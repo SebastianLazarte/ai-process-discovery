@@ -1,14 +1,17 @@
 from uuid import UUID
 
 from fastapi import APIRouter, status
+from fastapi.responses import PlainTextResponse
 
 from app.api.dependencies import AnalysisServiceDep
 from app.models.schemas.analysis import (
     AnalysisCreate,
     AnalysisRead,
     AnalysisSummary,
+    Blueprint,
     OverrideCreate,
 )
+from app.services.blueprint_service import build_blueprint, render_markdown
 
 router = APIRouter(tags=["analyses"])
 
@@ -39,3 +42,14 @@ def create_override(
     analysis_id: UUID, data: OverrideCreate, service: AnalysisServiceDep
 ) -> AnalysisRead:
     return service.add_override(analysis_id, data)
+
+
+@router.get("/analyses/{analysis_id}/blueprint")
+def get_blueprint(analysis_id: UUID, service: AnalysisServiceDep) -> Blueprint:
+    return build_blueprint(service.get(analysis_id), service.get_snapshot(analysis_id))
+
+
+@router.get("/analyses/{analysis_id}/blueprint.md", response_class=PlainTextResponse)
+def get_blueprint_markdown(analysis_id: UUID, service: AnalysisServiceDep) -> PlainTextResponse:
+    blueprint = build_blueprint(service.get(analysis_id), service.get_snapshot(analysis_id))
+    return PlainTextResponse(render_markdown(blueprint), media_type="text/markdown")

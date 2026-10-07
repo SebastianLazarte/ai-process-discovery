@@ -231,3 +231,39 @@ def test_invalid_assumptions_return_422(client: TestClient) -> None:
         },
     )
     assert response.status_code == 422
+
+
+def test_blueprint_json_and_markdown(client: TestClient) -> None:
+    demo = client.post("/demo-processes/invoice-intake").json()
+    reductions = {s["id"]: "0.5" for s in demo["steps"]}
+    analysis = _analyse(
+        client,
+        demo["id"],
+        use_llm=True,
+        confirm_sensitive=True,
+        assumptions={
+            "implementation_cost": "6000",
+            "monthly_tooling_cost": "50",
+            "expected_time_reduction_by_step": reductions,
+        },
+    )
+    blueprint = client.get(f"/analyses/{analysis['id']}/blueprint").json()
+    for section in (
+        "process_summary",
+        "current_state",
+        "automation_opportunities",
+        "proposed_architecture",
+        "business_impact",
+        "risks",
+        "human_controls",
+        "workflow_specification",
+    ):
+        assert blueprint[section], section
+
+    response = client.get(f"/analyses/{analysis['id']}/blueprint.md")
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/markdown")
+    text = response.text
+    assert text.startswith("# Automation blueprint: Invoice intake and validation")
+    assert "Implementation cost: 6,000.00" in text
+    assert "## Human controls" in text
