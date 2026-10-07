@@ -60,9 +60,19 @@ def build_blueprint(analysis: AnalysisRead, process: ProcessRead) -> Blueprint:
     )
 
 
+_SUITABILITY_NOTE = (
+    "Ordered by monthly time. Suitability measures whether a step can be automated, "
+    "not how much it is worth."
+)
+
+
 def render_markdown(blueprint: Blueprint) -> str:
     summary = blueprint.process_summary
     impact = blueprint.business_impact
+    analysis_line = (
+        f"- **Analysis:** {summary['analysed_at']}, process version {summary['process_version']}, "
+        f"rules {summary['rules_version']}, LLM {summary['llm']}"
+    )
     lines = [
         f"# Automation blueprint: {summary['name']}",
         "",
@@ -72,8 +82,7 @@ def render_markdown(blueprint: Blueprint) -> str:
         f"- **Owner:** {summary['owner'] or 'not given'}",
         f"- **Executions per month:** {summary['executions_per_month']}",
         f"- **Steps:** {summary['steps']}",
-        f"- **Analysis:** {summary['analysed_at']}, process version {summary['process_version']}, "
-        f"rules {summary['rules_version']}, LLM {summary['llm']}",
+        analysis_line,
         "",
         "## Current state",
         "",
@@ -82,8 +91,7 @@ def render_markdown(blueprint: Blueprint) -> str:
         "",
         "## Automation opportunities",
         "",
-        "Ordered by monthly time. Suitability measures whether a step can be automated, "
-        "not how much it is worth.",
+        _SUITABILITY_NOTE,
         "",
         "| # | Step | Method | Human control | Decided by | Hours/month | Suitability |",
         "|---|---|---|---|---|---:|---:|",
