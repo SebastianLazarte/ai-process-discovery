@@ -1,0 +1,40 @@
+name: Requirement
+description: A system requirement (RS) from docs/requirements.yaml
+title: "RS-XX: "
+labels: ["req", "type:feature"]
+body:
+  - type: input
+    id: rs
+    attributes:
+      label: Requirement ID
+      placeholder: RS-09
+    validations:
+      required: true
+  - type: input
+    id: ru
+    attributes:
+      label: Parent user requirement
+      placeholder: RU-03
+    validations:
+      required: true
+  - type: dropdown
+    id: block
+    attributes:
+      label: Block
+      options: [B0, B1, B2, B3, B4, B5, B6, B7, B8, B9]
+    validations:
+      required: true
+  - type: textarea
+    id: requirement
+    attributes:
+      label: Requirement
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Each criterion must be checkable by a concrete action, never by opinion.
+      value: "- [ ] "
+    validations:
+      required: true

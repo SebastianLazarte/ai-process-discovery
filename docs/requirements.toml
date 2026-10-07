@@ -1,0 +1,372 @@
+# System requirements, one GitHub issue each (scripts/bootstrap_github.py).
+# Same identifiers as the internal spec. Every requirement traces to a user requirement (ru).
+
+[user_requirements]
+RU-01 = "Describe a process and its steps with the attributes needed to analyse it"
+RU-02 = "Know how much time and money the process consumes today"
+RU-03 = "Know which steps are worth automating, with which method and why"
+RU-04 = "Get an AI-assisted interpretation that cannot change computed facts"
+RU-05 = "Correct a recommendation while keeping the original and the reason"
+RU-06 = "Estimate economic impact from explicit, editable assumptions"
+RU-07 = "Get an exportable technical blueprint"
+RU-08 = "See the analysis history of a process and why results differ"
+
+[[requirement]]
+id = "RS-01"
+ru = "RU-01"
+block = "B1"
+area = "domain"
+title = "Process holds name, description, owner, executions, optional hourly cost and ordered steps"
+acceptance = ["A complete process is built in a test without importing FastAPI, SQLAlchemy or any SDK"]
+
+[[requirement]]
+id = "RS-02"
+ru = "RU-01"
+block = "B1"
+area = "domain"
+title = "ProcessStep holds the scoring attributes, with UNKNOWN allowed"
+acceptance = ["Every attribute from the design report exists with its type", "Enumerations accept UNKNOWN"]
+
+[[requirement]]
+id = "RS-03"
+ru = "RU-01"
+block = "B1"
+area = "domain"
+title = "Domain invariants reject invalid values"
+acceptance = ["One test per invariant: executions >= 0, minutes >= 0, hourly cost >= 0, rates within 0..1"]
+
+[[requirement]]
+id = "RS-04"
+ru = "RU-02"
+block = "B1"
+area = "domain"
+title = "Monthly hours per step = executions x occurrence rate x minutes / 60"
+acceptance = ["10 executions x 6 min = 1 h", "occurrence rate 0.5 gives 0.5 h"]
+
+[[requirement]]
+id = "RS-05"
+ru = "RU-02"
+block = "B1"
+area = "domain"
+title = "Process monthly hours = sum of step hours"
+acceptance = ["10 x (6 + 12) min = 3 h", "A process without steps takes 0 h"]
+
+[[requirement]]
+id = "RS-06"
+ru = "RU-02"
+block = "B1"
+area = "domain"
+title = "Monthly cost = hours x hourly cost, None when cost is unknown"
+acceptance = ["10 h x 20 = 200", "Unknown hourly cost returns None, never 0"]
+
+[[requirement]]
+id = "RS-07"
+ru = "RU-02"
+block = "B1"
+area = "domain"
+title = "Decimal arithmetic, rounding only at presentation"
+acceptance = ["Invoice example gives 1600/60 h before rounding and 493.33 when presented"]
+
+[[requirement]]
+id = "RS-08"
+ru = "RU-01"
+block = "B1"
+area = "domain"
+title = "domain/ imports no framework"
+acceptance = ["A test fails if domain/ imports fastapi, sqlalchemy, anthropic, streamlit, httpx or pydantic"]
+
+[[requirement]]
+id = "RS-09"
+ru = "RU-03"
+block = "B2"
+area = "domain"
+title = "Versioned, configurable ScoringPolicy v1"
+acceptance = ["Changing a weight in the policy changes the score without touching the algorithm"]
+
+[[requirement]]
+id = "RS-10"
+ru = "RU-03"
+block = "B2"
+area = "domain"
+title = "score_step returns score, factors, penalties, unknowns and policy version"
+acceptance = ["Factors minus penalties, clamped to 0..100, equals the score"]
+
+[[requirement]]
+id = "RS-11"
+ru = "RU-03"
+block = "B2"
+area = "domain"
+title = "UNKNOWN attributes score 0 and are listed"
+acceptance = ["A step with UNKNOWN integration lists integration_readiness among its unknowns"]
+
+[[requirement]]
+id = "RS-12"
+ru = "RU-03"
+block = "B2"
+area = "domain"
+title = "Process score is the time-weighted mean of step scores"
+acceptance = ["1 h at 90 and 9 h at 50 gives 54"]
+
+[[requirement]]
+id = "RS-13"
+ru = "RU-03"
+block = "B2"
+area = "domain"
+title = "Automation method from written rules, separate from human control"
+acceptance = ["Each branch of the classification table has a test"]
+
+[[requirement]]
+id = "RS-14"
+ru = "RU-03"
+block = "B2"
+area = "domain"
+title = "Human control (REQUIRED, RECOMMENDED, NONE) computed separately"
+acceptance = ["Judgement or approval gives REQUIRED", "Sensitive data or high criticality gives RECOMMENDED"]
+
+[[requirement]]
+id = "RS-15"
+ru = "RU-06"
+block = "B3"
+area = "domain"
+title = "Business case assumptions are user input"
+acceptance = ["A step without a declared reduction counts as 0 and is reported as missing"]
+
+[[requirement]]
+id = "RS-16"
+ru = "RU-06"
+block = "B3"
+area = "domain"
+title = "Hours freed = step hours x expected reduction"
+acceptance = ["10 h with reduction 0.5 gives 5 h"]
+
+[[requirement]]
+id = "RS-17"
+ru = "RU-06"
+block = "B3"
+area = "domain"
+title = "Gross and net savings, payback and 12-month ROI"
+acceptance = ["Unknown hourly cost makes savings, payback and ROI None", "Net savings <= 0 gives no payback"]
+
+[[requirement]]
+id = "RS-18"
+ru = "RU-03"
+block = "B3"
+area = "domain"
+title = "Suitability and business impact are returned separately"
+acceptance = ["No response field combines both"]
+
+[[requirement]]
+id = "RS-19"
+ru = "RU-01"
+block = "B4"
+area = "api"
+title = "Process CRUD endpoints"
+acceptance = ["Create, read, update and delete return 201/200/200/204 in integration tests"]
+
+[[requirement]]
+id = "RS-20"
+ru = "RU-01"
+block = "B4"
+area = "api"
+title = "Step CRUD and reordering endpoints"
+acceptance = ["After reordering, GET returns steps in the new order"]
+
+[[requirement]]
+id = "RS-21"
+ru = "RU-01"
+block = "B4"
+area = "api"
+title = "Pydantic validation with explicit 4xx errors"
+acceptance = ["occurrence_rate 1.2 returns 422 naming the field", "Unknown id returns 404"]
+
+[[requirement]]
+id = "RS-22"
+ru = "RU-08"
+block = "B4"
+area = "api"
+title = "Immutable Analysis with rules version, prompt version, provider, model and process snapshot"
+acceptance = ["Changing the process after an analysis leaves the stored analysis unchanged"]
+
+[[requirement]]
+id = "RS-23"
+ru = "RU-08"
+block = "B4"
+area = "api"
+title = "Create, list and read analyses"
+acceptance = ["Two analyses of a process appear in history, newest first"]
+
+[[requirement]]
+id = "RS-24"
+ru = "RU-02"
+block = "B4"
+area = "infra"
+title = "Database selected by DATABASE_URL: SQLite by default, PostgreSQL in CI"
+acceptance = ["test-postgres runs the same integration suite as test"]
+
+[[requirement]]
+id = "RS-25"
+ru = "RU-02"
+block = "B4"
+area = "api"
+title = "GET /health reports application and database state"
+acceptance = ["Returns 200 with the database reachable"]
+
+[[requirement]]
+id = "RS-26"
+ru = "RU-04"
+block = "B5"
+area = "llm"
+title = "Services depend on an LLMProvider protocol, never on an SDK"
+acceptance = ["No module in services/ imports anthropic"]
+
+[[requirement]]
+id = "RS-27"
+ru = "RU-04"
+block = "B5"
+area = "llm"
+title = "LLM output schema has no field for hours, cost, score, savings, payback or ROI"
+acceptance = ["A test walks the generated JSON Schema and fails if any of those fields appears"]
+
+[[requirement]]
+id = "RS-28"
+ru = "RU-04"
+block = "B5"
+area = "llm"
+title = "Deterministic FakeLLMProvider as default provider"
+acceptance = ["The full suite passes without ANTHROPIC_API_KEY"]
+
+[[requirement]]
+id = "RS-29"
+ru = "RU-04"
+block = "B5"
+area = "llm"
+title = "AnthropicProvider with structured output, timeout, limited retries and normalised errors"
+acceptance = ["Valid output accepted", "Invalid output raises LLMSchemaError", "Timeout raises LLMTimeoutError"]
+
+[[requirement]]
+id = "RS-30"
+ru = "RU-04"
+block = "B5"
+area = "llm"
+title = "Versioned prompt, never logged in full"
+acceptance = ["PROMPT_VERSION is stored with the analysis", "Logs carry ids and counts only"]
+
+[[requirement]]
+id = "RS-31"
+ru = "RU-04"
+block = "B5"
+area = "llm"
+title = "Confirmation before sending sensitive steps to the LLM"
+acceptance = ["The API answers 409 unless confirm_sensitive=true"]
+
+[[requirement]]
+id = "RS-32"
+ru = "RU-04"
+block = "B6"
+area = "reconciliation"
+title = "Response metrics come only from the deterministic engine"
+acceptance = ["With a fake that returns figures in text, hours and costs do not change"]
+
+[[requirement]]
+id = "RS-33"
+ru = "RU-04"
+block = "B6"
+area = "reconciliation"
+title = "The LLM may raise human control and never lower it"
+acceptance = ["REQUIRED by rules plus human_control_recommended=false gives REQUIRED"]
+
+[[requirement]]
+id = "RS-34"
+ru = "RU-03"
+block = "B6"
+area = "reconciliation"
+title = "AI decides the method only where rules say NEEDS_REVIEW"
+acceptance = ["One test per case"]
+
+[[requirement]]
+id = "RS-35"
+ru = "RU-04"
+block = "B6"
+area = "reconciliation"
+title = "Rules, AI and final recommendations are all kept"
+acceptance = ["All three appear in every step assessment"]
+
+[[requirement]]
+id = "RS-36"
+ru = "RU-04"
+block = "B6"
+area = "reconciliation"
+title = "Unknown step ids from the LLM are discarded"
+acceptance = ["A made-up id does not appear in the analysis"]
+
+[[requirement]]
+id = "RS-37"
+ru = "RU-04"
+block = "B6"
+area = "reconciliation"
+title = "Provider failure still saves the deterministic analysis"
+acceptance = ["With a fake that times out, the response is 201 with metrics and scoring"]
+
+[[requirement]]
+id = "RS-38"
+ru = "RU-05"
+block = "B4"
+area = "api"
+title = "Human overrides with mandatory reason"
+acceptance = ["Without a reason returns 422", "The analysis shows original, override and reason"]
+
+[[requirement]]
+id = "RS-39"
+ru = "RU-07"
+block = "B7"
+area = "blueprint"
+title = "Blueprint with eight sections"
+acceptance = ["GET /analyses/{id}/blueprint returns all eight sections"]
+
+[[requirement]]
+id = "RS-40"
+ru = "RU-07"
+block = "B7"
+area = "blueprint"
+title = "Blueprint shows business case assumptions and applies overrides"
+acceptance = ["The Markdown lists every assumption and uses the corrected recommendation"]
+
+[[requirement]]
+id = "RS-41"
+ru = "RU-07"
+block = "B7"
+area = "blueprint"
+title = "Markdown export"
+acceptance = ["GET /analyses/{id}/blueprint.md returns text/markdown"]
+
+[[requirement]]
+id = "RS-42"
+ru = "RU-01"
+block = "B8"
+area = "ui"
+title = "Streamlit talks to the API over HTTP only"
+acceptance = ["A test fails if ui/ imports the app package"]
+
+[[requirement]]
+id = "RS-43"
+ru = "RU-01"
+block = "B8"
+area = "ui"
+title = "Load demo processes, create processes, edit and reorder steps"
+acceptance = ["Manual walkthrough recorded in the B8 pull request"]
+
+[[requirement]]
+id = "RS-44"
+ru = "RU-03"
+block = "B8"
+area = "ui"
+title = "Results in four separate panels: suitability, business impact, risk, human controls"
+acceptance = ["No panel shows a single combined score"]
+
+[[requirement]]
+id = "RS-45"
+ru = "RU-05"
+block = "B8"
+area = "ui"
+title = "Override form, analysis history and blueprint download"
+acceptance = ["Manual walkthrough recorded in the B8 pull request"]
