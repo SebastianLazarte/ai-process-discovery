@@ -51,6 +51,7 @@ def _violations(directory: Path, forbidden: tuple[str, ...]) -> list[str]:
             ),
         ),
         (SRC / "services", ("anthropic", "streamlit", "fastapi")),
+        (ROOT / "ui", ("app",)),
     ],
 )
 def test_layer_does_not_import_forbidden_modules(
