@@ -1,0 +1,60 @@
+# Full stack: PostgreSQL + API + Streamlit UI.
+#   docker compose up --build
+# CI runs this file in the `docker` job with a freshly built image (APD_IMAGE).
+
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: apd
+      POSTGRES_PASSWORD: apd
+      POSTGRES_DB: apd
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U apd"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    image: ${APD_IMAGE:-ai-process-discovery:local}
+    build: .
+    environment:
+      DATABASE_URL: postgresql+psycopg://apd:apd@db:5432/apd
+      LLM_PROVIDER: ${LLM_PROVIDER:-fake}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  ui:
+    image: ${APD_IMAGE:-ai-process-discovery:local}
+    command:
+      - streamlit
+      - run
+      - ui/streamlit_app.py
+      - --server.port=8501
+      - --server.address=0.0.0.0
+      - --server.headless=true
+    environment:
+      API_BASE_URL: http://api:8000
+    ports:
+      - "8501:8501"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health', timeout=2)"
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  pgdata:
