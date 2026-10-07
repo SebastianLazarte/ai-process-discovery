@@ -50,6 +50,7 @@ def _violations(directory: Path, forbidden: tuple[str, ...]) -> list[str]:
                 "app.api",
             ),
         ),
+        (SRC / "services", ("anthropic", "streamlit", "fastapi")),
     ],
 )
 def test_layer_does_not_import_forbidden_modules(
