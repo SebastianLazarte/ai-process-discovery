@@ -49,8 +49,10 @@ def test_update_rejects_null_required_field(client: TestClient) -> None:
 
 def test_delete_process(client: TestClient) -> None:
     created = _create(client)
-    assert client.delete(f"/processes/{created['id']}").status_code == 204
-    assert client.get(f"/processes/{created['id']}").status_code == 404
+    deleted = client.delete(f"/processes/{created['id']}")
+    fetched = client.get(f"/processes/{created['id']}")
+    assert deleted.status_code == 204
+    assert fetched.status_code == 404
 
 
 def test_steps_crud_and_order(client: TestClient) -> None:
@@ -58,7 +60,8 @@ def test_steps_crud_and_order(client: TestClient) -> None:
     pid = created["id"]
     first = created["steps"][0]["id"]
 
-    body = client.post(f"/processes/{pid}/steps", json=step_payload(name="Approve")).json()
+    appended = client.post(f"/processes/{pid}/steps", json=step_payload(name="Approve"))
+    assert appended.status_code == 201
     body = client.post(
         f"/processes/{pid}/steps", json=step_payload(name="Download", position=1)
     ).json()
@@ -94,16 +97,18 @@ def test_validation_errors_are_explicit(client: TestClient) -> None:
     assert response.status_code == 422
     assert "occurrence_rate" in response.text
 
-    assert (
-        client.post("/processes", json=process_payload(executions_per_month=-1)).status_code == 422
-    )
+    negative = client.post("/processes", json=process_payload(executions_per_month=-1))
+    assert negative.status_code == 422
 
 
 def test_unknown_ids_return_404(client: TestClient) -> None:
     missing = "00000000-0000-0000-0000-000000000000"
-    assert client.get(f"/processes/{missing}").status_code == 404
-    assert client.patch(f"/steps/{missing}", json={"name": "x"}).status_code == 404
-    assert client.post(f"/processes/{missing}/analyses", json={}).status_code == 404
+    responses = [
+        client.get(f"/processes/{missing}"),
+        client.patch(f"/steps/{missing}", json={"name": "x"}),
+        client.post(f"/processes/{missing}/analyses", json={}),
+    ]
+    assert [r.status_code for r in responses] == [404, 404, 404]
 
 
 def test_demo_processes_load(client: TestClient) -> None:
@@ -116,4 +121,5 @@ def test_demo_processes_load(client: TestClient) -> None:
     for demo in demos:
         response = client.post(f"/demo-processes/{demo['slug']}")
         assert response.status_code == 201, response.text
-    assert client.post("/demo-processes/nope").status_code == 404
+    unknown = client.post("/demo-processes/nope")
+    assert unknown.status_code == 404

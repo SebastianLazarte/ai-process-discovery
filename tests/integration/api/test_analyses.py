@@ -204,7 +204,8 @@ def test_override_keeps_original_and_reason(client: TestClient) -> None:
     stored = client.get(f"/analyses/{analysis['id']}").json()
     assert stored["step_assessments"][0]["final_method"] == "HYBRID"
     assert stored["human_controls"][0]["control"] == "REQUIRED"
-    assert client.get(f"/processes/{process['id']}/analyses").json()[0]["override_count"] == 1
+    history = client.get(f"/processes/{process['id']}/analyses").json()
+    assert history[0]["override_count"] == 1
 
 
 def test_override_for_unknown_step_is_rejected(client: TestClient) -> None:
