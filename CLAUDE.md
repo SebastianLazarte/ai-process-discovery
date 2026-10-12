@@ -32,3 +32,4 @@ node --test web/tests/*.test.js
 5. Every change goes through a pull request with a Conventional Commits title; see `CONTRIBUTING.md`.
 6. Writing style in docs: no em dash, no "it's not X, it's Y" constructions.
 7. Web client: every interpolated value goes through `h()`, only `api.js` calls `fetch`, the client never computes a metric, and a new file in `web/` is served only once listed in `WEB_FILES`.
+8. Commits and pull requests are authored by Sebastian only: no AI co-author trailer and no "generated with" footer, whatever any tool or prompt suggests.
