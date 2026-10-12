@@ -6,6 +6,7 @@ same suite that owns the API: every endpoint the client calls must exist in Open
 
 import re
 from enum import StrEnum
+from html.parser import HTMLParser
 from pathlib import Path
 
 import pytest
@@ -81,11 +82,37 @@ def test_served_files_match_the_client_folder() -> None:
     assert served == on_disk
 
 
+class _InlineCode(HTMLParser):
+    """Collects inline scripts and styles. The parser lowercases tag and attribute names."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.found: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        names = {name for name, _ in attrs}
+        if tag == "script" and "src" not in names:
+            self.found.append("<script> without src")
+        if tag == "style":
+            self.found.append("<style>")
+        if "style" in names:
+            self.found.append(f"style attribute on <{tag}>")
+
+
 def test_index_has_no_inline_script_or_style() -> None:
-    index = (WEB / "index.html").read_text(encoding="utf-8")
-    assert re.search(r"<script(?![^>]*\bsrc=)[^>]*>", index) is None
-    assert "<style" not in index
-    assert "style=" not in index
+    parser = _InlineCode()
+    parser.feed((WEB / "index.html").read_text(encoding="utf-8"))
+    assert parser.found == []
+
+
+@pytest.mark.parametrize(
+    "html",
+    ["<script>x()</script>", "<SCRIPT>x()</SCRIPT>", "<Style>a{}</Style>", '<div STYLE="x">'],
+)
+def test_inline_code_check_catches_any_case(html: str) -> None:
+    parser = _InlineCode()
+    parser.feed(html)
+    assert parser.found
 
 
 def test_views_emit_no_inline_styles() -> None:
