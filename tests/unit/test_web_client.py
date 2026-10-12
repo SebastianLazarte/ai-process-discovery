@@ -1,21 +1,38 @@
-"""Static checks on the web client (RS-47, RS-49, RS-50).
+"""Static checks on the web client (RS-47, RS-49, RS-50, RS-58).
 
 The client is plain JavaScript, so its contract with the API is checked here, in the
 same suite that owns the API: every endpoint the client calls must exist in OpenAPI.
 """
 
 import re
+from enum import StrEnum
 from pathlib import Path
 
 import pytest
 
 from app.api.routes.web import WEB_FILES
 from app.core.config import Settings
+from app.domain.enums import (
+    AutomationMethod,
+    HumanControl,
+    InputType,
+    IntegrationReadiness,
+    Level,
+)
 from app.main import create_app
 
 ROOT = Path(__file__).resolve().parents[2]
 WEB = ROOT / "web"
 ENDPOINT = re.compile(r"\[\s*'(GET|POST|PUT|PATCH|DELETE)'\s*,\s*'([^']+)'\s*\]")
+OPTION_LIST = re.compile(r"export const ([A-Z_]+) = \[([^\]]*)\];")
+
+CLIENT_ENUMS = {
+    "LEVELS": Level,
+    "INPUT_TYPES": InputType,
+    "INTEGRATION": IntegrationReadiness,
+    "METHODS": AutomationMethod,
+    "CONTROLS": HumanControl,
+}
 
 
 def _sources() -> dict[str, str]:
@@ -24,6 +41,14 @@ def _sources() -> dict[str, str]:
 
 def _client_endpoints() -> list[tuple[str, str]]:
     return ENDPOINT.findall((WEB / "api.js").read_text(encoding="utf-8"))
+
+
+def _option_lists() -> dict[str, set[str]]:
+    return {
+        name: set(re.findall(r"'([^']+)'", body))
+        for text in _sources().values()
+        for name, body in OPTION_LIST.findall(text)
+    }
 
 
 def test_client_declares_endpoints() -> None:
@@ -66,3 +91,8 @@ def test_index_has_no_inline_script_or_style() -> None:
 def test_views_emit_no_inline_styles() -> None:
     offenders = [name for name, text in _sources().items() if "style=" in text]
     assert offenders == []
+
+
+@pytest.mark.parametrize(("name", "enum"), CLIENT_ENUMS.items())
+def test_client_option_lists_match_domain_enums(name: str, enum: type[StrEnum]) -> None:
+    assert _option_lists().get(name) == {member.value for member in enum}, name

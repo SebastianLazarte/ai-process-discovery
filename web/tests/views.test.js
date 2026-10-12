@@ -1,8 +1,10 @@
-// RS-51, RS-53 and RS-54: escaping, four separate panels and the sensitive-data gate.
+// RS-51, RS-53, RS-54 and RS-58: escaping, four separate panels, the sensitive-data gate
+// and unknown option values.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { shell, home, stepsPage, stepForm, analysePage, historyPage, processHeader, canRunAnalysis } from '../process-views.js';
 import { resultsPage, blueprintPage } from '../analysis-views.js';
+import { select } from '../views.js';
 import { process, analysis, blueprint, history } from './fixtures.js';
 
 const EVIL = '<img src=x onerror=alert(1)>';
@@ -52,6 +54,13 @@ test('analysis with the LLM needs confirmation when a step is sensitive', () => 
   assert.equal(canRunAnalysis(process(), true, false), true);
   assert.ok(analysePage(sensitive, { useLlm: true }).includes('type="submit" disabled'));
   assert.ok(!analysePage(sensitive, { useLlm: false }).includes('type="submit" disabled'));
+});
+
+test('select keeps an unknown current value selected', () => {
+  const html = select('human_control', 'Human control', ['NONE', 'REQUIRED'], 'SUPERVISED');
+  assert.ok(html.includes('<option value="SUPERVISED" selected>'));
+  assert.ok(!/<option value="NONE" selected>/.test(html));
+  assert.equal((select('c', 'C', ['NONE', 'REQUIRED'], 'REQUIRED').match(/<option/g) || []).length, 2);
 });
 
 test('a process without steps cannot be analysed', () => {

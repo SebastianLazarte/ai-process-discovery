@@ -44,8 +44,10 @@ export const input = (name, title, { type = 'text', value = '', required = false
 export const area = (name, title, value = '') =>
   `<label class="wide">${h(title)}<textarea name="${h(name)}" rows="3">${h(value)}</textarea></label>`;
 
+// A value the client does not list (a newer API) is kept and selected, so saving the
+// form never swaps it silently for the first option (RS-58).
 export const select = (name, title, options, value = '') =>
-  `<label>${h(title)}<select name="${h(name)}">${options
+  `<label>${h(title)}<select name="${h(name)}">${(value && !options.includes(value) ? [...options, value] : options)
     .map(option => `<option value="${h(option)}"${option === value ? ' selected' : ''}>${h(enumLabel(option))}</option>`)
     .join('')}</select></label>`;
 

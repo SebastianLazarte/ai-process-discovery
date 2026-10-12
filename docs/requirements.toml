@@ -466,3 +466,11 @@ block = "B10"
 area = "ui"
 title = "Accessible and usable at 375 px: labels, visible focus, skip link, no horizontal scroll"
 acceptance = ["Screenshots at 375 and 1280 px in the pull request"]
+
+[[requirement]]
+id = "RS-58"
+ru = "RU-01"
+block = "B10"
+area = "ui"
+title = "Client option lists match the domain enums; an unknown value from the API stays selected"
+acceptance = ["A test fails if a domain enum value is missing from web/", "node:test: select() keeps an unknown current value"]
