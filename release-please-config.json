@@ -4,6 +4,7 @@
   "bump-minor-pre-major": true,
   "bump-patch-for-minor-pre-major": false,
   "include-component-in-tag": false,
+  "pull-request-title-pattern": "chore(release): release${component} ${version}",
   "packages": {
     ".": {
       "package-name": "ai-process-discovery",
