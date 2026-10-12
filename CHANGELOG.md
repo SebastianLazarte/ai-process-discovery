@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/SebastianLazarte/ai-process-discovery/compare/v1.0.0...v1.1.0) (2026-10-12)
+
+
+### Features
+
+* **web:** vanilla web client served by FastAPI at /ui/ ([#71](https://github.com/SebastianLazarte/ai-process-discovery/issues/71)) ([8f253f9](https://github.com/SebastianLazarte/ai-process-discovery/commit/8f253f97573cc9f8a63ad3a4c4df8a3b4b21c03a))
+
 ## [1.0.0](https://github.com/SebastianLazarte/ai-process-discovery/compare/v0.1.0...v1.0.0) (2026-10-07)
 
 
