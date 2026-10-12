@@ -45,7 +45,15 @@ LABELS = {
     },
 }
 
-REQUIRED_CHECKS = ["quality", "test (3.12)", "test (3.13)", "test-postgres", "docker", "pr-title"]
+REQUIRED_CHECKS = [
+    "quality",
+    "web",
+    "test (3.12)",
+    "test (3.13)",
+    "test-postgres",
+    "docker",
+    "pr-title",
+]
 
 
 class Runner:

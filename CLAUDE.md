@@ -1,6 +1,6 @@
 # AI Process Discovery: agent map
 
-Python 3.12, uv, FastAPI, Pydantic, SQLAlchemy 2, Anthropic SDK; web client in plain JavaScript modules (Streamlit until 1.1). Public portfolio repo.
+Python 3.12, uv, FastAPI, Pydantic, SQLAlchemy 2, Anthropic SDK; web client in plain JavaScript modules (Streamlit until 1.2). Public portfolio repo.
 
 | Task | Where | Read first |
 |---|---|---|
@@ -8,7 +8,7 @@ Python 3.12, uv, FastAPI, Pydantic, SQLAlchemy 2, Anthropic SDK; web client in p
 | HTTP contracts and routes | `src/app/models/schemas/`, `src/app/api/` | `docs/adr/0003-...` |
 | LLM adapter or prompt | `src/app/llm/` | `docs/adr/0004-...` |
 | Web client | `web/`, served by `src/app/api/routes/web.py` | `docs/adr/0007-...` |
-| Legacy UI (until 1.1) | `ui/streamlit_app.py` | `docs/adr/0005-...` |
+| Legacy UI (until 1.2) | `ui/streamlit_app.py` | `docs/adr/0005-...` |
 | CI/CD, releases, GitHub setup | `.github/`, `scripts/bootstrap_github.py` | `docs/adr/0006-...` |
 | Requirements and acceptance criteria | `docs/requirements.toml` | |
 

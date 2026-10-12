@@ -35,7 +35,7 @@ Describe the process
 ```mermaid
 flowchart TB
     WEB[Web client /ui/] -->|REST JSON| API[FastAPI]
-    UI[Streamlit UI, until 1.1] -->|REST JSON| API
+    UI[Streamlit UI, until 1.2] -->|REST JSON| API
     API --> PS[ProcessService]
     API --> AS[AnalysisService]
     API --> BS[Blueprint]
@@ -126,7 +126,7 @@ uv sync --all-extras
 cp .env.example .env            # optional: LLM_PROVIDER=anthropic and a key
 
 uv run uvicorn app.main:app --reload                 # API and web client on :8000/ui/, docs at /docs
-uv run streamlit run ui/streamlit_app.py             # legacy Streamlit UI on :8501, until 1.1
+uv run streamlit run ui/streamlit_app.py             # legacy Streamlit UI on :8501, until 1.2
 ```
 
 Or the whole stack with PostgreSQL:
@@ -182,7 +182,7 @@ The "Approve payment" step scores 60 and is `RULE_BASED`, and it still keeps `RE
 
 - **SQLite locally, PostgreSQL in CI.** The demo runs with nothing but `uv`; the `test-postgres` job proves the PostgreSQL path on every pull request ([ADR 0002](docs/adr/0002-sqlite-locally-postgresql-in-ci.md)).
 - **No migrations yet.** `create_all` until a schema is released.
-- **Web client without a framework.** ES modules served by FastAPI at `/ui/`, no build step and no dependencies; the client prints the API's numbers and never computes one ([ADR 0007](docs/adr/0007-vanilla-web-client-served-by-fastapi.md)). Streamlit stays in 1.0 and leaves in 1.1 ([ADR 0005](docs/adr/0005-streamlit-as-rest-client.md)).
+- **Web client without a framework.** ES modules served by FastAPI at `/ui/`, no build step and no dependencies; the client prints the API's numbers and never computes one ([ADR 0007](docs/adr/0007-vanilla-web-client-served-by-fastapi.md)). Streamlit runs next to it in 1.1 and leaves in 1.2 ([ADR 0005](docs/adr/0005-streamlit-as-rest-client.md)).
 - **One real LLM provider.** The interface is the deliverable; a second adapter is one module ([ADR 0004](docs/adr/0004-provider-agnostic-llm-anthropic-first.md)).
 - **Synchronous LLM call.** Simple and adequate for one analysis at a time; a queue is the next step if analyses grow.
 

@@ -1,6 +1,6 @@
 # ADR 0007: Vanilla web client served by FastAPI
 
-**Status:** accepted · 2026-10-12 · replaces ADR 0005 from 1.1.0
+**Status:** accepted · 2026-10-12 · replaces ADR 0005 from 1.2.0
 
 ## Context
 
@@ -21,7 +21,7 @@ Streamlit came from the design report, which wanted the least possible frontend 
 - One process and one port for API and UI. The image no longer needs Streamlit once it is retired.
 - The UI boundary from ADR 0005 still holds: the client only speaks HTTP, and replacing it touches no backend code.
 - The repository gains a second language. Its checks are limited to syntax, pure-function tests and the contract test against OpenAPI; browser walkthroughs are recorded in pull requests.
-- Streamlit stays in 1.0.0 next to the web client and is removed in 1.1.0.
+- Streamlit runs next to the web client in 1.1.0 and is removed in 1.2.0.
 
 ## Alternatives rejected
 
