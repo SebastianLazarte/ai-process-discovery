@@ -370,3 +370,107 @@ block = "B8"
 area = "ui"
 title = "Override form, analysis history and blueprint download"
 acceptance = ["Manual walkthrough recorded in the B8 pull request"]
+
+[[requirement]]
+id = "RS-46"
+ru = "RU-01"
+block = "B10"
+area = "ui"
+title = "FastAPI serves web/ at /ui/ and / redirects there; WEB_DIR is configurable and the API runs without it"
+acceptance = ["/ui/ returns 200 text/html and / returns 307", "With a missing WEB_DIR, /health returns 200 and /ui/ returns 404"]
+
+[[requirement]]
+id = "RS-47"
+ru = "RU-01"
+block = "B10"
+area = "ui"
+title = "Only files listed by name in the web router are served"
+acceptance = ["/ui/tests/views.test.js returns 404", "A test fails if web/ and the served list differ"]
+
+[[requirement]]
+id = "RS-48"
+ru = "RU-01"
+block = "B10"
+area = "ui"
+title = "Client responses carry a strict CSP, nosniff and no-referrer; /docs is unchanged"
+acceptance = ["Header test on /ui/ and /docs"]
+
+[[requirement]]
+id = "RS-49"
+ru = "RU-01"
+block = "B10"
+area = "ui"
+title = "The client calls only public API routes, and only from api.js"
+acceptance = ["Every endpoint in api.js exists in app.openapi()", "No other file in web/ contains fetch("]
+
+[[requirement]]
+id = "RS-50"
+ru = "RU-04"
+block = "B10"
+area = "ui"
+title = "The client never computes a metric; unknown values show as unknown, never 0"
+acceptance = ["node:test on format.js", "parseFloat, parseInt and Number( appear only in format.js"]
+
+[[requirement]]
+id = "RS-51"
+ru = "RU-01"
+block = "B10"
+area = "ui"
+title = "Every interpolated value goes through h()"
+acceptance = ["node:test: a process named <img onerror> renders escaped in every view"]
+
+[[requirement]]
+id = "RS-52"
+ru = "RU-01"
+block = "B10"
+area = "ui"
+title = "Load demos, create and delete processes, add, edit, reorder and delete steps"
+acceptance = ["Browser walkthrough with screenshots in the B10 pull request"]
+
+[[requirement]]
+id = "RS-53"
+ru = "RU-03"
+block = "B10"
+area = "ui"
+title = "Results in four separate panels with rules version, prompt version and LLM status"
+acceptance = ["No panel shows a combined score", "llm_status=unavailable shows a notice and complete deterministic results"]
+
+[[requirement]]
+id = "RS-54"
+ru = "RU-04"
+block = "B10"
+area = "ui"
+title = "With the LLM on and sensitive steps, the run button stays disabled until confirmed; a 409 shows as a notice"
+acceptance = ["node:test on the analysis view", "Browser walkthrough"]
+
+[[requirement]]
+id = "RS-55"
+ru = "RU-05"
+block = "B10"
+area = "ui"
+title = "Override with a required reason, analysis history and blueprint with .md download"
+acceptance = ["Browser walkthrough", "An override without reason marks the field"]
+
+[[requirement]]
+id = "RS-56"
+ru = "RU-01"
+block = "B10"
+area = "ui"
+title = "API errors show in a toast; a 422 marks the affected form field"
+acceptance = ["node:test on error mapping for domain and validation errors"]
+
+[[requirement]]
+id = "RS-57"
+ru = "RU-01"
+block = "B10"
+area = "ui"
+title = "Accessible and usable at 375 px: labels, visible focus, skip link, no horizontal scroll"
+acceptance = ["Screenshots at 375 and 1280 px in the pull request"]
+
+[[requirement]]
+id = "RS-58"
+ru = "RU-01"
+block = "B10"
+area = "ui"
+title = "Client option lists match the domain enums; an unknown value from the API stays selected"
+acceptance = ["A test fails if a domain enum value is missing from web/", "node:test: select() keeps an unknown current value"]

@@ -1,4 +1,4 @@
-# Full stack: PostgreSQL + API + Streamlit UI.
+# Full stack: PostgreSQL + API (web client at :8000/ui/) + Streamlit UI.
 #   docker compose up --build
 # CI runs this file in the `docker` job with a freshly built image (APD_IMAGE).
 

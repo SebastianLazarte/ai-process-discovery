@@ -29,6 +29,7 @@ MILESTONES = {
     "B7": "Blueprint",
     "B8": "Streamlit UI",
     "B9": "Docs and 1.0 release",
+    "B10": "Web client",
 }
 
 LABELS = {
@@ -44,7 +45,15 @@ LABELS = {
     },
 }
 
-REQUIRED_CHECKS = ["quality", "test (3.12)", "test (3.13)", "test-postgres", "docker", "pr-title"]
+REQUIRED_CHECKS = [
+    "quality",
+    "web",
+    "test (3.12)",
+    "test (3.13)",
+    "test-postgres",
+    "docker",
+    "pr-title",
+]
 
 
 class Runner:

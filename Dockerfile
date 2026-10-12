@@ -1,4 +1,5 @@
-# One image for the API and the Streamlit UI; compose.yaml picks the command.
+# One image for the API, the web client it serves at /ui/ and the Streamlit UI;
+# compose.yaml picks the command.
 FROM python:3.12-slim AS base
 
 COPY --from=ghcr.io/astral-sh/uv:0.11.9 /uv /uvx /bin/
@@ -18,12 +19,14 @@ RUN uv sync --locked --no-dev --all-extras --no-install-project
 
 COPY src ./src
 COPY ui ./ui
+COPY web ./web
 RUN uv sync --locked --no-dev --all-extras
 
 RUN useradd --create-home --uid 10001 app && mkdir -p /data && chown app /data
 USER app
 
 ENV DATABASE_URL=sqlite:////data/apd.sqlite \
+    WEB_DIR=/app/web \
     LLM_PROVIDER=fake
 
 EXPOSE 8000 8501

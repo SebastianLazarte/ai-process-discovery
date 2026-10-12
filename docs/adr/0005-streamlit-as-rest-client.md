@@ -10,3 +10,4 @@ The Streamlit UI calls the FastAPI service over HTTP with `httpx`. It never impo
 
 - The UI can be replaced (React, a CLI, another service) without touching the backend.
 - Running the UI needs the API running. `compose.yaml` starts both.
+- From 1.1.0 the web client of [ADR 0007](0007-vanilla-web-client-served-by-fastapi.md) runs next to Streamlit. Streamlit is removed in 1.2.0 and this ADR is then superseded.
