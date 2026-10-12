@@ -6,7 +6,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from app import __version__
-from app.api.routes import analyses, processes, system
+from app.api.routes import analyses, processes, system, web
 from app.core.config import Settings, get_settings
 from app.core.db import build_engine, init_db, session_factory
 from app.core.errors import AppError
@@ -61,6 +61,7 @@ def create_app(settings: Settings | None = None, provider: LLMProvider | None = 
     app.include_router(system.router)
     app.include_router(processes.router)
     app.include_router(analyses.router)
+    web.mount_web_client(app, settings.web_dir)
     return app
 
 

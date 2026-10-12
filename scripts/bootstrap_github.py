@@ -29,6 +29,7 @@ MILESTONES = {
     "B7": "Blueprint",
     "B8": "Streamlit UI",
     "B9": "Docs and 1.0 release",
+    "B10": "Web client",
 }
 
 LABELS = {
