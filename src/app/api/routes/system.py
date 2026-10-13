@@ -4,8 +4,10 @@ from typing import Any
 
 from fastapi import APIRouter, Request, status
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 from sqlalchemy import text
 
+from app import __version__
 from app.api.dependencies import ProcessServiceDep
 from app.core.errors import NotFoundError
 from app.models.schemas.process import ProcessCreate, ProcessRead
@@ -28,6 +30,17 @@ def health(request: Request) -> JSONResponse:
         {"status": "ok" if healthy else "degraded", "database": database},
         status_code=status.HTTP_200_OK if healthy else status.HTTP_503_SERVICE_UNAVAILABLE,
     )
+
+
+class AppMeta(BaseModel):
+    version: str
+    public_demo: bool
+
+
+@router.get("/meta")
+def meta(request: Request) -> AppMeta:
+    """What the client needs to know about this deployment."""
+    return AppMeta(version=__version__, public_demo=request.app.state.settings.public_demo)
 
 
 @router.get("/demo-processes")

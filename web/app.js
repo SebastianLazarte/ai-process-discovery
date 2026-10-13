@@ -49,6 +49,9 @@ const PAGES = {
   blueprint: ({ process, blueprint }) => av.blueprintPage(blueprint, process),
 };
 
+// Asked once per page load. Without an answer the client runs as before, with no banner.
+const metaRequest = call('getMeta').catch(() => null);
+
 async function render({ focus = false, open = null } = {}) {
   const version = ++renderVersion;
   const route = parseRoute();
@@ -87,7 +90,7 @@ async function render({ focus = false, open = null } = {}) {
     );
   }
   if (version !== renderVersion) return;
-  root.innerHTML = pv.shell(processes, processId, content);
+  root.innerHTML = pv.shell(processes, processId, content, await metaRequest);
   if (open) document.getElementById(open)?.setAttribute('open', '');
   if (focus) {
     window.scrollTo(0, 0);
