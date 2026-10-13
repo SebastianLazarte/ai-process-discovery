@@ -11,6 +11,7 @@ export const ENDPOINTS = {
   reorderSteps: ['PUT', '/processes/{process_id}/steps/order'],
   updateStep: ['PATCH', '/steps/{step_id}'],
   deleteStep: ['DELETE', '/steps/{step_id}'],
+  getMeta: ['GET', '/meta'],
   listDemos: ['GET', '/demo-processes'],
   loadDemo: ['POST', '/demo-processes/{slug}'],
   runAnalysis: ['POST', '/processes/{process_id}/analyses'],

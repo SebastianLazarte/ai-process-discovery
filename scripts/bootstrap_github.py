@@ -1,6 +1,6 @@
 """Set up the GitHub side of the repository with the gh CLI.
 
-Creates labels, milestones (B0-B9), one issue per requirement in docs/requirements.toml,
+Creates labels, milestones (B0-B11), one issue per requirement in docs/requirements.toml,
 a Project board, the `main` ruleset and the security settings. Safe to re-run: existing
 labels, milestones and issues are left alone.
 
@@ -30,6 +30,7 @@ MILESTONES = {
     "B8": "Streamlit UI",
     "B9": "Docs and 1.0 release",
     "B10": "Web client",
+    "B11": "Production deployment",
 }
 
 LABELS = {

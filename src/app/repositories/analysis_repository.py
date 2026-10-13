@@ -1,6 +1,7 @@
+from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.models.persistence import AnalysisORM, OverrideORM
@@ -29,6 +30,15 @@ class AnalysisRepository:
                 .order_by(AnalysisORM.created_at.desc())
             )
         )
+
+    def count_llm_requests_since(self, since: datetime) -> int:
+        """Analyses that asked for the LLM since ``since``, whatever the outcome."""
+        count = self._session.scalar(
+            select(func.count())
+            .select_from(AnalysisORM)
+            .where(AnalysisORM.provider.is_not(None), AnalysisORM.created_at >= since)
+        )
+        return count or 0
 
     def add_override(self, override: OverrideORM) -> None:
         self._session.add(override)

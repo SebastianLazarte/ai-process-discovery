@@ -21,3 +21,8 @@ class ConflictError(AppError):
 
 class SensitiveDataConfirmationError(ConflictError):
     code = "sensitive_data_confirmation_required"
+
+
+class LimitExceededError(AppError):
+    status_code = 422
+    code = "limit_exceeded"

@@ -163,6 +163,38 @@ def test_provider_failure_keeps_the_deterministic_analysis(
     assert analysis["step_assessments"][0]["suitability_score"] > 0
 
 
+def test_daily_quota_skips_the_llm_and_keeps_the_facts(
+    make_client: Callable[..., TestClient],
+) -> None:
+    provider = FakeLLMProvider()
+    client = make_client(provider, llm_daily_limit=1)
+    process = _process(client)
+    _analyse(client, process["id"])  # without the LLM: does not count
+
+    first = _analyse(client, process["id"], use_llm=True)
+    second = _analyse(client, process["id"], use_llm=True)
+
+    assert first["llm"]["status"] == "ok"
+    assert second["llm"] == {
+        "status": "unavailable",
+        "provider": "fake",
+        "model": first["llm"]["model"],
+        "prompt_version": first["llm"]["prompt_version"],
+        "error_kind": "daily_quota",
+    }
+    assert len(provider.calls) == 1
+    for section in ("current_state", "business_impact", "automation_suitability"):
+        assert second[section] == first[section], section
+
+
+def test_a_zero_quota_never_calls_the_llm(make_client: Callable[..., TestClient]) -> None:
+    provider = FakeLLMProvider()
+    client = make_client(provider, llm_daily_limit=0)
+    analysis = _analyse(client, _process(client)["id"], use_llm=True)
+    assert analysis["llm"]["error_kind"] == "daily_quota"
+    assert provider.calls == []
+
+
 def test_needs_review_steps_take_the_ai_method(client: TestClient) -> None:
     process = _process(
         client,
