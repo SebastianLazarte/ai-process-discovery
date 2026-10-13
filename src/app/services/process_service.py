@@ -2,10 +2,11 @@ from uuid import UUID
 
 from sqlalchemy.orm import Session
 
-from app.core.errors import AppError, NotFoundError
+from app.core.errors import AppError, LimitExceededError, NotFoundError
 from app.models.persistence import ProcessORM, ProcessStepORM
 from app.models.persistence.base import utcnow
 from app.models.schemas.process import (
+    MAX_STEPS,
     ProcessCreate,
     ProcessRead,
     ProcessSummary,
@@ -64,6 +65,8 @@ class ProcessService:
 
     def add_step(self, process_id: UUID, data: StepCreate) -> ProcessRead:
         process = self._get(process_id)
+        if len(process.steps) >= MAX_STEPS:
+            raise LimitExceededError(f"a process has at most {MAX_STEPS} steps")
         position = data.position or len(process.steps) + 1
         position = min(position, len(process.steps) + 1)
         for step in process.steps:
