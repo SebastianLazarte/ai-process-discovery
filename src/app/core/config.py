@@ -26,6 +26,9 @@ class Settings(BaseSettings):
 
     log_level: str = "INFO"
 
+    # Public deployment (ADR 0008): the web client warns that data is public and short-lived.
+    public_demo: bool = False
+
     web_dir: Path = DEFAULT_WEB_DIR
 
 
