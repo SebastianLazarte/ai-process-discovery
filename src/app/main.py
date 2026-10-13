@@ -46,6 +46,7 @@ def create_app(settings: Settings | None = None, provider: LLMProvider | None = 
         ),
         lifespan=lifespan,
     )
+    app.state.settings = settings
 
     @app.exception_handler(AppError)
     async def _app_error(_: Request, exc: AppError) -> JSONResponse:
