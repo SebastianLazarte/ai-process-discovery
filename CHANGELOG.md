@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.2.0](https://github.com/SebastianLazarte/ai-process-discovery/compare/v1.1.0...v1.2.0) (2026-10-13)
+
+
+### Features
+
+* **api:** size limits on processes, steps and assumptions ([#74](https://github.com/SebastianLazarte/ai-process-discovery/issues/74)) ([18d7906](https://github.com/SebastianLazarte/ai-process-discovery/commit/18d790675719e742ed7ce420c723e1cb99c61de8))
+* **llm:** daily quota on analyses that call the LLM ([#75](https://github.com/SebastianLazarte/ai-process-discovery/issues/75)) ([35be0b5](https://github.com/SebastianLazarte/ai-process-discovery/commit/35be0b5a43ce4aa044a9ca65391188220f90ca85))
+* Nginx site with TLS, rate limits and body limit ([#78](https://github.com/SebastianLazarte/ai-process-discovery/issues/78)) ([ee8d849](https://github.com/SebastianLazarte/ai-process-discovery/commit/ee8d849a0a8f1ece648474a5a3ad7929a26c19f0))
+* production compose for the public demo ([#77](https://github.com/SebastianLazarte/ai-process-discovery/issues/77)) ([8fd4061](https://github.com/SebastianLazarte/ai-process-discovery/commit/8fd40616b958d376b835ab38990b1a67f0ab9e98))
+* **web:** public demo banner driven by a /meta endpoint ([#76](https://github.com/SebastianLazarte/ai-process-discovery/issues/76)) ([d3b6caf](https://github.com/SebastianLazarte/ai-process-discovery/commit/d3b6caf1aa6f83e1c85eb54788f87cb592c24366))
+
+
+### Documentation
+
+* production deployment plan (ADR 0008, B11 requirements, runbook) ([#73](https://github.com/SebastianLazarte/ai-process-discovery/issues/73)) ([442f2d4](https://github.com/SebastianLazarte/ai-process-discovery/commit/442f2d4c5c4becb32b6fe8dfc84f81e32a32e407))
+
 ## [1.1.0](https://github.com/SebastianLazarte/ai-process-discovery/compare/v1.0.0...v1.1.0) (2026-10-12)
 
 
