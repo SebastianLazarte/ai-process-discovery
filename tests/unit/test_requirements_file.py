@@ -18,4 +18,4 @@ def test_every_requirement_traces_to_a_user_requirement() -> None:
     for requirement in DATA["requirement"]:
         assert requirement["ru"] in user_ids, requirement["id"]
         assert requirement["acceptance"], requirement["id"]
-        assert requirement["block"] in {f"B{n}" for n in range(11)}, requirement["id"]
+        assert requirement["block"] in {f"B{n}" for n in range(12)}, requirement["id"]

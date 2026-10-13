@@ -10,6 +10,7 @@ RU-05 = "Correct a recommendation while keeping the original and the reason"
 RU-06 = "Estimate economic impact from explicit, editable assumptions"
 RU-07 = "Get an exportable technical blueprint"
 RU-08 = "See the analysis history of a process and why results differ"
+RU-09 = "Try the product on a public demo that protects the budget, the data and the host it shares"
 
 [[requirement]]
 id = "RS-01"
@@ -474,3 +475,83 @@ block = "B10"
 area = "ui"
 title = "Client option lists match the domain enums; an unknown value from the API stays selected"
 acceptance = ["A test fails if a domain enum value is missing from web/", "node:test: select() keeps an unknown current value"]
+
+[[requirement]]
+id = "RS-59"
+ru = "RU-09"
+block = "B11"
+area = "infra"
+title = "Schema changes ship as Alembic migrations; tables are created on startup only when CREATE_SCHEMA_ON_STARTUP is true"
+acceptance = ["test-postgres runs alembic upgrade head and then alembic check", "With create_schema_on_startup=false, startup creates no table"]
+
+[[requirement]]
+id = "RS-60"
+ru = "RU-09"
+block = "B11"
+area = "api"
+title = "Request limits on steps per process, text lengths and list sizes"
+acceptance = ["A process over the step limit returns 422 naming the field", "An oversized description or list returns 422 naming the field"]
+
+[[requirement]]
+id = "RS-61"
+ru = "RU-09"
+block = "B11"
+area = "llm"
+title = "Daily LLM quota: past the limit the provider is not called and llm_status=unavailable with error_kind=daily_quota"
+acceptance = ["The fake provider records no call once the limit is reached", "Deterministic results are identical with and without the quota hit"]
+
+[[requirement]]
+id = "RS-62"
+ru = "RU-09"
+block = "B11"
+area = "ui"
+title = "Public demo mode: the API reports it and the client shows a banner that data is public and deleted daily"
+acceptance = ["The metadata endpoint returns version and public_demo", "node:test: the banner renders only when public_demo is true"]
+
+[[requirement]]
+id = "RS-63"
+ru = "RU-09"
+block = "B11"
+area = "infra"
+title = "A purge command deletes processes older than the retention window, with their analyses and overrides"
+acceptance = ["Integration test: only processes older than the window are deleted", "No HTTP route exposes the purge"]
+
+[[requirement]]
+id = "RS-64"
+ru = "RU-09"
+block = "B11"
+area = "infra"
+title = "Production compose: API on 127.0.0.1 only, internal PostgreSQL, resource limits, read-only root, rotated logs, trusted proxy headers"
+acceptance = ["CI validates deploy/compose.prod.yaml with docker compose config", "No service publishes a port on 0.0.0.0"]
+
+[[requirement]]
+id = "RS-65"
+ru = "RU-09"
+block = "B11"
+area = "infra"
+title = "Nginx site with TLS, a rate limit on analysis runs, a request body limit and a read timeout above the LLM timeout"
+acceptance = ["nginx -t passes for deploy/nginx/apd.conf in CI with test certificates", "A burst over the limit returns 429 in the go-live check"]
+
+[[requirement]]
+id = "RS-66"
+ru = "RU-09"
+block = "B11"
+area = "infra"
+title = "deploy.sh deploys one validated tag: backup, pull, migrate, start, health check, automatic rollback"
+acceptance = ["A tag outside vX.Y.Z is rejected", "A failing health check restores the previous tag", "shellcheck passes in CI"]
+
+[[requirement]]
+id = "RS-67"
+ru = "RU-09"
+block = "B11"
+area = "infra"
+title = "A release deploys over SSH with a forced-command key and a pinned host key, then runs an HTTPS smoke test"
+acceptance = ["The deploy job runs only in the production environment", "The smoke test checks /health and /ui/ over HTTPS"]
+
+[[requirement]]
+id = "RS-68"
+ru = "RU-09"
+block = "B11"
+area = "infra"
+title = "Nightly backup and purge run from systemd timers; runbook, README and SECURITY.md describe the live demo"
+acceptance = ["A restore into a scratch database is recorded in the runbook", "README links the live demo"]
