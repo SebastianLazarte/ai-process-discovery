@@ -124,9 +124,11 @@ ${overrideForm(analysis, step)}
 export function resultsPage(analysis, process) {
   const stepNames = Object.fromEntries((process?.steps ?? []).map(s => [s.id, s.name]));
   const unavailable =
-    analysis.llm.status === 'unavailable'
-      ? note(`The LLM was unavailable (${analysis.llm.error_kind ?? 'error'}). Deterministic results are complete.`, 'warn')
-      : '';
+    analysis.llm.status !== 'unavailable'
+      ? ''
+      : analysis.llm.error_kind === 'daily_quota'
+        ? note('The daily AI quota of this demo is used up, so the LLM was skipped. Deterministic results are complete.', 'warn')
+        : note(`The LLM was unavailable (${analysis.llm.error_kind ?? 'error'}). Deterministic results are complete.`, 'warn');
   return `${provenance(analysis)}${unavailable}
 <div class="metrics two">
 ${metric('Current monthly hours', hours(analysis.current_state.monthly_hours))}

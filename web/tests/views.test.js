@@ -46,6 +46,15 @@ test('an unavailable LLM is announced and deterministic results stay', () => {
   assert.ok(html.includes('95.33 h'));
 });
 
+test('a used-up daily quota is explained in plain words', () => {
+  const quota = analysis({ llmStatus: 'unavailable' });
+  quota.llm.error_kind = 'daily_quota';
+  const html = resultsPage(quota, process());
+  assert.ok(html.includes('daily AI quota of this demo is used up'));
+  assert.ok(!html.includes('(daily_quota)'));
+  assert.ok(html.includes('95.33 h'));
+});
+
 test('analysis with the LLM needs confirmation when a step is sensitive', () => {
   const sensitive = process({ sensitive: true });
   assert.equal(canRunAnalysis(sensitive, false, false), true);

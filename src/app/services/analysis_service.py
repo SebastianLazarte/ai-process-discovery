@@ -51,13 +51,18 @@ logger = logging.getLogger(__name__)
 
 class AnalysisService:
     def __init__(
-        self, session: Session, provider: LLMProvider, policy: ScoringPolicy = DEFAULT_POLICY
+        self,
+        session: Session,
+        provider: LLMProvider,
+        policy: ScoringPolicy = DEFAULT_POLICY,
+        llm_daily_limit: int | None = None,
     ) -> None:
         self._session = session
         self._processes = ProcessRepository(session)
         self._analyses = AnalysisRepository(session)
         self._provider = provider
         self._policy = policy
+        self._llm_daily_limit = llm_daily_limit
 
     # Commands
 
@@ -83,15 +88,22 @@ class AnalysisService:
                     + ", ".join(sensitive)
                     + ". Resend with confirm_sensitive=true to proceed."
                 )
-            try:
-                ai_output = self._provider.analyze_process(_llm_request(process, deterministic))
-                llm_status = "ok"
-            except LLMProviderError as exc:
-                llm_status, error_kind = "unavailable", exc.kind
+            if self._llm_quota_reached():
+                llm_status, error_kind = "unavailable", "daily_quota"
                 logger.warning(
-                    "llm_unavailable",
-                    extra={"process_id": str(process_id), "error_kind": exc.kind},
+                    "llm_quota_reached",
+                    extra={"process_id": str(process_id), "limit": self._llm_daily_limit},
                 )
+            else:
+                try:
+                    ai_output = self._provider.analyze_process(_llm_request(process, deterministic))
+                    llm_status = "ok"
+                except LLMProviderError as exc:
+                    llm_status, error_kind = "unavailable", exc.kind
+                    logger.warning(
+                        "llm_unavailable",
+                        extra={"process_id": str(process_id), "error_kind": exc.kind},
+                    )
 
         analysis = _build_analysis(
             process=process,
@@ -134,6 +146,17 @@ class AnalysisService:
             },
         )
         return analysis
+
+    def _llm_quota_reached(self) -> bool:
+        """Counted in the database, so the limit holds across instances and restarts.
+
+        Two concurrent requests at the boundary can both pass: the limit is a cost guard,
+        and one extra call is acceptable.
+        """
+        if self._llm_daily_limit is None:
+            return False
+        start_of_day = datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0)
+        return self._analyses.count_llm_requests_since(start_of_day) >= self._llm_daily_limit
 
     def add_override(self, analysis_id: UUID, data: OverrideCreate) -> AnalysisRead:
         stored = self._get(analysis_id)
