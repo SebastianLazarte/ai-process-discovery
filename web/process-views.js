@@ -8,7 +8,12 @@ export const LEVELS = ['UNKNOWN', 'LOW', 'MEDIUM', 'HIGH'];
 export const INPUT_TYPES = ['UNKNOWN', 'DIGITAL_STRUCTURED', 'DIGITAL_UNSTRUCTURED', 'MIXED', 'PHYSICAL'];
 export const INTEGRATION = ['UNKNOWN', 'NONE', 'PARTIAL', 'GOOD'];
 
-export function shell(processes, currentId, content) {
+export function demoBanner(meta) {
+  if (!meta?.public_demo) return '';
+  return `<p class="demo-banner" role="note"><strong>Public demo v${h(meta.version)}.</strong> Anything you enter is visible to other visitors and deleted periodically. Do not enter real or personal data.</p>`;
+}
+
+export function shell(processes, currentId, content, meta = null) {
   const items = processes.length
     ? processes
         .map(
@@ -24,7 +29,7 @@ export function shell(processes, currentId, content) {
   <nav aria-label="Processes"><h2 class="nav-title">Processes</h2>${items}</nav>
   <p class="sidebar-foot">Deterministic first. The LLM interprets; it never produces a number.</p>
 </aside>
-<div class="workspace"><main id="main" tabindex="-1">${content}</main></div>
+<div class="workspace">${demoBanner(meta)}<main id="main" tabindex="-1">${content}</main></div>
 </div>`;
 }
 

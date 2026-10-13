@@ -1,5 +1,6 @@
 from fastapi.testclient import TestClient
 
+from app.models.schemas.process import MAX_LIST_ITEMS, MAX_LONG_TEXT, MAX_SHORT_TEXT, MAX_STEPS
 from tests.payloads import process_payload, step_payload
 
 
@@ -99,6 +100,27 @@ def test_validation_errors_are_explicit(client: TestClient) -> None:
 
     negative = client.post("/processes", json=process_payload(executions_per_month=-1))
     assert negative.status_code == 422
+
+
+def test_size_limits_return_422_naming_the_field(client: TestClient) -> None:
+    oversized = {
+        "steps": process_payload(steps=[step_payload()] * (MAX_STEPS + 1)),
+        "description": process_payload(description="x" * (MAX_LONG_TEXT + 1)),
+        "tools": process_payload(steps=[step_payload(tools=["t"] * (MAX_LIST_ITEMS + 1))]),
+        "problems": process_payload(steps=[step_payload(problems=["p" * (MAX_SHORT_TEXT + 1)])]),
+    }
+    for field, payload in oversized.items():
+        response = client.post("/processes", json=payload)
+        assert response.status_code == 422, field
+        assert field in response.json()["detail"][0]["loc"], field
+
+
+def test_adding_a_step_beyond_the_limit_returns_422(client: TestClient) -> None:
+    full = _create(client, steps=[step_payload()] * MAX_STEPS)
+    response = client.post(f"/processes/{full['id']}/steps", json=step_payload())
+    assert response.status_code == 422
+    assert response.json()["code"] == "limit_exceeded"
+    assert len(client.get(f"/processes/{full['id']}").json()["steps"]) == MAX_STEPS
 
 
 def test_unknown_ids_return_404(client: TestClient) -> None:

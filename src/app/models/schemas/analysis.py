@@ -13,6 +13,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.domain.enums import AutomationMethod, HumanControl
 from app.domain.reconciliation import RecommendationSource
+from app.models.schemas.process import MAX_STEPS
 
 
 class _Schema(BaseModel):
@@ -24,6 +25,7 @@ class BusinessCaseInput(_Schema):
     monthly_tooling_cost: Decimal = Field(default=Decimal(0), ge=0)
     expected_time_reduction_by_step: dict[UUID, Decimal] = Field(
         default_factory=dict,
+        max_length=MAX_STEPS,
         description="Expected share of each step's time removed by automation, from 0 to 1.",
     )
 

@@ -142,9 +142,33 @@ jobs:
           curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:8000/health
           curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:8000/ui/
           curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:8501/_stcore/health
+      # RS-64: the production stack runs with the same image, a read-only root and no
+      # capabilities, and publishes nothing beyond 127.0.0.1.
+      - name: Production compose smoke test
+        env:
+          APD_IMAGE: ai-process-discovery
+          APD_VERSION: ci
+          POSTGRES_PASSWORD: ci-only-password
+          LLM_PROVIDER: fake
+        run: |
+          docker compose -f deploy/compose.prod.yaml config --quiet
+          host_ips=$(docker compose -f deploy/compose.prod.yaml config --format json \
+            | jq -r '.services[].ports[]? | .host_ip // "0.0.0.0"')
+          echo "Published on: $host_ips"
+          if echo "$host_ips" | grep -qv '^127\.0\.0\.1$'; then
+            echo "::error::deploy/compose.prod.yaml publishes a port beyond 127.0.0.1"
+            exit 1
+          fi
+          docker compose -f deploy/compose.prod.yaml up -d --wait --wait-timeout 120
+          curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://127.0.0.1:8100/health
+          curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://127.0.0.1:8100/ui/
       - name: Logs on failure
         if: failure()
-        run: docker compose logs
+        run: |
+          docker compose logs
+          docker compose -f deploy/compose.prod.yaml logs || true
       - name: Tear down
         if: always()
-        run: docker compose down -v
+        run: |
+          docker compose down -v
+          docker compose -f deploy/compose.prod.yaml down -v || true

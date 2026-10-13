@@ -32,8 +32,13 @@ def database_url(tmp_path: Path) -> Iterator[str]:
 def make_client(database_url: str) -> Iterator[Callable[[LLMProvider], TestClient]]:
     clients: list[TestClient] = []
 
-    def _make(provider: LLMProvider) -> TestClient:
-        settings = Settings(database_url=database_url, llm_provider="fake", log_level="WARNING")
+    def _make(provider: LLMProvider, **overrides: object) -> TestClient:
+        settings = Settings(
+            database_url=database_url,
+            llm_provider="fake",
+            log_level="WARNING",
+            **overrides,  # type: ignore[arg-type]
+        )
         client = TestClient(create_app(settings, provider))
         client.__enter__()
         clients.append(client)

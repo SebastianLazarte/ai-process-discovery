@@ -2,7 +2,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import SecretStr
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 DEFAULT_ANTHROPIC_MODEL = "claude-opus-5"
@@ -21,8 +21,13 @@ class Settings(BaseSettings):
     anthropic_model: str = DEFAULT_ANTHROPIC_MODEL
     llm_timeout_seconds: float = 60.0
     llm_max_retries: int = 2
+    # Analyses that may ask the LLM per UTC day, across every instance. None means no limit.
+    llm_daily_limit: int | None = Field(default=None, ge=0)
 
     log_level: str = "INFO"
+
+    # Public deployment (ADR 0008): the web client warns that data is public and short-lived.
+    public_demo: bool = False
 
     web_dir: Path = DEFAULT_WEB_DIR
 

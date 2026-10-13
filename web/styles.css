@@ -140,6 +140,7 @@ meter::-moz-meter-bar { background: var(--good); border-radius: 6px; }
 .note.info { border-color: var(--info); background: var(--info-bg); color: #c9d7f5; }
 .note.bad { border-color: var(--bad); background: var(--bad-bg); color: #f3c9c4; }
 .small { font-size: 12px; }
+.demo-banner { margin: 0; padding: 10px 44px; border-bottom: 1px solid var(--line); background: var(--warn-bg); color: #e3d4ac; font-size: 13px; }
 
 /* Home */
 .demo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
@@ -235,6 +236,7 @@ dialog h2 { font-size: 21px; margin-bottom: 18px; }
   .sidebar nav a { flex: none; max-width: 220px; }
   .nav-title, .sidebar-foot { display: none; }
   main { padding: 24px 16px 48px; }
+  .demo-banner { padding: 10px 16px; }
   h1 { font-size: 27px; }
   .demo-grid, .metrics, .metrics.two, .form-grid, .assessment-body, .override .form-grid { grid-template-columns: 1fr; }
   .steps .step { grid-template-columns: 28px minmax(0, 1fr); }
