@@ -1,0 +1,78 @@
+# Production stack for the public demo (ADR 0008). Copied to /opt/apd/compose.yaml on the
+# VPS, next to a .env made from deploy/.env.example:
+#   cd /opt/apd && docker compose up -d
+# The host Nginx is the only way in: the API listens on 127.0.0.1, PostgreSQL on no port.
+# CI starts this file in the `docker` job with the freshly built image.
+
+name: apd
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: apd
+      POSTGRES_DB: apd
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks: [internal]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U apd"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    mem_limit: 256m
+    cpus: 0.5
+    logging: *logging
+
+  api:
+    image: ${APD_IMAGE:-ghcr.io/sebastianlazarte/ai-process-discovery}:${APD_VERSION:?set APD_VERSION in .env}
+    restart: unless-stopped
+    # The published port is bound to 127.0.0.1, so only processes on the host (Nginx)
+    # reach it. That is why every forwarding address is trusted.
+    command:
+      - uvicorn
+      - app.main:app
+      - --host=0.0.0.0
+      - --port=8000
+      - --proxy-headers
+      - --forwarded-allow-ips=*
+    environment:
+      DATABASE_URL: postgresql+psycopg://apd:${POSTGRES_PASSWORD}@postgres:5432/apd
+      LLM_PROVIDER: ${LLM_PROVIDER:-anthropic}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-}
+      LLM_DAILY_LIMIT: ${LLM_DAILY_LIMIT:-50}
+      PUBLIC_DEMO: "true"
+      LOG_LEVEL: INFO
+    ports:
+      - "127.0.0.1:8100:8000"
+    # `edge` gives outbound access to the LLM provider; `internal` reaches PostgreSQL.
+    networks: [edge, internal]
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 512m
+    cpus: 1.0
+    logging: *logging
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+networks:
+  edge:
+  internal:
+    internal: true
+
+volumes:
+  pgdata:
