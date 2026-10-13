@@ -41,4 +41,4 @@ Describe a process step by step → quantify the current state → deterministic
 - No billing
 - No automatic n8n workflow generation
 - No integrations with real business systems
-- No hosted public deployment
+- No hosted public deployment. Amended by ADR 0008: a public demo with short-lived data runs on the maintainer's VPS (block B11)

@@ -2,11 +2,23 @@
 
 from datetime import datetime
 from decimal import Decimal
+from typing import Annotated
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.domain.enums import InputType, IntegrationReadiness, Level
+
+# Size limits for a public deployment (RS-60). They bound storage and the prompt sent to
+# the LLM provider; the demo processes stay far below them.
+MAX_STEPS = 50
+MAX_SHORT_TEXT = 200
+MAX_LONG_TEXT = 2000
+MAX_LIST_ITEMS = 20
+
+ShortText = Annotated[str, Field(max_length=MAX_SHORT_TEXT)]
+LongText = Annotated[str, Field(max_length=MAX_LONG_TEXT)]
+TextList = Annotated[list[ShortText], Field(max_length=MAX_LIST_ITEMS)]
 
 
 class _Schema(BaseModel):
@@ -15,11 +27,11 @@ class _Schema(BaseModel):
 
 class StepFields(_Schema):
     name: str = Field(min_length=1, max_length=200)
-    description: str = ""
+    description: LongText = ""
     responsible_role: str = Field(default="", max_length=200)
-    tools: list[str] = Field(default_factory=list)
-    input_description: str = ""
-    output_description: str = ""
+    tools: TextList = Field(default_factory=list)
+    input_description: LongText = ""
+    output_description: LongText = ""
     minutes_per_execution: Decimal = Field(ge=0, examples=["4.0"])
     occurrence_rate: Decimal = Field(default=Decimal(1), ge=0, le=1)
     repetitiveness: Level = Level.UNKNOWN
@@ -31,7 +43,7 @@ class StepFields(_Schema):
     requires_human_approval: bool = False
     handles_sensitive_data: bool = False
     criticality: Level = Level.UNKNOWN
-    problems: list[str] = Field(default_factory=list)
+    problems: TextList = Field(default_factory=list)
 
 
 class StepCreate(StepFields):
@@ -42,11 +54,11 @@ class StepCreate(StepFields):
 
 class StepUpdate(_Schema):
     name: str | None = Field(default=None, min_length=1, max_length=200)
-    description: str | None = None
+    description: LongText | None = None
     responsible_role: str | None = Field(default=None, max_length=200)
-    tools: list[str] | None = None
-    input_description: str | None = None
-    output_description: str | None = None
+    tools: TextList | None = None
+    input_description: LongText | None = None
+    output_description: LongText | None = None
     minutes_per_execution: Decimal | None = Field(default=None, ge=0)
     occurrence_rate: Decimal | None = Field(default=None, ge=0, le=1)
     repetitiveness: Level | None = None
@@ -58,7 +70,7 @@ class StepUpdate(_Schema):
     requires_human_approval: bool | None = None
     handles_sensitive_data: bool | None = None
     criticality: Level | None = None
-    problems: list[str] | None = None
+    problems: TextList | None = None
 
 
 class StepRead(StepFields):
@@ -70,7 +82,7 @@ class StepRead(StepFields):
 
 class ProcessFields(_Schema):
     name: str = Field(min_length=1, max_length=200)
-    description: str = ""
+    description: LongText = ""
     owner: str | None = Field(default=None, max_length=200)
     executions_per_month: int = Field(ge=0)
     hourly_cost: Decimal | None = Field(
@@ -79,12 +91,12 @@ class ProcessFields(_Schema):
 
 
 class ProcessCreate(ProcessFields):
-    steps: list[StepFields] = Field(default_factory=list)
+    steps: list[StepFields] = Field(default_factory=list, max_length=MAX_STEPS)
 
 
 class ProcessUpdate(_Schema):
     name: str | None = Field(default=None, min_length=1, max_length=200)
-    description: str | None = None
+    description: LongText | None = None
     owner: str | None = Field(default=None, max_length=200)
     executions_per_month: int | None = Field(default=None, ge=0)
     hourly_cost: Decimal | None = Field(default=None, ge=0)
@@ -113,4 +125,6 @@ class ProcessSummary(_Schema):
 
 
 class StepOrder(_Schema):
-    step_ids: list[UUID] = Field(description="Every step id of the process, in the new order.")
+    step_ids: list[UUID] = Field(
+        max_length=MAX_STEPS, description="Every step id of the process, in the new order."
+    )
