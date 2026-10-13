@@ -22,8 +22,8 @@ Keep a second SSH session open during steps 1 and 2, so a mistake in the SSH con
 
 1. **Harden the host.** Apply pending updates and enable `unattended-upgrades`. Add a 2 GB swap file. Create an admin user with `sudo` and an SSH key, then set `PermitRootLogin no` and `PasswordAuthentication no`. Enable UFW with 22, 80 and 443 only. Install fail2ban.
 2. **Deploy user.** Create `deploy`, add it to the `docker` group, and install the GitHub deploy key in its `authorized_keys` with `command="/opt/apd/deploy.sh",no-port-forwarding,no-agent-forwarding,no-X11-forwarding,no-pty`. Membership of `docker` is equivalent to root, which is why the key is restricted to one command.
-3. **Project folder.** `/opt/apd` owned by `deploy`, with `compose.yaml`, `deploy.sh` and `.env` from `deploy/.env.example`.
-4. **DNS and TLS.** Add an A record (and AAAA if IPv6 is served) for `apd.<domain>`. Install `deploy/nginx/apd.conf`, run `sudo nginx -t`, reload Nginx, then issue the certificate with certbot.
+3. **Project folder.** `/opt/apd` owned by `deploy`, with `compose.yaml` (from `deploy/compose.prod.yaml`), `deploy.sh` and `.env` from `deploy/.env.example`.
+4. **DNS and TLS.** Add an A record (and AAAA if IPv6 is served) for `apd.<domain>`. Issue the certificate first, because the site refers to it: `sudo certbot certonly --nginx -d apd.<domain> --deploy-hook "systemctl reload nginx"`. Then install `deploy/nginx/apd.conf` with `apd.<domain>` in place of `apd.example.com`, link it into `sites-enabled`, run `sudo nginx -t` and reload Nginx.
 5. **Anthropic.** Create a workspace for the demo, set a monthly spend limit, create a key for that workspace only and put it in `.env`.
 6. **GitHub.** Create the `production` environment with `DEPLOY_SSH_KEY` and `DEPLOY_KNOWN_HOSTS` (output of `ssh-keyscan` for the host, checked against the fingerprint shown on the server).
 7. **Timers.** Install and enable `apd-backup.timer` and `apd-purge.timer`.
