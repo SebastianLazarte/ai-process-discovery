@@ -77,7 +77,8 @@ def test_only_format_js_turns_strings_into_numbers() -> None:
 
 
 def test_served_files_match_the_client_folder() -> None:
-    on_disk = {path.name for path in WEB.iterdir() if path.is_file()}
+    # CLAUDE.md is agent context for this folder, never served.
+    on_disk = {path.name for path in WEB.iterdir() if path.is_file() and path.name != "CLAUDE.md"}
     served = {name or "index.html" for name in WEB_FILES}
     assert served == on_disk
 
