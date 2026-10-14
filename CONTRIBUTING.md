@@ -4,7 +4,7 @@
 
 1. Pick an issue. Each one is a requirement (`RS-nn`) with acceptance criteria.
 2. Branch from `main`: `feat/rs-12-process-score`, `fix/...`, `docs/...`, `ci/...`.
-3. Open a pull request using the template. Title in Conventional Commits, for example `feat(scoring): weight process score by time`. The squash commit takes this title, and release-please builds the changelog from it.
+3. Open a pull request using the template. Title in Conventional Commits, for example `feat(scoring): weight process score by time`. The squash commit takes this title, and release-please builds the changelog from it. A bot comments a checklist for the areas the change touches, with verification questions for its type; it is a guide, not a required check. Add or change items in `.github/pr-checklist.toml`.
 4. All required checks must pass: `quality`, `web`, `test (3.12)`, `test (3.13)`, `test-postgres`, `docker`, `pr-title`.
 5. Squash merge. The branch is deleted automatically.
 

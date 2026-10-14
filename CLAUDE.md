@@ -55,7 +55,7 @@ ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locall
 
 - **Inputs:** one issue, which is one requirement `RS-nn` in `docs/requirements.toml` with its acceptance criteria; the ADRs routed above.
 - **Process:** branch from `main` (`feat/rs-12-process-score`, `fix/...`, `docs/...`, `ci/...`). A test proves each acceptance criterion. A new dependency or a reversed decision comes with an ADR.
-- **Outputs:** one pull request with the template and a Conventional Commits title (`feat(scoring): ...`), squash merged.
+- **Outputs:** one pull request with the template and a Conventional Commits title (`feat(scoring): ...`), squash merged. The description answers the verification questions of the checklist comment (`.github/pr-checklist.toml`).
 - **Verify:** pre-commit, `uv run pytest` and the Node tests pass locally. Required checks: `quality`, `web`, `test (3.12)`, `test (3.13)`, `test-postgres`, `docker`, `pr-title`.
 
 ## Hard rules
