@@ -219,6 +219,7 @@ def ensure_ruleset(run: Runner, checks: list[str]) -> None:
                         "require_code_owner_review": False,
                         "require_last_push_approval": False,
                         "required_review_thread_resolution": True,
+                        "require_extra_approval_for_unattributed_changes": True,
                         "allowed_merge_methods": ["squash"],
                     },
                 },
