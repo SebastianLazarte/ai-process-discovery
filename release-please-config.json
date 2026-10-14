@@ -5,6 +5,8 @@
   "bump-patch-for-minor-pre-major": false,
   "include-component-in-tag": false,
   "pull-request-title-pattern": "chore(release): release${component} ${version}",
+  "pull-request-header": "Release prepared from the Conventional Commits merged since the previous version. Check the version and the changelog before merging.",
+  "pull-request-footer": "Merging tags the release, publishes the GitHub Release and pushes the image to ghcr.io.",
   "packages": {
     ".": {
       "package-name": "ai-process-discovery",
