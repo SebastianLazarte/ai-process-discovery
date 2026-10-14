@@ -8,13 +8,14 @@
 
 **Flow.** One branch per issue, one pull request per change, squash merge only. Pull request titles follow Conventional Commits and are validated in CI, so the history of `main` is readable and release-please can build the changelog from it.
 
-**Protection.** A ruleset on `main` blocks direct pushes and force pushes, requires linear history, resolved conversations and these checks: `quality`, `test (3.12)`, `test (3.13)`, `test-postgres`, `docker`, `pr-title`. No approval count is required because the project has one maintainer.
+**Protection.** A ruleset on `main` blocks direct pushes and force pushes, requires linear history, resolved conversations and these checks: `quality`, `web`, `test (3.12)`, `test (3.13)`, `test-postgres`, `docker`, `pr-title`. No approval count is required because the project has one maintainer.
 
 **Checks.**
 
 | Job | What it proves |
 |---|---|
 | `quality` | Formatting, lint and strict typing |
+| `web` | The client modules parse and the client tests pass (`node --test`) |
 | `test` | Unit and integration tests on SQLite, coverage at least 85 %, on Python 3.12 and 3.13 |
 | `test-postgres` | The same integration suite on PostgreSQL 17 |
 | `docker` | The image builds and the compose stack becomes healthy |
