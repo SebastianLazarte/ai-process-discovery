@@ -1,6 +1,6 @@
 # PDR 001: MVP scope
 
-**Status:** accepted · 2026-10-07
+**Status:** accepted · 2026-10-07 · target user amended by PDR 002
 
 ## Problem
 

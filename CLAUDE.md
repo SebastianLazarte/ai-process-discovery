@@ -32,7 +32,7 @@ Areas marked * have their own CLAUDE.md with Read, Rules and Verify. It loads wh
 | Vanilla web client: legacy, pending removal in 2.0.0, no new features | `web/`* | ADR 0007 |
 | Production deploy, Nginx, operations | `deploy/`* | ADR 0008, `docs/runbook/production.md` |
 | CI/CD, releases, GitHub setup | `.github/`, `scripts/bootstrap_github.py` | ADR 0006 |
-| Scope, requirements, acceptance criteria | `docs/requirements.toml` | `docs/pdr/001-mvp-scope.md` |
+| Scope, product backlog, stories and acceptance criteria | `docs/requirements.toml` | `docs/pdr/001-mvp-scope.md`, `docs/pdr/002-portfolio-product-goal-and-roles.md` |
 | Write or amend an ADR, PDR or runbook | `docs/`* | decision index in `docs/CLAUDE.md` |
 | Streamlit UI: legacy, pending removal, no new features | `ui/streamlit_app.py` | ADR 0005 |
 
@@ -54,7 +54,7 @@ ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locall
 
 ## Change contract
 
-- **Inputs:** one issue, which is one requirement `RS-nn` in `docs/requirements.toml` with its acceptance criteria; the ADRs routed above.
+- **Inputs:** one issue, which is one backlog item `RS-nn` in `docs/requirements.toml` with its acceptance criteria (Ready, when refined: see the Scrum section of `docs/CLAUDE.md`); the ADRs routed above.
 - **Process:** branch from `main` (`feat/rs-12-process-score`, `fix/...`, `docs/...`, `ci/...`). A test proves each acceptance criterion. A new dependency or a reversed decision comes with an ADR.
 - **Outputs:** one pull request with the template and a Conventional Commits title (`feat(scoring): ...`), squash merged. The description answers the verification questions of the checklist comment (`.github/pr-checklist.toml`).
 - **Verify:** pre-commit, `uv run pytest` and the Node tests pass locally. Required checks: `quality`, `web`, `test (3.12)`, `test (3.13)`, `test-postgres`, `docker`, `pr-title`.

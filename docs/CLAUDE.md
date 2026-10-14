@@ -6,14 +6,15 @@ Stable reference for the whole repo. Code changes read from here; this folder ch
 |---|---|
 | `adr/` | Technical decisions |
 | `pdr/` | Product and scope decisions |
-| `requirements.toml` | User requirements (`RU-nn`) and system requirements (`RS-nn`), one GitHub issue per RS |
+| `requirements.toml` | Product backlog: Product Goal, epics (`RU-nn`) and backlog items (`RS-nn`), one GitHub issue per RS |
 | `runbook/` | Operating the production demo |
 
 ## Decision index
 
 | Doc | Decision | Status |
 |---|---|---|
-| PDR 001 | MVP scope; "no hosted deployment" amended by ADR 0008 | accepted |
+| PDR 001 | MVP scope; "no hosted deployment" amended by ADR 0008 | accepted; target user amended by PDR 002 |
+| PDR 002 | Product Goal (portfolio demo), roles and Scrum backlog | accepted |
 | ADR 0001 | Python computes every number, the LLM only interprets; authority order | accepted |
 | ADR 0002 | SQLite locally, PostgreSQL in CI, `ExactDecimal`, no migrations yet | accepted |
 | ADR 0003 | Domain, contracts and persistence are separate models | accepted |
@@ -38,11 +39,29 @@ Adding or changing a decision updates this index, and the routing table in the r
 - Sections: Context, Decision, Consequences, Alternatives rejected; How to revert when useful. Decision first, short.
 - An accepted record is never rewritten. A new one replaces or amends it, and the old one gets its status updated.
 
+## Scrum (PDR 002)
+
+The maintainer is the Product Owner and writes and approves the stories. An agent may propose a story, criteria or an estimate, marked as a proposal, and never adds one to the file without the Product Owner's approval.
+
+| Scrum | Here |
+|---|---|
+| Product Goal | `[product] goal` |
+| Epic | `[user_requirements.RU-nn]`: `name` and a story (`as_a`, `i_want`, `so_that`) |
+| Backlog item | `[[requirement]]` `RS-nn`: a user story or an enabler, one GitHub issue |
+| Release | `block` B0 to B12, one milestone each |
+| Sprint | One week from `first_sprint`; the Sprint field on the GitHub Project board |
+
+- **Definition of Ready**: a story (`as_a` from `roles`, `i_want`, `so_that`) or an enabler with a clear title; at least one Given/When/Then criterion; `points` in 1, 2, 3, 5 or 8 (split anything larger); `priority` must, should, could or wont; a `rank`; approved by the PO. Only Ready items enter a sprint.
+- **Definition of Done**: a pull request with a Conventional Commits title that closes the issue, one test per criterion, required checks green, docs and the area's `CLAUDE.md` up to date, squash merged into `main`.
+- Status and sprint live in GitHub (issue state and the Project board), never in the file.
+
 ## requirements.toml
 
-- Each `[[requirement]]` has `id`, `ru`, `block`, `area`, `title` and `acceptance`.
-- `tests/unit/test_requirements_file.py` checks that ids are contiguous, each RS traces to a known RU and has acceptance criteria, and `block` is B0 to B11. A new block widens that test.
-- `scripts/bootstrap_github.py` turns the file into issues, milestones and the project board, and can be re-run.
+- `[product]` holds `goal`, `sprint_days`, `first_sprint` and `roles`.
+- Each `[[requirement]]` has `id`, `ru`, `block`, `area` and `title`. A refined item adds `kind`, the story fields when it is a story, `points`, `priority`, `rank` and `[[requirement.criteria]]` with `given`, `when` and `then`. An item delivered before refinement keeps its `acceptance` list instead.
+- `tests/unit/test_requirements_file.py` checks contiguous ids, that every item traces to an epic and a release, that each item has either `acceptance` or `criteria`, that refined items meet the Definition of Ready with unique ranks, and that every epic and role is used. A new block widens that test.
+- `scripts/bootstrap_github.py` turns the file into issues (epic, story, criteria, priority label), milestones and the Project board with Points and Priority fields, and can be re-run. `--sync` rewrites existing issues to match the file and keeps ticked criteria; run it with `--dry-run` first. The board needs `gh auth refresh -s project`.
+- The board's Sprint field is created once by hand: Project settings, New field, Iteration, name `Sprint`, start on the `first_sprint` date, duration 1 week.
 
 ## Style
 
