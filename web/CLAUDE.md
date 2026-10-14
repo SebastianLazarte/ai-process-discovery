@@ -2,9 +2,12 @@
 
 ES modules served by FastAPI at `/ui/`. No framework, no bundler, no `package.json`, no dependencies.
 
+Legacy: ADR 0009 replaces this client with `frontend/` and removes it in 2.0.0. Fixes only, no new features.
+
 ## Read
 
 - `docs/adr/0007-vanilla-web-client-served-by-fastapi.md`
+- `docs/adr/0009-nextjs-frontend-as-separate-service.md` (what replaces it)
 
 ## Rules
 

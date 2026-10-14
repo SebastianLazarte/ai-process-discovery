@@ -1,6 +1,6 @@
 # ADR 0008: Public demo on the maintainer's VPS
 
-**Status:** accepted · 2026-10-13 · amends PDR 001 (non-goal "No hosted public deployment")
+**Status:** accepted · 2026-10-13 · amends PDR 001 (non-goal "No hosted public deployment"); layout amended by ADR 0009
 
 ## Context
 

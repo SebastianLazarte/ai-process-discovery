@@ -555,3 +555,99 @@ block = "B11"
 area = "infra"
 title = "Nightly backup and purge run from systemd timers; runbook, README and SECURITY.md describe the live demo"
 acceptance = ["A restore into a scratch database is recorded in the runbook", "README links the live demo"]
+
+[[requirement]]
+id = "RS-69"
+ru = "RU-01"
+block = "B12"
+area = "api"
+title = "The API serves every route under /api as well as at the root; openapi.json is committed and kept in sync"
+acceptance = ["Integration tests pass with both prefixes", "/api/docs and /api/openapi.json return 200", "A test fails if frontend/openapi.json differs from app.openapi()"]
+
+[[requirement]]
+id = "RS-70"
+ru = "RU-01"
+block = "B12"
+area = "ui"
+title = "frontend/ holds a Next.js standalone app: TypeScript strict, Tailwind, shadcn/ui, ESLint, Prettier and Vitest on pnpm and Node 22"
+acceptance = ["The frontend job runs lint, typecheck, tests and build", "Lint fails on fetch outside src/lib/api/ and on dangerouslySetInnerHTML"]
+
+[[requirement]]
+id = "RS-71"
+ru = "RU-01"
+block = "B12"
+area = "ui"
+title = "The client calls the API only through a typed client generated from openapi.json, with TanStack Query for server state"
+acceptance = ["The frontend job fails when the generated types differ from the committed ones", "Component test: an API error maps to a toast and a 422 marks the affected field"]
+
+[[requirement]]
+id = "RS-72"
+ru = "RU-01"
+block = "B12"
+area = "ui"
+title = "Every frontend response carries a CSP with a per-request nonce, nosniff, no-referrer and frame-ancestors 'none'"
+acceptance = ["A test reads the headers of a page response", "script-src has no unsafe-inline"]
+
+[[requirement]]
+id = "RS-73"
+ru = "RU-01"
+block = "B12"
+area = "ui"
+title = "Next.js client: process list, demo loading, process creation and deletion, demo banner"
+acceptance = ["Component tests for each view", "A process named <img onerror> renders as text"]
+
+[[requirement]]
+id = "RS-74"
+ru = "RU-01"
+block = "B12"
+area = "ui"
+title = "Next.js client: process editor with add, edit, reorder and delete steps; option lists match the domain enums"
+acceptance = ["A test fails if a domain enum value is missing from the client", "An unknown value from the API stays selected"]
+
+[[requirement]]
+id = "RS-75"
+ru = "RU-03"
+block = "B12"
+area = "ui"
+title = "Next.js client: run an analysis and show results in four panels with rules version, prompt version and LLM status"
+acceptance = ["No panel shows a combined score", "Figures print as the API returns them and unknown values show as unknown, never 0", "With the LLM on and sensitive steps, the run button stays disabled until confirmed"]
+
+[[requirement]]
+id = "RS-76"
+ru = "RU-05"
+block = "B12"
+area = "ui"
+title = "Next.js client: override with a required reason, analysis history and blueprint with .md download"
+acceptance = ["An override without reason marks the field", "Usable at 375 px with labels, visible focus and a skip link"]
+
+[[requirement]]
+id = "RS-77"
+ru = "RU-09"
+block = "B12"
+area = "infra"
+title = "The ai-process-discovery-web image (multi-stage, non-root, read-only) runs in compose and ships with every release"
+acceptance = ["The docker job starts both images and both become healthy", "publish-image pushes both images with the same tag, SBOM and provenance"]
+
+[[requirement]]
+id = "RS-78"
+ru = "RU-09"
+block = "B12"
+area = "infra"
+title = "Playwright end-to-end tests run against the compose stack with the fake LLM provider"
+acceptance = ["The e2e job loads a demo, runs an analysis, adds an override and downloads the blueprint", "The e2e job is a required check"]
+
+[[requirement]]
+id = "RS-79"
+ru = "RU-09"
+block = "B12"
+area = "infra"
+title = "Production serves /app/ from Next.js and /api/ from FastAPI; deploy.sh moves both images to one tag"
+acceptance = ["The analysis rate limit matches /api/processes/{id}/analyses", "The smoke test checks /api/health and /app/ over HTTPS", "A failing health check restores both previous images"]
+
+[[requirement]]
+id = "RS-80"
+ru = "RU-09"
+block = "B12"
+area = "ui"
+title = "Retire the vanilla client and the root API routes; Next.js serves / and /ui/ redirects there (2.0.0)"
+acceptance = ["web/, WEB_FILES and the web check are gone", "/processes returns 404 and /api/processes returns 200", "README, CLAUDE.md and the required checks describe the new layout"]

@@ -1,6 +1,6 @@
 # ADR 0006: GitHub Flow, required checks and automated releases
 
-**Status:** accepted · 2026-10-07
+**Status:** accepted · 2026-10-07 · required checks amended by ADR 0009
 
 ## Decision
 
