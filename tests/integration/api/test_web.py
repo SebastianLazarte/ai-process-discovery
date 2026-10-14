@@ -42,7 +42,13 @@ def test_index_and_modules_are_served(web: TestClient) -> None:
 
 @pytest.mark.parametrize(
     "path",
-    ["/ui/tests/views.test.js", "/ui/tests/fixtures.js", "/ui/../pyproject.toml", "/ui/index.html"],
+    [
+        "/ui/tests/views.test.js",
+        "/ui/tests/fixtures.js",
+        "/ui/../pyproject.toml",
+        "/ui/index.html",
+        "/ui/CLAUDE.md",
+    ],
 )
 def test_only_listed_files_are_served(web: TestClient, path: str) -> None:
     assert web.get(path).status_code == 404
