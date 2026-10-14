@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.1](https://github.com/SebastianLazarte/ai-process-discovery/compare/v1.2.0...v1.2.1) (2026-10-14)
+
+
+### Documentation
+
+* layered CLAUDE.md context per area ([#81](https://github.com/SebastianLazarte/ai-process-discovery/issues/81)) ([fcd56dc](https://github.com/SebastianLazarte/ai-process-discovery/commit/fcd56dc3341933fe0ddd20aa5b4ffcae78883a0e))
+* review agent instruction files like code ([#83](https://github.com/SebastianLazarte/ai-process-discovery/issues/83)) ([40980c2](https://github.com/SebastianLazarte/ai-process-discovery/commit/40980c2744b1d99f5e358d576bf65e81b3dbf6f3))
+
 ## [1.2.0](https://github.com/SebastianLazarte/ai-process-discovery/compare/v1.1.0...v1.2.0) (2026-10-13)
 
 
