@@ -26,3 +26,4 @@ node --test web/tests/*.test.js   # Node 22
 - No value produced by the LLM may overwrite a deterministic fact or remove a human control.
 - A new dependency or a reversed decision comes with an ADR in `docs/adr/`.
 - Never log prompts or step descriptions.
+- `CLAUDE.md` files are agent instructions: a pull request that changes one is reviewed like code, and its branch is never run with an agent before that review.

@@ -21,3 +21,4 @@ htmlcov/
 *.sqlite3
 *.db
 output/
+CLAUDE.local.md
