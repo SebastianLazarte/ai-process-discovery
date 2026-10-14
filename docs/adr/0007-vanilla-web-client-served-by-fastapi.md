@@ -1,6 +1,6 @@
 # ADR 0007: Vanilla web client served by FastAPI
 
-**Status:** accepted · 2026-10-12 · replaces ADR 0005 from 1.2.0
+**Status:** accepted · 2026-10-12 · replaces ADR 0005 from 1.2.0 · replaced by ADR 0009 from 2.0.0
 
 ## Context
 

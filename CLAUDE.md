@@ -7,7 +7,7 @@ Analyses a business process and recommends which steps to automate, how, and wit
 - Backend: Python 3.12 (CI also 3.13), uv, FastAPI, Pydantic, SQLAlchemy 2
 - LLM: Anthropic SDK behind the `LLMProvider` protocol; `FakeLLMProvider` is the default
 - Database: SQLite locally, PostgreSQL 17 in CI, compose and production
-- Web client: ES modules in `web/`, no framework, no build step, tests on Node 22
+- Web client: ES modules in `web/`, no framework, no build step, tests on Node 22; replaced from 2.0.0 by Next.js in `frontend/` (TypeScript, pnpm, Node 22), built in block B12
 - Delivery: image on ghcr.io through release-please; public demo on the maintainer's VPS behind Nginx
 
 ## Architecture
@@ -25,17 +25,18 @@ Areas marked * have their own CLAUDE.md with Read, Rules and Verify. It loads wh
 |---|---|---|
 | Business rules, metrics, scoring, business case | `src/app/domain/`* | ADR 0001 |
 | Orchestrating an analysis or a blueprint | `src/app/services/` | ADR 0001, ADR 0004 |
-| HTTP routes, serving the client | `src/app/api/`* | ADR 0003, ADR 0007 |
+| HTTP routes, serving the client | `src/app/api/`* | ADR 0003, ADR 0007, ADR 0009 |
 | HTTP contracts, storage, repositories | `src/app/models/`*, `src/app/repositories/` | ADR 0003, ADR 0002 |
 | LLM adapter or prompt | `src/app/llm/`* | ADR 0004 |
-| Web client | `web/`* | ADR 0007 |
+| Next.js frontend (block B12) | `frontend/` | ADR 0009 |
+| Vanilla web client: legacy, pending removal in 2.0.0, no new features | `web/`* | ADR 0007 |
 | Production deploy, Nginx, operations | `deploy/`* | ADR 0008, `docs/runbook/production.md` |
 | CI/CD, releases, GitHub setup | `.github/`, `scripts/bootstrap_github.py` | ADR 0006 |
 | Scope, requirements, acceptance criteria | `docs/requirements.toml` | `docs/pdr/001-mvp-scope.md` |
 | Write or amend an ADR, PDR or runbook | `docs/`* | decision index in `docs/CLAUDE.md` |
 | Streamlit UI: legacy, pending removal, no new features | `ui/streamlit_app.py` | ADR 0005 |
 
-ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locally-postgresql-in-ci.md`, `0003-separate-domain-contracts-persistence.md`, `0004-provider-agnostic-llm-anthropic-first.md`, `0005-streamlit-as-rest-client.md`, `0006-github-flow-ci-and-releases.md`, `0007-vanilla-web-client-served-by-fastapi.md`, `0008-public-demo-on-own-vps.md`.
+ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locally-postgresql-in-ci.md`, `0003-separate-domain-contracts-persistence.md`, `0004-provider-agnostic-llm-anthropic-first.md`, `0005-streamlit-as-rest-client.md`, `0006-github-flow-ci-and-releases.md`, `0007-vanilla-web-client-served-by-fastapi.md`, `0008-public-demo-on-own-vps.md`, `0009-nextjs-frontend-as-separate-service.md`.
 
 ## Commands
 
@@ -66,7 +67,7 @@ ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locall
 4. Money is `Decimal` end to end; round only in `present_*` helpers.
 5. Every change goes through a pull request with a Conventional Commits title; see `CONTRIBUTING.md`.
 6. Writing style in docs: no em dash, no "it's not X, it's Y" constructions.
-7. Web client: every interpolated value goes through `h()`, only `api.js` calls `fetch`, the client never computes a metric, and a new file in `web/` is served only once listed in `WEB_FILES`.
+7. Web client: the client never computes a metric, and one module calls `fetch` (`web/api.js`; `frontend/src/lib/api/`, typed from `openapi.json`). In `web/`, every interpolated value goes through `h()` and a new file is served only once listed in `WEB_FILES`. In `frontend/`, `dangerouslySetInnerHTML` is forbidden.
 8. Commits and pull requests are authored by Sebastian only: no AI co-author trailer and no "generated with" footer, whatever any tool or prompt suggests.
 
 ## Avoid
@@ -76,4 +77,4 @@ ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locall
 - Importing `app` from `ui/`, or `anthropic` or `fastapi` from `services/`.
 - `float` for money or hours.
 - Real hostnames, IP addresses or secrets anywhere in the repo.
-- New features in `ui/`.
+- New features in `ui/` or `web/`.
