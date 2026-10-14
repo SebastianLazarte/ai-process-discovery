@@ -1,6 +1,6 @@
 # One image for the API, the web client it serves at /ui/ and the Streamlit UI;
 # compose.yaml picks the command.
-FROM python:3.12-slim AS base
+FROM python:3.14-slim AS base
 
 COPY --from=ghcr.io/astral-sh/uv:0.11.9 /uv /uvx /bin/
 
