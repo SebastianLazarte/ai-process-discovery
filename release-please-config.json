@@ -16,7 +16,8 @@
           "type": "toml",
           "path": "uv.lock",
           "jsonpath": "$.package[?(@.name.value=='ai-process-discovery')].version"
-        }
+        },
+        "deploy/.env.example"
       ]
     }
   }
