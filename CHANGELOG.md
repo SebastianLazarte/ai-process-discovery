@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.3.0](https://github.com/SebastianLazarte/ai-process-discovery/compare/v1.2.1...v1.3.0) (2026-10-15)
+
+
+### Features
+
+* purge command for expired demo data (RS-63) ([#100](https://github.com/SebastianLazarte/ai-process-discovery/issues/100)) ([e4c1560](https://github.com/SebastianLazarte/ai-process-discovery/commit/e4c1560ab6ab4f4e4128dc332aea6a9ab47a2008))
+
+
+### Documentation
+
+* replace vanilla web client with Next.js (ADR 0009) ([#87](https://github.com/SebastianLazarte/ai-process-discovery/issues/87)) ([e996f24](https://github.com/SebastianLazarte/ai-process-discovery/commit/e996f24af9f9f9daf6d69a6df70c58644717a08b))
+* run the demo as its own apd user ([#99](https://github.com/SebastianLazarte/ai-process-discovery/issues/99)) ([36e3b5c](https://github.com/SebastianLazarte/ai-process-discovery/commit/36e3b5cdddf27fdd889b702fbba8735d70be0e6f))
+* Scrum product backlog with the PO-approved stories (PDR 002) ([#88](https://github.com/SebastianLazarte/ai-process-discovery/issues/88)) ([a4584d8](https://github.com/SebastianLazarte/ai-process-discovery/commit/a4584d88504901120c9ee82e03469cb3c6f366cb))
+
 ## [1.2.1](https://github.com/SebastianLazarte/ai-process-discovery/compare/v1.2.0...v1.2.1) (2026-10-14)
 
 
