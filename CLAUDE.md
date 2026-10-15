@@ -50,6 +50,7 @@ ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locall
 | API and web client on `:8000/ui/` | `uv run uvicorn app.main:app --reload` |
 | Web client tests | `node --test web/tests/*.test.js` |
 | Whole stack on PostgreSQL | `docker compose up --build` |
+| Purge demo data older than 24 h | `uv run python -m app.purge --older-than-hours 24` |
 | Legacy Streamlit on `:8501` | `uv run streamlit run ui/streamlit_app.py` |
 
 ## Change contract

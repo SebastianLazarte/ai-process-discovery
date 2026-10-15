@@ -1,6 +1,8 @@
+from datetime import datetime
+from typing import Any, cast
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import CursorResult, delete, func, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.domain.entities import Process, ProcessStep
@@ -38,6 +40,18 @@ class ProcessRepository:
 
     def delete(self, process: ProcessORM) -> None:
         self._session.delete(process)
+
+    def delete_created_before(self, cutoff: datetime) -> int:
+        """Delete every process created before ``cutoff`` and return how many.
+
+        One statement: steps, analyses and their overrides go with each process through
+        the ON DELETE CASCADE foreign keys, on SQLite and PostgreSQL alike.
+        """
+        result = cast(
+            CursorResult[Any],
+            self._session.execute(delete(ProcessORM).where(ProcessORM.created_at < cutoff)),
+        )
+        return result.rowcount
 
 
 def to_domain(process: ProcessORM) -> Process:
