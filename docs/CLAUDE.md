@@ -20,10 +20,11 @@ Stable reference for the whole repo. Code changes read from here; this folder ch
 | ADR 0003 | Domain, contracts and persistence are separate models | accepted |
 | ADR 0004 | `LLMProvider` protocol, fake by default, Anthropic first, versioned prompt | accepted |
 | ADR 0005 | Streamlit as a REST client | replaced by ADR 0007 from 1.2.0; Streamlit pending removal |
-| ADR 0006 | GitHub Flow, required checks, release-please, release authorship | accepted; required checks amended by ADR 0009 |
+| ADR 0006 | GitHub Flow, required checks, release-please, release authorship | accepted; required checks amended by ADR 0009, supply chain by ADR 0010 |
 | ADR 0007 | Vanilla web client served by FastAPI | replaced by ADR 0009 from 2.0.0; `web/` pending removal |
 | ADR 0008 | Public demo on the maintainer's VPS (block B11, RS-59 to RS-68) | accepted; layout amended by ADR 0009 |
 | ADR 0009 | Next.js frontend as a separate service, API under `/api` (block B12, RS-69 to RS-80) | accepted |
+| ADR 0010 | Dependency updates: grouped minor and patch after a cooldown, majors planned, Python version fixed | accepted |
 
 Adding or changing a decision updates this index, and the routing table in the root `CLAUDE.md` when it opens a new area.
 

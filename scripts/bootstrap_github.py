@@ -399,6 +399,8 @@ def ensure_settings(run: Runner) -> None:
         },
     )
     run.api("PUT", f"repos/{run.repo}/vulnerability-alerts")
+    # Security updates skip the version-update cooldown (ADR 0010).
+    run.api("PUT", f"repos/{run.repo}/automated-security-fixes")
     run.api("PUT", f"repos/{run.repo}/private-vulnerability-reporting")
     # release-please opens its release pull request with GITHUB_TOKEN.
     run.api(

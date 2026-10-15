@@ -39,6 +39,7 @@ jobs:
             web
             ci
             deps
+            deps-dev
             docs
             release
           requireScope: false
