@@ -1,4 +1,4 @@
-"""Architecture boundaries, enforced as tests (RS-08, RS-26, RS-42)."""
+"""Architecture boundaries, enforced as tests (RS-08, RS-26, RS-42, RS-63)."""
 
 import ast
 from pathlib import Path
@@ -51,6 +51,8 @@ def _violations(directory: Path, forbidden: tuple[str, ...]) -> list[str]:
             ),
         ),
         (SRC / "services", ("anthropic", "streamlit", "fastapi")),
+        # RS-63: deleting demo data is an operator command, never an HTTP route.
+        (SRC / "api", ("app.services.retention_service", "app.purge")),
         (ROOT / "ui", ("app",)),
     ],
 )

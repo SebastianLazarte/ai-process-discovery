@@ -53,6 +53,16 @@ Nightly dumps and pre-deploy dumps live in `/var/backups/apd`. To rehearse a res
 |---|---|---|
 | | | |
 
+## Purge demo data
+
+The banner promises that visitor data is deleted daily. The purge command deletes every process created more than 24 hours ago, with its steps, analyses and overrides. Editing a process does not extend its life. No HTTP route can trigger it.
+
+```bash
+cd /opt/apd && sudo docker compose exec -T api python -m app.purge --older-than-hours 24
+```
+
+It logs one `demo_data_purged` event with the number of processes deleted. `apd-purge.timer` runs it daily just after midnight UTC, when the daily LLM quota resets: the quota counts the day's analyses, so a purge later in the day would delete some of them and free quota early. Until the timer is installed (RS-68), run the command by hand once a day.
+
 ## Rotate the Anthropic key
 
 Create a new key in the demo workspace, replace it in `/opt/apd/.env`, run `docker compose up -d api` in `/opt/apd`, run one analysis with the LLM, then revoke the old key.
