@@ -1,16 +1,83 @@
-# System requirements, one GitHub issue each (scripts/bootstrap_github.py).
-# Same identifiers as the internal spec. Every requirement traces to a user requirement (ru).
+# Product backlog, one GitHub issue per requirement (scripts/bootstrap_github.py).
+#
+# Scrum mapping: each user requirement (RU) is an epic written as a user story, each system
+# requirement (RS) is a backlog item (a user story or an enabler), and each block (B0 to B12)
+# is a release with its milestone. Refined items carry Given/When/Then criteria, Fibonacci
+# points, a MoSCoW priority and a rank; items delivered before refinement keep their
+# original title and acceptance list. Status and sprint live in GitHub, not here.
 
-[user_requirements]
-RU-01 = "Describe a process and its steps with the attributes needed to analyse it"
-RU-02 = "Know how much time and money the process consumes today"
-RU-03 = "Know which steps are worth automating, with which method and why"
-RU-04 = "Get an AI-assisted interpretation that cannot change computed facts"
-RU-05 = "Correct a recommendation while keeping the original and the reason"
-RU-06 = "Estimate economic impact from explicit, editable assumptions"
-RU-07 = "Get an exportable technical blueprint"
-RU-08 = "See the analysis history of a process and why results differ"
-RU-09 = "Try the product on a public demo that protects the budget, the data and the host it shares"
+[product]
+goal = "A live, production-grade demo that shows how to build AI-assisted software people can trust: code computes every number, the AI only interprets, and the engineering holds up from backend to frontend to delivery."
+sprint_days = 7
+first_sprint = 2026-10-14
+# Who the stories are written for (PDR 002).
+roles = ["operations lead", "demo visitor", "maintainer"]
+
+[user_requirements.RU-01]
+name = "Process modelling"
+as_a = "operations lead"
+i_want = "to describe a process and its steps with the attributes needed to analyse it"
+so_that = "the analysis starts from how the work is really done"
+
+[user_requirements.RU-02]
+name = "Current cost baseline"
+as_a = "operations lead"
+i_want = "to know how much time and money the process consumes today"
+so_that = "I can size the opportunity before investing in automation"
+
+[user_requirements.RU-03]
+name = "Automation recommendation"
+as_a = "operations lead"
+i_want = "to know which steps are worth automating, with which method and why"
+so_that = "I can decide where to invest with a rationale I can defend"
+
+[user_requirements.RU-04]
+name = "Trustworthy AI interpretation"
+as_a = "operations lead"
+i_want = "an AI-assisted interpretation that cannot change computed facts"
+so_that = "I get extra insight without losing trust in the numbers"
+
+[user_requirements.RU-05]
+name = "Human override"
+as_a = "operations lead"
+i_want = "to correct a recommendation while keeping the original and the reason"
+so_that = "my judgement prevails and every change stays auditable"
+
+[user_requirements.RU-06]
+name = "Business case"
+as_a = "operations lead"
+i_want = "to estimate economic impact from explicit, editable assumptions"
+so_that = "I can defend the investment to whoever approves the budget"
+
+[user_requirements.RU-07]
+name = "Implementation blueprint"
+as_a = "operations lead"
+i_want = "an exportable technical blueprint"
+so_that = "the team that builds the automation can estimate it and start from it"
+
+[user_requirements.RU-08]
+name = "Analysis history"
+as_a = "operations lead"
+i_want = "to see the analysis history of a process and why results differ"
+so_that = "I can explain how the recommendation changed over time"
+
+[user_requirements.RU-09]
+name = "Public demo"
+as_a = "demo visitor"
+i_want = "to try the product on a public URL without installing anything or signing up"
+so_that = "I can judge it in a few minutes"
+
+[user_requirements.RU-10]
+name = "Safe demo operations"
+as_a = "maintainer"
+i_want = "the public demo to protect the API budget, visitor data and the shared host"
+so_that = "running it costs nothing unexpected and puts nothing else at risk"
+
+[user_requirements.RU-11]
+name = "Modern web interface"
+as_a = "operations lead"
+i_want = "a fast, accessible and secure web interface"
+so_that = "I can work through an analysis on any device without friction"
 
 [[requirement]]
 id = "RS-01"
@@ -374,7 +441,7 @@ acceptance = ["Manual walkthrough recorded in the B8 pull request"]
 
 [[requirement]]
 id = "RS-46"
-ru = "RU-01"
+ru = "RU-11"
 block = "B10"
 area = "ui"
 title = "FastAPI serves web/ at /ui/ and / redirects there; WEB_DIR is configurable and the API runs without it"
@@ -382,7 +449,7 @@ acceptance = ["/ui/ returns 200 text/html and / returns 307", "With a missing WE
 
 [[requirement]]
 id = "RS-47"
-ru = "RU-01"
+ru = "RU-11"
 block = "B10"
 area = "ui"
 title = "Only files listed by name in the web router are served"
@@ -390,7 +457,7 @@ acceptance = ["/ui/tests/views.test.js returns 404", "A test fails if web/ and t
 
 [[requirement]]
 id = "RS-48"
-ru = "RU-01"
+ru = "RU-11"
 block = "B10"
 area = "ui"
 title = "Client responses carry a strict CSP, nosniff and no-referrer; /docs is unchanged"
@@ -398,7 +465,7 @@ acceptance = ["Header test on /ui/ and /docs"]
 
 [[requirement]]
 id = "RS-49"
-ru = "RU-01"
+ru = "RU-11"
 block = "B10"
 area = "ui"
 title = "The client calls only public API routes, and only from api.js"
@@ -414,7 +481,7 @@ acceptance = ["node:test on format.js", "parseFloat, parseInt and Number( appear
 
 [[requirement]]
 id = "RS-51"
-ru = "RU-01"
+ru = "RU-11"
 block = "B10"
 area = "ui"
 title = "Every interpolated value goes through h()"
@@ -454,7 +521,7 @@ acceptance = ["Browser walkthrough", "An override without reason marks the field
 
 [[requirement]]
 id = "RS-56"
-ru = "RU-01"
+ru = "RU-11"
 block = "B10"
 area = "ui"
 title = "API errors show in a toast; a 422 marks the affected form field"
@@ -462,7 +529,7 @@ acceptance = ["node:test on error mapping for domain and validation errors"]
 
 [[requirement]]
 id = "RS-57"
-ru = "RU-01"
+ru = "RU-11"
 block = "B10"
 area = "ui"
 title = "Accessible and usable at 375 px: labels, visible focus, skip link, no horizontal scroll"
@@ -478,15 +545,36 @@ acceptance = ["A test fails if a domain enum value is missing from web/", "node:
 
 [[requirement]]
 id = "RS-59"
-ru = "RU-09"
+ru = "RU-10"
 block = "B11"
 area = "infra"
-title = "Schema changes ship as Alembic migrations; tables are created on startup only when CREATE_SCHEMA_ON_STARTUP is true"
-acceptance = ["test-postgres runs alembic upgrade head and then alembic check", "With create_schema_on_startup=false, startup creates no table"]
+kind = "story"
+title = "Schema changes ship as Alembic migrations"
+as_a = "maintainer"
+i_want = "schema changes to ship as Alembic migrations that run before a new version starts"
+so_that = "a release never breaks or silently changes the live database"
+points = 5
+priority = "must"
+rank = 2
+
+[[requirement.criteria]]
+given = "a PostgreSQL database in CI"
+when = "alembic upgrade head and then alembic check run"
+then = "both succeed with no pending changes"
+
+[[requirement.criteria]]
+given = "create_schema_on_startup is false"
+when = "the API starts on an empty database"
+then = "no table is created"
+
+[[requirement.criteria]]
+given = "the live database created by create_all"
+when = "it is stamped with alembic stamp head"
+then = "the next upgrade applies nothing"
 
 [[requirement]]
 id = "RS-60"
-ru = "RU-09"
+ru = "RU-10"
 block = "B11"
 area = "api"
 title = "Request limits on steps per process, text lengths and list sizes"
@@ -494,7 +582,7 @@ acceptance = ["A process over the step limit returns 422 naming the field", "An 
 
 [[requirement]]
 id = "RS-61"
-ru = "RU-09"
+ru = "RU-10"
 block = "B11"
 area = "llm"
 title = "Daily LLM quota: past the limit the provider is not called and llm_status=unavailable with error_kind=daily_quota"
@@ -510,15 +598,31 @@ acceptance = ["The metadata endpoint returns version and public_demo", "node:tes
 
 [[requirement]]
 id = "RS-63"
-ru = "RU-09"
+ru = "RU-10"
 block = "B11"
 area = "infra"
-title = "A purge command deletes processes older than the retention window, with their analyses and overrides"
-acceptance = ["Integration test: only processes older than the window are deleted", "No HTTP route exposes the purge"]
+kind = "story"
+title = "Purge command for expired demo data"
+as_a = "maintainer"
+i_want = "a command that deletes processes older than the retention window, with their analyses and overrides"
+so_that = "the demo keeps the promise on its banner that data is deleted daily"
+points = 3
+priority = "must"
+rank = 1
+
+[[requirement.criteria]]
+given = "processes older and newer than the retention window"
+when = "the purge command runs"
+then = "only the older ones are deleted, with their analyses and overrides"
+
+[[requirement.criteria]]
+given = "the running API"
+when = "any HTTP route is called"
+then = "none of them triggers a purge"
 
 [[requirement]]
 id = "RS-64"
-ru = "RU-09"
+ru = "RU-10"
 block = "B11"
 area = "infra"
 title = "Production compose: API on 127.0.0.1 only, internal PostgreSQL, resource limits, read-only root, rotated logs, trusted proxy headers"
@@ -526,7 +630,7 @@ acceptance = ["CI validates deploy/compose.prod.yaml with docker compose config"
 
 [[requirement]]
 id = "RS-65"
-ru = "RU-09"
+ru = "RU-10"
 block = "B11"
 area = "infra"
 title = "Nginx site with TLS, a rate limit on analysis runs, a request body limit and a read timeout above the LLM timeout"
@@ -534,7 +638,7 @@ acceptance = ["nginx -t passes for deploy/nginx/apd.conf in CI with test certifi
 
 [[requirement]]
 id = "RS-66"
-ru = "RU-09"
+ru = "RU-10"
 block = "B11"
 area = "infra"
 title = "deploy.sh deploys one validated tag: backup, pull, migrate, start, health check, automatic rollback"
@@ -542,7 +646,7 @@ acceptance = ["A tag outside vX.Y.Z is rejected", "A failing health check restor
 
 [[requirement]]
 id = "RS-67"
-ru = "RU-09"
+ru = "RU-10"
 block = "B11"
 area = "infra"
 title = "A release deploys over SSH with a forced-command key and a pinned host key, then runs an HTTPS smoke test"
@@ -550,51 +654,160 @@ acceptance = ["The deploy job runs only in the production environment", "The smo
 
 [[requirement]]
 id = "RS-68"
-ru = "RU-09"
+ru = "RU-10"
 block = "B11"
 area = "infra"
-title = "Nightly backup and purge run from systemd timers; runbook, README and SECURITY.md describe the live demo"
-acceptance = ["A restore into a scratch database is recorded in the runbook", "README links the live demo"]
+kind = "story"
+title = "Nightly backup and purge with a rehearsed restore"
+as_a = "maintainer"
+i_want = "nightly backups and purges from systemd timers, with a rehearsed restore"
+so_that = "a lost database costs at most one day of demo data"
+points = 5
+priority = "must"
+rank = 3
+
+[[requirement.criteria]]
+given = "last night's backup"
+when = "it is restored into a scratch database"
+then = "the runbook records the restore and its date"
+
+[[requirement.criteria]]
+given = "the systemd timers on the host"
+when = "a night passes"
+then = "a new backup exists, backups older than 7 days are gone and expired processes are purged"
+
+[[requirement.criteria]]
+given = "a reader of the repository"
+when = "they open README and SECURITY.md"
+then = "README links the live demo and SECURITY.md describes its data policy"
 
 [[requirement]]
 id = "RS-69"
-ru = "RU-01"
+ru = "RU-11"
 block = "B12"
 area = "api"
-title = "The API serves every route under /api as well as at the root; openapi.json is committed and kept in sync"
-acceptance = ["Integration tests pass with both prefixes", "/api/docs and /api/openapi.json return 200", "A test fails if frontend/openapi.json differs from app.openapi()"]
+kind = "enabler"
+title = "API served under /api with a committed OpenAPI contract"
+points = 3
+priority = "must"
+rank = 6
+
+[[requirement.criteria]]
+given = "the API during the migration"
+when = "a route is called under /api or at the root"
+then = "both answer the same"
+
+[[requirement.criteria]]
+given = "the API"
+when = "/api/docs and /api/openapi.json are requested"
+then = "both return 200"
+
+[[requirement.criteria]]
+given = "a change to a route"
+when = "frontend/openapi.json is not regenerated"
+then = "a test fails"
 
 [[requirement]]
 id = "RS-70"
-ru = "RU-01"
+ru = "RU-11"
 block = "B12"
 area = "ui"
-title = "frontend/ holds a Next.js standalone app: TypeScript strict, Tailwind, shadcn/ui, ESLint, Prettier and Vitest on pnpm and Node 22"
-acceptance = ["The frontend job runs lint, typecheck, tests and build", "Lint fails on fetch outside src/lib/api/ and on dangerouslySetInnerHTML"]
+kind = "enabler"
+title = "Next.js project with lint, types and tests in CI"
+points = 5
+priority = "must"
+rank = 7
+
+[[requirement.criteria]]
+given = "a pull request that touches frontend/"
+when = "CI runs"
+then = "the frontend job runs lint, typecheck, unit tests and build"
+
+[[requirement.criteria]]
+given = "a fetch call outside src/lib/api/"
+when = "lint runs"
+then = "it fails"
+
+[[requirement.criteria]]
+given = "a component that uses dangerouslySetInnerHTML"
+when = "lint runs"
+then = "it fails"
 
 [[requirement]]
 id = "RS-71"
-ru = "RU-01"
+ru = "RU-11"
 block = "B12"
 area = "ui"
-title = "The client calls the API only through a typed client generated from openapi.json, with TanStack Query for server state"
-acceptance = ["The frontend job fails when the generated types differ from the committed ones", "Component test: an API error maps to a toast and a 422 marks the affected field"]
+kind = "enabler"
+title = "Typed API client generated from OpenAPI, with TanStack Query"
+points = 3
+priority = "must"
+rank = 8
+
+[[requirement.criteria]]
+given = "a change to openapi.json"
+when = "the generated types are not updated"
+then = "the frontend job fails"
+
+[[requirement.criteria]]
+given = "the API answers 422 for one field"
+when = "the form is submitted"
+then = "that field shows the error"
+
+[[requirement.criteria]]
+given = "the API answers any other error"
+when = "a request fails"
+then = "a toast shows the message"
 
 [[requirement]]
 id = "RS-72"
-ru = "RU-01"
+ru = "RU-11"
 block = "B12"
 area = "ui"
-title = "Every frontend response carries a CSP with a per-request nonce, nosniff, no-referrer and frame-ancestors 'none'"
-acceptance = ["A test reads the headers of a page response", "script-src has no unsafe-inline"]
+kind = "enabler"
+title = "Strict security headers with a per-request CSP nonce"
+points = 3
+priority = "must"
+rank = 9
+
+[[requirement.criteria]]
+given = "any page of the frontend"
+when = "it is requested"
+then = "the response carries a CSP with a nonce, nosniff, no-referrer and frame-ancestors 'none'"
+
+[[requirement.criteria]]
+given = "that CSP"
+when = "its script-src is read"
+then = "it has no unsafe-inline"
 
 [[requirement]]
 id = "RS-73"
 ru = "RU-01"
 block = "B12"
 area = "ui"
-title = "Next.js client: process list, demo loading, process creation and deletion, demo banner"
-acceptance = ["Component tests for each view", "A process named <img onerror> renders as text"]
+kind = "story"
+title = "Process list, demo loading, creation and deletion in the new client"
+as_a = "operations lead"
+i_want = "to list my processes, load a demo process, create one and delete one in the new interface"
+so_that = "I can start an analysis in a few clicks"
+points = 5
+priority = "must"
+rank = 10
+
+[[requirement.criteria]]
+given = "the process list"
+when = "I load a demo process"
+then = "it appears in the list and opens"
+
+[[requirement.criteria]]
+given = "a process named <img src=x onerror=alert(1)>"
+when = "the list renders"
+then = "the name shows as text and no script runs"
+
+[[requirement.criteria]]
+given = "the public demo"
+when = "any page opens"
+then = "a banner says that data is public and deleted daily"
 
 [[requirement]]
 id = "RS-74"
@@ -622,7 +835,7 @@ acceptance = ["An override without reason marks the field", "Usable at 375 px wi
 
 [[requirement]]
 id = "RS-77"
-ru = "RU-09"
+ru = "RU-10"
 block = "B12"
 area = "infra"
 title = "The ai-process-discovery-web image (multi-stage, non-root, read-only) runs in compose and ships with every release"
@@ -630,7 +843,7 @@ acceptance = ["The docker job starts both images and both become healthy", "publ
 
 [[requirement]]
 id = "RS-78"
-ru = "RU-09"
+ru = "RU-11"
 block = "B12"
 area = "infra"
 title = "Playwright end-to-end tests run against the compose stack with the fake LLM provider"
@@ -646,7 +859,7 @@ acceptance = ["The analysis rate limit matches /api/processes/{id}/analyses", "T
 
 [[requirement]]
 id = "RS-80"
-ru = "RU-09"
+ru = "RU-11"
 block = "B12"
 area = "ui"
 title = "Retire the vanilla client and the root API routes; Next.js serves / and /ui/ redirects there (2.0.0)"

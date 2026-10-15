@@ -1,15 +1,20 @@
 """Set up the GitHub side of the repository with the gh CLI.
 
-Creates labels, milestones (B0-B12), one issue per requirement in docs/requirements.toml,
-a Project board, the `main` ruleset and the security settings. Safe to re-run: existing
-labels, milestones and issues are left alone.
+Creates labels, milestones (one per release, B0-B12), one issue per backlog item in
+docs/requirements.toml, a Project board with Points and Priority fields, the `main` ruleset
+and the security settings. Safe to re-run: existing labels, milestones and issues are left
+alone. With --sync, existing issues are brought back in line with the file (title, epic,
+story, criteria, milestone, area and priority labels); criteria already ticked stay ticked.
+The board's Sprint field (an iteration field) is created by hand: see docs/CLAUDE.md.
 
     uv run python scripts/bootstrap_github.py --repo OWNER/NAME --dry-run
     uv run python scripts/bootstrap_github.py --repo OWNER/NAME
+    uv run python scripts/bootstrap_github.py --repo OWNER/NAME --sync --dry-run
 """
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 import tomllib
@@ -45,7 +50,14 @@ LABELS = {
         f"area:{area}": "c5def5"
         for area in ("domain", "api", "llm", "reconciliation", "blueprint", "ui", "infra")
     },
+    "priority:must": "b60205",
+    "priority:should": "d93f0b",
+    "priority:could": "0e8a16",
+    "priority:wont": "cfd3d7",
 }
+
+PRIORITY_NAMES = {"must": "Must", "should": "Should", "could": "Could", "wont": "Won't"}
+MANAGED_LABEL_PREFIXES = ("area:", "priority:")
 
 REQUIRED_CHECKS = [
     "quality",
@@ -91,9 +103,85 @@ class Runner:
         return self.gh(*args, input_json=body)
 
 
-def load_requirements() -> tuple[dict[str, str], list[dict[str, Any]]]:
+def load_requirements() -> tuple[dict[str, dict[str, str]], list[dict[str, Any]]]:
+    """Epics by id and backlog items, in file order."""
     data = tomllib.loads((ROOT / "docs" / "requirements.toml").read_text(encoding="utf-8"))
     return data["user_requirements"], data["requirement"]
+
+
+def user_story(story: dict[str, str]) -> str:
+    role = story["as_a"]
+    article = "an" if role[0].lower() in "aeiou" else "a"
+    return f"As {article} {role}, I want {story['i_want']}, so that {story['so_that']}."
+
+
+_TICKED = re.compile(r"^- \[[xX]\] (.+)$")
+
+
+def ticked_criteria(body: str) -> set[str]:
+    """Criteria already ticked in an issue body, so a sync does not untick them."""
+    return {m.group(1).strip() for line in body.splitlines() if (m := _TICKED.match(line.strip()))}
+
+
+def issue_title(req: dict[str, Any]) -> str:
+    return f"{req['id']}: {req['title']}"
+
+
+def criteria_lines(req: dict[str, Any]) -> list[str]:
+    """Criteria as sentences: Given/When/Then when refined, the original list otherwise."""
+    if "criteria" in req:
+        return [f"Given {c['given']}, when {c['when']}, then {c['then']}" for c in req["criteria"]]
+    return list(req["acceptance"])
+
+
+def issue_body(
+    req: dict[str, Any], epics: dict[str, dict[str, str]], ticked: set[str] | None = None
+) -> str:
+    ticked = ticked or set()
+    epic = epics[req["ru"]]
+    header = [f"**Requirement:** {req['id']}"]
+    if "criteria" in req:
+        priority = PRIORITY_NAMES[req["priority"]]
+        header = [
+            f"**Requirement:** {req['id']} ({req['kind']}, {req['points']} points, {priority})"
+        ]
+    lines = [
+        *header,
+        f"**Epic:** {req['ru']} {epic['name']}: {user_story(epic)}",
+        f"**Release:** {req['block']}",
+    ]
+    if req.get("kind") == "story":
+        lines += ["", "### User story", "", user_story(req)]
+    lines += ["", "### Acceptance criteria", ""]
+    lines += [f"- [{'x' if c in ticked else ' '}] {c}" for c in criteria_lines(req)]
+    return "\n".join(lines)
+
+
+def issue_labels(req: dict[str, Any]) -> set[str]:
+    """Labels this script manages on an item's issue."""
+    labels = {f"area:{req['area']}"}
+    if "priority" in req:
+        labels.add(f"priority:{req['priority']}")
+    return labels
+
+
+def issue_edits(req: dict[str, Any], body: str, milestone: str, issue: dict[str, Any]) -> list[str]:
+    """`gh issue edit` arguments that bring an existing issue in line with the file."""
+    args: list[str] = []
+    if issue["title"] != issue_title(req):
+        args += ["--title", issue_title(req)]
+    if (issue.get("body") or "").replace("\r\n", "\n").strip() != body.strip():
+        args += ["--body", body]
+    if (issue.get("milestone") or {}).get("title") != milestone:
+        args += ["--milestone", milestone]
+    wanted = issue_labels(req)
+    current = {label["name"] for label in issue.get("labels", [])}
+    for label in sorted(wanted - current):
+        args += ["--add-label", label]
+    managed = {name for name in current if name.startswith(MANAGED_LABEL_PREFIXES)}
+    for stale in sorted(managed - wanted):
+        args += ["--remove-label", stale]
+    return args
 
 
 def ensure_labels(run: Runner) -> None:
@@ -119,8 +207,11 @@ def ensure_milestones(run: Runner) -> dict[str, str]:
     return names
 
 
-def ensure_issues(run: Runner, milestones: dict[str, str]) -> list[str]:
-    user_reqs, requirements = load_requirements()
+def ensure_issues(
+    run: Runner, milestones: dict[str, str], sync: bool = False
+) -> list[tuple[str, dict[str, Any]]]:
+    """Issue URL and backlog item for every requirement, creating missing issues."""
+    epics, requirements = load_requirements()
     existing = json.loads(
         run.gh(
             "issue",
@@ -132,47 +223,43 @@ def ensure_issues(run: Runner, milestones: dict[str, str]) -> list[str]:
             "--limit",
             "500",
             "--json",
-            "title,url",
+            "title,url,body,milestone,labels",
             read=True,
         )
         or "[]"
     )
-    by_prefix = {issue["title"].split(":")[0]: issue["url"] for issue in existing}
-    urls = []
+    by_prefix = {issue["title"].split(":")[0]: issue for issue in existing}
+    items = []
     for req in requirements:
-        if req["id"] in by_prefix:
-            urls.append(by_prefix[req["id"]])
+        issue = by_prefix.get(req["id"])
+        if issue is not None:
+            items.append((issue["url"], req))
+            if sync:
+                body = issue_body(req, epics, ticked_criteria(issue.get("body") or ""))
+                edits = issue_edits(req, body, milestones[req["block"]], issue)
+                if edits:
+                    run.gh("issue", "edit", issue["url"], *edits)
             continue
-        body = "\n".join(
-            [
-                f"**Requirement:** {req['id']}",
-                f"**User requirement:** {req['ru']}: {user_reqs[req['ru']]}",
-                f"**Block:** {req['block']}",
-                "",
-                "### Acceptance criteria",
-                "",
-                *[f"- [ ] {criterion}" for criterion in req["acceptance"]],
-            ]
-        )
         url = run.gh(
             "issue",
             "create",
             "--repo",
             run.repo,
             "--title",
-            f"{req['id']}: {req['title']}",
+            issue_title(req),
             "--body",
-            body,
+            issue_body(req, epics),
             "--label",
-            f"req,type:feature,area:{req['area']}",
+            ",".join(["req", "type:feature", *sorted(issue_labels(req))]),
             "--milestone",
             milestones[req["block"]],
         ).strip()
-        urls.append(url)
-    return urls
+        items.append((url, req))
+    return items
 
 
-def ensure_project(run: Runner, owner: str, issue_urls: list[str]) -> None:
+def ensure_project(run: Runner, owner: str, items: list[tuple[str, dict[str, Any]]]) -> None:
+    """Board with every issue, plus Points and Priority fields filled from the file."""
     title = "AI Process Discovery"
     projects = json.loads(
         run.gh("project", "list", "--owner", owner, "--format", "json", read=True) or "{}"
@@ -184,9 +271,67 @@ def ensure_project(run: Runner, owner: str, issue_urls: list[str]) -> None:
         )
         number = str(json.loads(created)["number"]) if created else "<new>"
         run.gh("project", "link", number, "--owner", owner, "--repo", run.repo)
-    for url in issue_urls:
-        if url:
-            run.gh("project", "item-add", number, "--owner", owner, "--url", url)
+    fields = ensure_project_fields(run, owner, number)
+    project_id = ""
+    if not run.dry_run:
+        view = run.gh("project", "view", number, "--owner", owner, "--format", "json", read=True)
+        project_id = json.loads(view)["id"]
+    for url, req in items:
+        if not url:
+            continue
+        added = run.gh(
+            "project", "item-add", number, "--owner", owner, "--url", url, "--format", "json"
+        )
+        if not added or "criteria" not in req:
+            continue
+        item_id = json.loads(added)["id"]
+        base = ["project", "item-edit", "--id", item_id, "--project-id", project_id]
+        run.gh(*base, "--field-id", fields["Points"]["id"], "--number", str(req["points"]))
+        option = fields["Priority"]["options"][PRIORITY_NAMES[req["priority"]]]
+        run.gh(*base, "--field-id", fields["Priority"]["id"], "--single-select-option-id", option)
+
+
+def ensure_project_fields(run: Runner, owner: str, number: str) -> dict[str, dict[str, Any]]:
+    """Create the Points and Priority fields when missing; return them by name."""
+
+    def current() -> dict[str, dict[str, Any]]:
+        listed = run.gh(
+            "project", "field-list", number, "--owner", owner, "--format", "json", read=True
+        )
+        found = {}
+        for field in json.loads(listed or "{}").get("fields", []):
+            options = {o["name"]: o["id"] for o in field.get("options", [])}
+            found[field["name"]] = {"id": field["id"], "options": options}
+        return found
+
+    fields = current() if number != "<new>" else {}
+    if "Points" not in fields:
+        run.gh(
+            "project",
+            "field-create",
+            number,
+            "--owner",
+            owner,
+            "--name",
+            "Points",
+            "--data-type",
+            "NUMBER",
+        )
+    if "Priority" not in fields:
+        run.gh(
+            "project",
+            "field-create",
+            number,
+            "--owner",
+            owner,
+            "--name",
+            "Priority",
+            "--data-type",
+            "SINGLE_SELECT",
+            "--single-select-options",
+            ",".join(PRIORITY_NAMES.values()),
+        )
+    return fields if run.dry_run else current()
 
 
 def ensure_ruleset(run: Runner, checks: list[str]) -> None:
@@ -271,6 +416,9 @@ def main() -> None:
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--skip-project", action="store_true")
     parser.add_argument(
+        "--sync", action="store_true", help="Also update existing issues to match the file"
+    )
+    parser.add_argument(
         "--checks",
         default=",".join(REQUIRED_CHECKS),
         help="Comma-separated required status checks for main",
@@ -289,16 +437,16 @@ def main() -> None:
     ensure_settings(run)
     ensure_labels(run)
     milestones = ensure_milestones(run)
-    urls = ensure_issues(run, milestones)
+    items = ensure_issues(run, milestones, sync=args.sync)
     if not args.skip_project:
         try:
-            ensure_project(run, args.repo.split("/")[0], urls)
+            ensure_project(run, args.repo.split("/")[0], items)
         except SystemExit as exc:
             sys.stderr.write(
                 f"Project board skipped ({exc}).\nRun `gh auth refresh -s project` and re-run.\n"
             )
     ensure_ruleset(run, checks)
-    sys.stdout.write(f"Done: {len(urls)} requirement issues on {args.repo}\n")
+    sys.stdout.write(f"Done: {len(items)} backlog issues on {args.repo}\n")
 
 
 if __name__ == "__main__":
