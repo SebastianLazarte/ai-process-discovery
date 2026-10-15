@@ -24,6 +24,7 @@ Keep a second SSH session open during steps 1 and 2, so a mistake in the SSH con
 2. **Deploy user.** Create `deploy`, add it to the `docker` group, and install the GitHub deploy key in its `authorized_keys` with `command="/opt/apd/deploy.sh",no-port-forwarding,no-agent-forwarding,no-X11-forwarding,no-pty`. Membership of `docker` is equivalent to root, which is why the key is restricted to one command.
 3. **Project folder.** `/opt/apd` owned by `deploy`, with `compose.yaml` (from `deploy/compose.prod.yaml`), `deploy.sh` and `.env` from `deploy/.env.example`.
 4. **DNS and TLS.** Add an A record (and AAAA if IPv6 is served) for `apd.<domain>`. Issue the certificate first, because the site refers to it: `sudo certbot certonly --nginx -d apd.<domain> --deploy-hook "systemctl reload nginx"`. Then install `deploy/nginx/apd.conf` with `apd.<domain>` in place of `apd.example.com`, link it into `sites-enabled`, run `sudo nginx -t` and reload Nginx.
+   Then install `deploy/fail2ban/apd.local` as `/etc/fail2ban/jail.d/apd.local` and run `sudo fail2ban-client reload`. `sudo fail2ban-client status apd-limit-req` lists the jail; it bans a client that keeps getting 429 from the demo, and leaves the limits of other sites alone.
 5. **Anthropic.** Create a workspace for the demo, set a monthly spend limit, create a key for that workspace only and put it in `.env`.
 6. **GitHub.** Create the `production` environment with `DEPLOY_SSH_KEY` and `DEPLOY_KNOWN_HOSTS` (output of `ssh-keyscan` for the host, checked against the fingerprint shown on the server).
 7. **Timers.** Install and enable `apd-backup.timer` and `apd-purge.timer`.
@@ -61,6 +62,7 @@ Create a new key in the demo workspace, replace it in `/opt/apd/.env`, run `dock
 |---|---|---|
 | Analyses show "LLM unavailable" all day | Log events `llm_unavailable` with `error_kind` | `daily_quota`: expected until midnight UTC. Otherwise check the Anthropic spend limit and the key |
 | Many 429 responses | Nginx access log for `/analyses` | Expected under a burst. Tune `limit_req` only if real visitors are blocked |
+| A visitor cannot connect at all | `sudo fail2ban-client status apd-limit-req` | Banned for an hour after repeated 429. Lift it with `sudo fail2ban-client set apd-limit-req unbanip <ip>` |
 | `/health` returns 503 | `docker compose ps`, `docker compose logs postgres` | Restart `postgres`; restore from backup if the volume is damaged |
 | Host slow, n8n affected | `docker stats`, `free -h`, `df -h` | Stop the demo with `docker compose stop api`; n8n and the website keep running |
 | Certificate expiry warning | `sudo certbot renew --dry-run` | Fix renewal, then reload Nginx |

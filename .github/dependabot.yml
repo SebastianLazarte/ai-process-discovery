@@ -51,3 +51,19 @@ updates:
       # The 3.12-slim tag still receives Python patch releases on every image build.
       - dependency-name: python
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
+
+  # PostgreSQL is pinned by tag and digest in both compose files; one pull request moves
+  # both, so CI keeps starting the version that production runs.
+  - package-ecosystem: docker-compose
+    directories: [/, /deploy]
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: build
+      include: scope
+    groups:
+      postgres:
+        patterns: [postgres]
+        group-by: dependency-name

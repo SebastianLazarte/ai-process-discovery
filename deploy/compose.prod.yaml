@@ -14,7 +14,10 @@ x-logging: &logging
 
 services:
   postgres:
-    image: postgres:17
+    # Pinned by digest, so a pull never brings different bits under the same tag.
+    # Dependabot proposes the next minor (ADR 0010). A major cannot read this data volume:
+    # it ships as planned work with a dump and a restore.
+    image: postgres:17.11@sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3
     restart: unless-stopped
     environment:
       POSTGRES_USER: apd
@@ -28,6 +31,10 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    # The entrypoint starts as root to own the data directory, then drops to the postgres
+    # user, so capabilities stay; this only blocks gaining privileges after that.
+    security_opt:
+      - no-new-privileges:true
     mem_limit: 256m
     cpus: 0.5
     logging: *logging

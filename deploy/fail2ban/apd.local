@@ -1,0 +1,21 @@
+# fail2ban jail for the public demo (ADR 0008), for the fail2ban that runs on the host.
+# Install as /etc/fail2ban/jail.d/apd.local (see docs/runbook/production.md):
+#   sudo fail2ban-client reload && sudo fail2ban-client status apd-limit-req
+#
+# Bans a client that keeps running into the rate limits of deploy/nginx/apd.conf. Each
+# request rejected with 429 writes one "limiting requests" line to the Nginx error log; the
+# zone names keep the jail away from the limits of n8n and the website on the same host.
+# The ban works at the host firewall because Nginx runs on the host, not in a container.
+
+[apd-limit-req]
+enabled  = true
+filter   = nginx-limit-req[ngx_limit_req_zones="apd_analyses|apd_general"]
+port     = http,https
+logpath  = %(nginx_error_log)s
+# Debian and Ubuntu default every jail to the systemd journal, and Nginx writes its error
+# log to a file, so this jail reads the file.
+backend  = auto
+# 10 rejected requests within 10 minutes: far beyond a person clicking through.
+maxretry = 10
+findtime = 10m
+bantime  = 1h
