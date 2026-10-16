@@ -37,6 +37,26 @@ updates:
         dependency-type: development
         update-types: [minor, patch]
 
+  # The Next.js client (ADR 0009). Same cooldown and grouping as the Python packages.
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+    cooldown:
+      semver-patch-days: 3
+      semver-minor-days: 7
+      semver-major-days: 30
+    commit-message:
+      prefix: build
+      include: scope
+    groups:
+      frontend-runtime:
+        dependency-type: production
+        update-types: [minor, patch]
+      frontend-dev:
+        dependency-type: development
+        update-types: [minor, patch]
+
   - package-ecosystem: docker
     directory: /
     schedule:

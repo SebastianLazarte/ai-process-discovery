@@ -1,0 +1,4 @@
+# Install scripts are off by default (pnpm). unrs-resolver ships prebuilt binaries for each
+# platform, so its postinstall fallback is not needed.
+allowBuilds:
+  unrs-resolver: false
