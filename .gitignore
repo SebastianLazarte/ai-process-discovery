@@ -22,6 +22,7 @@ htmlcov/
 *.db
 output/
 CLAUDE.local.md
+.claude/worktrees/
 
 # Mutation testing
 mutants/

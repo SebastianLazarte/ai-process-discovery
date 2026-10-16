@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.1](https://github.com/SebastianLazarte/ai-process-discovery/compare/v1.3.0...v1.3.1) (2026-10-16)
+
+
+### Documentation
+
+* design brief and design system decisions (ADR 0013) ([#107](https://github.com/SebastianLazarte/ai-process-discovery/issues/107)) ([bdf5e12](https://github.com/SebastianLazarte/ai-process-discovery/commit/bdf5e12c2efe596b036904f2fd2f1fd967cbb978))
+* put the go-live items first and rewrite the README for visitors ([#105](https://github.com/SebastianLazarte/ai-process-discovery/issues/105)) ([1ceca43](https://github.com/SebastianLazarte/ai-process-discovery/commit/1ceca436f85ed68250b33575f6b13ec4a4c6bd5a))
+
 ## [1.3.0](https://github.com/SebastianLazarte/ai-process-discovery/compare/v1.2.1...v1.3.0) (2026-10-15)
 
 
