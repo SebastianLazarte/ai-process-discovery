@@ -17,7 +17,7 @@ Stable reference for the whole repo. Code changes read from here; this folder ch
 | PDR 001 | MVP scope; "no hosted deployment" amended by ADR 0008 | accepted; target user amended by PDR 002 |
 | PDR 002 | Product Goal (portfolio demo), roles and Scrum backlog | accepted |
 | ADR 0001 | Python computes every number, the LLM only interprets; authority order | accepted |
-| ADR 0002 | SQLite locally, PostgreSQL in CI, `ExactDecimal`, no migrations yet | accepted |
+| ADR 0002 | SQLite locally, PostgreSQL in CI, `ExactDecimal`, no migrations yet | accepted; migrations amended by ADR 0008 (Alembic from RS-59) |
 | ADR 0003 | Domain, contracts and persistence are separate models | accepted |
 | ADR 0004 | `LLMProvider` protocol, fake by default, Anthropic first, versioned prompt | accepted |
 | ADR 0005 | Streamlit as a REST client | replaced by ADR 0007 from 1.2.0; Streamlit pending removal |

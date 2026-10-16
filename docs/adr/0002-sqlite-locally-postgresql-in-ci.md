@@ -1,6 +1,6 @@
 # ADR 0002: SQLite locally, PostgreSQL verified in CI, no migrations yet
 
-**Status:** accepted · 2026-10-07
+**Status:** accepted · 2026-10-07 · "no migrations yet" amended by ADR 0008: Alembic owns the production schema from RS-59
 
 ## Context
 
