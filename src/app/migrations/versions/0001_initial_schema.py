@@ -19,6 +19,9 @@ from sqlalchemy.dialects import postgresql
 
 from app.models.persistence.base import ExactDecimal, UTCDateTime
 
+# Alembic reads these names from the module, so they are its public interface.
+__all__ = ["branch_labels", "depends_on", "down_revision", "downgrade", "revision", "upgrade"]
+
 revision: str = "0001"
 down_revision: str | Sequence[str] | None = None
 branch_labels: str | Sequence[str] | None = None
