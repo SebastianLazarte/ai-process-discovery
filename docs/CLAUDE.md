@@ -8,6 +8,7 @@ Stable reference for the whole repo. Code changes read from here; this folder ch
 | `pdr/` | Product and scope decisions |
 | `requirements.toml` | Product backlog: Product Goal, epics (`RU-nn`) and backlog items (`RS-nn`), one GitHub issue per RS |
 | `runbook/` | Operating the production demo |
+| `design/` | UX and UI specs for the Next.js client, numbered in the order of ADR 0013: brief, discovery, wireframes, foundations, components, usability |
 
 ## Decision index
 
@@ -23,9 +24,10 @@ Stable reference for the whole repo. Code changes read from here; this folder ch
 | ADR 0006 | GitHub Flow, required checks, release-please, release authorship | accepted; required checks amended by ADR 0009, supply chain by ADR 0010, coverage minimum by ADR 0011 |
 | ADR 0007 | Vanilla web client served by FastAPI | replaced by ADR 0009 from 2.0.0; `web/` pending removal |
 | ADR 0008 | Public demo on the maintainer's VPS (block B11, RS-59 to RS-68) | accepted; layout amended by ADR 0009 |
-| ADR 0009 | Next.js frontend as a separate service, API under `/api` (block B12, RS-69 to RS-80) | accepted |
+| ADR 0009 | Next.js frontend as a separate service, API under `/api` (block B12, RS-69 to RS-80) | accepted; dependencies amended by ADR 0013 |
 | ADR 0010 | Dependency updates: grouped minor and patch after a cooldown, majors planned, Python version fixed | accepted |
 | ADR 0011 | Automated quality gauntlet: mutation testing on the domain, property-based tests, complexity limits, coverage 95 % | proposed |
+| ADR 0013 | Design system: tokens in CSS as source of truth, light and dark by system setting with a cookie toggle, WCAG 2.2 AA, Penpot and Claude Design as free tools | proposed |
 
 Adding or changing a decision updates this index, and the routing table in the root `CLAUDE.md` when it opens a new area.
 
