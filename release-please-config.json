@@ -17,12 +17,7 @@
           "path": "uv.lock",
           "jsonpath": "$.package[?(@.name.value=='ai-process-discovery')].version"
         },
-        "deploy/.env.example",
-        {
-          "type": "json",
-          "path": "frontend/openapi.json",
-          "jsonpath": "$.info.version"
-        }
+        "deploy/.env.example"
       ]
     }
   }
