@@ -22,19 +22,20 @@ Then open <http://localhost:8000/ui/>. The API docs are at `/docs`.
 
 ## A two-minute tour
 
-1. **Load the "Invoice intake and validation" demo.** 400 invoices a month, 5 steps, 18.50 per hour.
-2. **Open Analyse.** Set an implementation cost of 6000, tooling of 50 per month and a 60 % expected reduction on every step. Tick "Enrich with the LLM" to see the AI layer, and confirm the notice about steps with sensitive data. Without a key, a deterministic fake provider plays the LLM.
-3. **Run the analysis.** You get four separate answers:
+The demos follow a fictitious manufacturer of zoned HVAC controls that sells through distributors and installers. The processes, volumes and costs are synthetic but modelled on how such a company works. Each demo loads with its assumptions already set and a first analysis already run.
 
-| Question | Answer for this demo |
-|---|---|
-| What does the process cost today? | 95.33 hours and 1,763.67 per month |
-| How suitable is it for automation? | 65.9 / 100, weighted by the time each step takes |
-| Is it worth it? | 1,008.20 net savings per month, payback in 5.95 months |
-| Where must a person stay in control? | "Approve payment" is `RULE_BASED` and still keeps `REQUIRED` human control, because the step needs an approval. The AI cannot change that. |
+| Demo | Per month | Today | Net savings | Payback |
+|---|---|---|---|---|
+| Order intake from distributors | 1,100 orders | 278.30 h, 5,844.30 | 3,888.85 | 7.20 months |
+| Zoning design and quote for installers | 240 quotes | 308.00 h, 9,856.00 | 3,641.20 | 9.61 months |
+| Warranty claims from installers | 320 claims | 180.00 h, 4,320.00 | 1,384.80 | 15.89 months |
 
-4. **Override a recommendation** on any step. The reason is mandatory and is stored next to the original.
-5. **Open Blueprint** and download it as Markdown: eight sections, ready to hand to a team.
+1. **Load "Warranty claims from installers".** The results open straight away, in four separate answers: current cost, suitability (42.1 / 100), business impact and human controls.
+2. **Read the human controls.** "Approve the credit note or free replacement" is `RULE_BASED` and still keeps `REQUIRED` human control, because the step needs an approval. The lab inspection stays `MANUAL`: the input is a physical unit. The AI cannot change either.
+3. **Notice the payback.** Automation suits this process less than order intake, and the 12-month ROI is negative. Suitability and savings are reported apart on purpose.
+4. **Run it again with your own assumptions and the LLM.** On Analyse, enter costs and reductions, tick "Enrich with the LLM" and confirm the notice about steps with sensitive data. Without a key, a deterministic fake provider plays the LLM.
+5. **Override a recommendation** on any step. The reason is mandatory and is stored next to the original.
+6. **Open Blueprint** and download it as Markdown: eight sections, ready to hand to a team.
 
 ## Why it is built this way
 

@@ -14,6 +14,7 @@ Thin FastAPI routes: validate the contract, call a service, return a schema. Bus
 - Analysing a step flagged as sensitive needs `confirm_sensitive=true`; without it the service raises a 409.
 - `routes/web.py` serves the client by name from `WEB_FILES`, never by directory, with a strict CSP, `nosniff` and `no-referrer`. `/docs` keeps its own headers.
 - `/meta` tells the client the version and whether this is the public demo (banner).
+- Loading a demo goes through `DemoService`: demos in `app/demo/` with `assumptions` also get a first analysis, never with the LLM (RS-89). Reductions there are keyed by step name.
 - A new or changed endpoint keeps `ENDPOINTS` in `web/api.js` in sync; a test checks it against OpenAPI.
 
 ## Verify

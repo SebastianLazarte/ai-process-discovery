@@ -6,7 +6,7 @@
     ],
     "automation_suitability": {
       "policy_version": "scoring-v1",
-      "process_score": "65.9"
+      "process_score": "76.8"
     },
     "business_impact": {
       "assumptions": {
@@ -14,51 +14,44 @@
           "<step-1>": "0.5",
           "<step-2>": "0.5",
           "<step-3>": "0.5",
-          "<step-4>": "0.5"
+          "<step-4>": "0.5",
+          "<step-5>": "0.5"
         },
         "implementation_cost": "6000",
         "monthly_tooling_cost": "50"
       },
-      "estimated_hours_saved": "41.00",
-      "estimated_monthly_savings": "758.50",
+      "estimated_hours_saved": "134.75",
+      "estimated_monthly_savings": "2829.75",
       "implementation_cost": "6000.00",
       "monthly_tooling_cost": "50.00",
-      "net_monthly_savings": "708.50",
-      "payback_months": "8.47",
-      "roi_12_months": "0.42",
+      "net_monthly_savings": "2779.75",
+      "payback_months": "2.16",
+      "roi_12_months": "4.56",
       "steps_without_reduction": [
-        "<step-5>"
+        "<step-6>"
       ]
     },
     "created_at": "<timestamp>",
     "current_state": {
-      "monthly_cost": "1763.67",
-      "monthly_hours": "95.33"
+      "monthly_cost": "5844.30",
+      "monthly_hours": "278.30"
     },
     "human_controls": [
-      {
-        "control": "RECOMMENDED",
-        "reasons": [
-          "handles sensitive data"
-        ],
-        "step_id": "<step-2>",
-        "step_name": "Extract invoice fields"
-      },
       {
         "control": "REQUIRED",
         "reasons": [
           "requires human judgement"
         ],
         "step_id": "<step-4>",
-        "step_name": "Resolve discrepancies with supplier"
+        "step_name": "Fix discontinued or wrong product codes"
       },
       {
         "control": "REQUIRED",
         "reasons": [
           "requires human approval"
         ],
-        "step_id": "<step-5>",
-        "step_name": "Approve payment"
+        "step_id": "<step-6>",
+        "step_name": "Release orders blocked by the credit limit"
       }
     ],
     "id": "<analysis>",
@@ -73,39 +66,27 @@
     "process_version": 1,
     "risks": [
       {
-        "description": "Extract invoice fields handles sensitive data",
-        "source": "RULES",
-        "step_id": "<step-2>",
-        "type": "DATA"
-      },
-      {
-        "description": "Data protection: restrict access and log processing",
-        "source": "AI",
-        "step_id": "<step-2>",
-        "type": "STEP"
-      },
-      {
-        "description": "Resolve discrepancies with supplier depends on human judgement",
+        "description": "Fix discontinued or wrong product codes depends on human judgement",
         "source": "RULES",
         "step_id": "<step-4>",
         "type": "OPERATIONAL"
       },
       {
-        "description": "Approve payment handles sensitive data",
+        "description": "Release orders blocked by the credit limit handles sensitive data",
         "source": "RULES",
-        "step_id": "<step-5>",
+        "step_id": "<step-6>",
         "type": "DATA"
       },
       {
-        "description": "Approve payment is business critical",
+        "description": "Release orders blocked by the credit limit is business critical",
         "source": "RULES",
-        "step_id": "<step-5>",
+        "step_id": "<step-6>",
         "type": "OPERATIONAL"
       },
       {
         "description": "Data protection: restrict access and log processing",
         "source": "AI",
-        "step_id": "<step-5>",
+        "step_id": "<step-6>",
         "type": "STEP"
       },
       {
@@ -122,30 +103,30 @@
           "confidence": 0.6,
           "dependencies": [
             "Access to Email",
-            "Access to File share"
+            "Access to ERP"
           ],
           "human_control_recommended": false,
-          "interpretation": "Download invoice from shared mailbox: Save the PDF attachment to the invoices folder with a standard file name",
-          "method": "RULE_BASED",
-          "rationale": "Input is digital structured and integration readiness is good.",
+          "interpretation": "Read the order email and identify the distributor: Open the order mailbox, identify the distributor account and save the attachment to the order",
+          "method": "API_INTEGRATION",
+          "rationale": "Input is digital unstructured and integration readiness is good.",
           "risks": [],
           "uncertainties": []
         },
         "final_human_control": "NONE",
-        "final_method": "RULE_BASED",
+        "final_method": "API_INTEGRATION",
         "final_source": "RULES",
         "human_control_reasons": [],
-        "monthly_hours": "10.00",
-        "name": "Download invoice from shared mailbox",
+        "monthly_hours": "27.50",
+        "name": "Read the order email and identify the distributor",
         "override": null,
         "position": 1,
         "reconciliation_notes": [],
         "rules_human_control": "NONE",
-        "rules_method": "RULE_BASED",
-        "rules_method_reason": "clear rules over structured digital input with few exceptions",
+        "rules_method": "API_INTEGRATION",
+        "rules_method_reason": "the systems involved expose a usable integration",
         "score_factors": [
           {
-            "detail": "400 effective executions/month",
+            "detail": "1100 effective executions/month",
             "max_points": 20,
             "name": "frequency",
             "points": 20
@@ -163,13 +144,13 @@
             "points": 20
           },
           {
-            "detail": "DIGITAL_STRUCTURED",
+            "detail": "DIGITAL_UNSTRUCTURED",
             "max_points": 15,
             "name": "input_type",
-            "points": 15
+            "points": 8
           },
           {
-            "detail": "0.02 of executions",
+            "detail": "0.03 of executions",
             "max_points": 15,
             "name": "exception_rate",
             "points": 15
@@ -184,41 +165,37 @@
         "score_penalties": [],
         "score_unknowns": [],
         "step_id": "<step-1>",
-        "suitability_score": 100
+        "suitability_score": 93
       },
       {
         "ai_suggestion": {
           "confidence": 0.6,
           "dependencies": [
-            "Access to Email",
-            "Access to ERP"
+            "Access to ERP",
+            "Access to Spreadsheet"
           ],
-          "human_control_recommended": true,
-          "interpretation": "Extract invoice fields: Copy supplier, invoice number, dates, lines and totals from the PDF into the ERP",
-          "method": "API_INTEGRATION",
-          "rationale": "Input is digital unstructured and integration readiness is good.",
-          "risks": [
-            "Data protection: restrict access and log processing"
-          ],
+          "human_control_recommended": false,
+          "interpretation": "Key order lines into the ERP: Copy product codes, quantities, requested dates and the delivery address from each distributor's own order format",
+          "method": "AI_CANDIDATE",
+          "rationale": "Input is digital unstructured and integration readiness is partial.",
+          "risks": [],
           "uncertainties": []
         },
-        "final_human_control": "RECOMMENDED",
-        "final_method": "API_INTEGRATION",
+        "final_human_control": "NONE",
+        "final_method": "AI_CANDIDATE",
         "final_source": "RULES",
-        "human_control_reasons": [
-          "handles sensitive data"
-        ],
-        "monthly_hours": "26.67",
-        "name": "Extract invoice fields",
+        "human_control_reasons": [],
+        "monthly_hours": "110.00",
+        "name": "Key order lines into the ERP",
         "override": null,
         "position": 2,
         "reconciliation_notes": [],
-        "rules_human_control": "RECOMMENDED",
-        "rules_method": "API_INTEGRATION",
-        "rules_method_reason": "the systems involved expose a usable integration",
+        "rules_human_control": "NONE",
+        "rules_method": "AI_CANDIDATE",
+        "rules_method_reason": "unstructured digital input without required human judgement",
         "score_factors": [
           {
-            "detail": "400 effective executions/month",
+            "detail": "1100 effective executions/month",
             "max_points": 20,
             "name": "frequency",
             "points": 20
@@ -242,82 +219,7 @@
             "points": 8
           },
           {
-            "detail": "0.08 of executions",
-            "max_points": 15,
-            "name": "exception_rate",
-            "points": 10
-          },
-          {
-            "detail": "GOOD",
-            "max_points": 10,
-            "name": "integration_readiness",
-            "points": 10
-          }
-        ],
-        "score_penalties": [
-          {
-            "name": "sensitive_data",
-            "points": 10
-          }
-        ],
-        "score_unknowns": [],
-        "step_id": "<step-2>",
-        "suitability_score": 68
-      },
-      {
-        "ai_suggestion": {
-          "confidence": 0.6,
-          "dependencies": [
-            "Access to ERP"
-          ],
-          "human_control_recommended": false,
-          "interpretation": "Match invoice with purchase order: Three-way match between invoice, purchase order and goods receipt",
-          "method": "HYBRID",
-          "rationale": "Input is digital structured and integration readiness is partial.",
-          "risks": [],
-          "uncertainties": [
-            "Exception handling is not described"
-          ]
-        },
-        "final_human_control": "NONE",
-        "final_method": "HYBRID",
-        "final_source": "AI",
-        "human_control_reasons": [],
-        "monthly_hours": "33.33",
-        "name": "Match invoice with purchase order",
-        "override": null,
-        "position": 3,
-        "reconciliation_notes": [],
-        "rules_human_control": "NONE",
-        "rules_method": "NEEDS_REVIEW",
-        "rules_method_reason": "no deterministic rule applies; needs analyst review",
-        "score_factors": [
-          {
-            "detail": "400 effective executions/month",
-            "max_points": 20,
-            "name": "frequency",
-            "points": 20
-          },
-          {
-            "detail": "HIGH",
-            "max_points": 20,
-            "name": "repetitiveness",
-            "points": 20
-          },
-          {
-            "detail": "MEDIUM",
-            "max_points": 20,
-            "name": "rule_clarity",
-            "points": 10
-          },
-          {
-            "detail": "DIGITAL_STRUCTURED",
-            "max_points": 15,
-            "name": "input_type",
-            "points": 15
-          },
-          {
-            "detail": "0.12 of executions",
+            "detail": "0.1 of executions",
             "max_points": 15,
             "name": "exception_rate",
             "points": 10
@@ -331,18 +233,87 @@
         ],
         "score_penalties": [],
         "score_unknowns": [],
+        "step_id": "<step-2>",
+        "suitability_score": 73
+      },
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to ERP"
+          ],
+          "human_control_recommended": false,
+          "interpretation": "Check prices against the distributor agreement: Compare each line price with the distributor's price list and volume discounts",
+          "method": "RULE_BASED",
+          "rationale": "Input is digital structured and integration readiness is good.",
+          "risks": [],
+          "uncertainties": []
+        },
+        "final_human_control": "NONE",
+        "final_method": "RULE_BASED",
+        "final_source": "RULES",
+        "human_control_reasons": [],
+        "monthly_hours": "55.00",
+        "name": "Check prices against the distributor agreement",
+        "override": null,
+        "position": 3,
+        "reconciliation_notes": [],
+        "rules_human_control": "NONE",
+        "rules_method": "RULE_BASED",
+        "rules_method_reason": "clear rules over structured digital input with few exceptions",
+        "score_factors": [
+          {
+            "detail": "1100 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
+            "points": 20
+          },
+          {
+            "detail": "HIGH",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 20
+          },
+          {
+            "detail": "HIGH",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 20
+          },
+          {
+            "detail": "DIGITAL_STRUCTURED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 15
+          },
+          {
+            "detail": "0.06 of executions",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 10
+          },
+          {
+            "detail": "GOOD",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 10
+          }
+        ],
+        "score_penalties": [],
+        "score_unknowns": [],
         "step_id": "<step-3>",
-        "suitability_score": 80
+        "suitability_score": 95
       },
       {
         "ai_suggestion": {
           "confidence": 0.6,
           "dependencies": [
             "Access to Email",
-            "Access to Phone"
+            "Access to Phone",
+            "Access to Product catalogue"
           ],
           "human_control_recommended": true,
-          "interpretation": "Resolve discrepancies with supplier: Call or email the supplier when quantities or prices do not match",
+          "interpretation": "Fix discontinued or wrong product codes: Agree a replacement product with the distributor when a code is discontinued or does not exist",
           "method": "HYBRID",
           "rationale": "Input is mixed and integration readiness is none.",
           "risks": [],
@@ -356,8 +327,8 @@
         "human_control_reasons": [
           "requires human judgement"
         ],
-        "monthly_hours": "12.00",
-        "name": "Resolve discrepancies with supplier",
+        "monthly_hours": "22.00",
+        "name": "Fix discontinued or wrong product codes",
         "override": null,
         "position": 4,
         "reconciliation_notes": [],
@@ -366,10 +337,10 @@
         "rules_method_reason": "no deterministic rule applies; needs analyst review",
         "score_factors": [
           {
-            "detail": "48 effective executions/month",
+            "detail": "132 effective executions/month",
             "max_points": 20,
             "name": "frequency",
-            "points": 10
+            "points": 15
           },
           {
             "detail": "LOW",
@@ -410,49 +381,46 @@
         ],
         "score_unknowns": [],
         "step_id": "<step-4>",
-        "suitability_score": 0
+        "suitability_score": 1
       },
       {
         "ai_suggestion": {
           "confidence": 0.6,
           "dependencies": [
-            "Access to ERP"
+            "Access to ERP",
+            "Access to Email"
           ],
-          "human_control_recommended": true,
-          "interpretation": "Approve payment: Finance manager approves matched invoices for the next payment run",
+          "human_control_recommended": false,
+          "interpretation": "Confirm stock and delivery date: Check stock per warehouse and send the order confirmation with the delivery date",
           "method": "RULE_BASED",
-          "rationale": "Input is digital structured and integration readiness is partial.",
-          "risks": [
-            "Data protection: restrict access and log processing"
-          ],
+          "rationale": "Input is digital structured and integration readiness is good.",
+          "risks": [],
           "uncertainties": []
         },
-        "final_human_control": "REQUIRED",
+        "final_human_control": "NONE",
         "final_method": "RULE_BASED",
         "final_source": "RULES",
-        "human_control_reasons": [
-          "requires human approval"
-        ],
-        "monthly_hours": "13.33",
-        "name": "Approve payment",
+        "human_control_reasons": [],
+        "monthly_hours": "55.00",
+        "name": "Confirm stock and delivery date",
         "override": null,
         "position": 5,
         "reconciliation_notes": [],
-        "rules_human_control": "REQUIRED",
+        "rules_human_control": "NONE",
         "rules_method": "RULE_BASED",
         "rules_method_reason": "clear rules over structured digital input with few exceptions",
         "score_factors": [
           {
-            "detail": "400 effective executions/month",
+            "detail": "1100 effective executions/month",
             "max_points": 20,
             "name": "frequency",
             "points": 20
           },
           {
-            "detail": "MEDIUM",
+            "detail": "HIGH",
             "max_points": 20,
             "name": "repetitiveness",
-            "points": 10
+            "points": 20
           },
           {
             "detail": "HIGH",
@@ -467,10 +435,84 @@
             "points": 15
           },
           {
-            "detail": "0.03 of executions",
+            "detail": "0.08 of executions",
             "max_points": 15,
             "name": "exception_rate",
+            "points": 10
+          },
+          {
+            "detail": "GOOD",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 10
+          }
+        ],
+        "score_penalties": [],
+        "score_unknowns": [],
+        "step_id": "<step-5>",
+        "suitability_score": 95
+      },
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to ERP"
+          ],
+          "human_control_recommended": true,
+          "interpretation": "Release orders blocked by the credit limit: The credit controller reviews the distributor's open balance and releases or holds the order",
+          "method": "HYBRID",
+          "rationale": "Input is digital structured and integration readiness is partial.",
+          "risks": [
+            "Data protection: restrict access and log processing"
+          ],
+          "uncertainties": [
+            "Exception handling is not described"
+          ]
+        },
+        "final_human_control": "REQUIRED",
+        "final_method": "HYBRID",
+        "final_source": "AI",
+        "human_control_reasons": [
+          "requires human approval"
+        ],
+        "monthly_hours": "8.80",
+        "name": "Release orders blocked by the credit limit",
+        "override": null,
+        "position": 6,
+        "reconciliation_notes": [],
+        "rules_human_control": "REQUIRED",
+        "rules_method": "NEEDS_REVIEW",
+        "rules_method_reason": "no deterministic rule applies; needs analyst review",
+        "score_factors": [
+          {
+            "detail": "66 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
             "points": 15
+          },
+          {
+            "detail": "MEDIUM",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 10
+          },
+          {
+            "detail": "MEDIUM",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 10
+          },
+          {
+            "detail": "DIGITAL_STRUCTURED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 15
+          },
+          {
+            "detail": "0.2 of executions",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 5
           },
           {
             "detail": "PARTIAL",
@@ -490,15 +532,15 @@
           }
         ],
         "score_unknowns": [],
-        "step_id": "<step-5>",
-        "suitability_score": 60
+        "step_id": "<step-6>",
+        "suitability_score": 35
       }
     ],
     "unknowns": [
-      "Approve payment: no expected time reduction given"
+      "Release orders blocked by the credit limit: no expected time reduction given"
     ]
   },
-  "blueprint_md": "# Automation blueprint: Invoice intake and validation\n\n## Process summary\n\n- **Description:** Supplier invoices arrive by email as PDF, are keyed into the ERP, matched to purchase orders and approved for payment.\n- **Owner:** Finance Operations\n- **Executions per month:** 400\n- **Steps:** 5\n- **Analysis:** <timestamp>, process version 1, rules scoring-v1, LLM ok (fake/fake-deterministic-v1)\n\n## Current state\n\n- **Monthly hours:** 95.33\n- **Monthly cost:** 1,763.67\n\n## Automation opportunities\n\nOrdered by monthly time. Suitability measures whether a step can be automated, not how much it is worth.\n\n| # | Step | Method | Human control | Decided by | Hours/month | Suitability |\n|---|---|---|---|---|---:|---:|\n| 3 | Match invoice with purchase order | HYBRID | NONE | AI | 33.33 | 80 |\n| 2 | Extract invoice fields | API_INTEGRATION | RECOMMENDED | RULES | 26.67 | 68 |\n| 5 | Approve payment | RULE_BASED | REQUIRED | RULES | 13.33 | 60 |\n| 4 | Resolve discrepancies with supplier | HYBRID | REQUIRED | AI | 12.00 | 0 |\n\n- **Match invoice with purchase order:** Input is digital structured and integration readiness is partial.\n- **Extract invoice fields:** the systems involved expose a usable integration\n- **Approve payment:** clear rules over structured digital input with few exceptions\n- **Resolve discrepancies with supplier:** Input is mixed and integration readiness is none.\n\n## Proposed architecture\n\n- Workflow engine that runs the steps in order, with retries and an audit log\n- Rules step in the workflow engine with explicit, versioned validation rules\n- API connectors to the systems already in use\n- Automated draft with a person confirming the result\n- Human review queue: flagged items wait for a decision, which is logged\n- Orchestrate the automated steps from a single workflow engine with retries\n- Route low-confidence and flagged items to a human review queue\n\n## Business impact\n\nEvery economic figure below depends on the assumptions listed after it.\n\n- **Hours freed per month:** 41.00\n- **Gross monthly savings:** 758.50\n- **Monthly tooling cost:** 50.00\n- **Net monthly savings:** 708.50\n- **Implementation cost:** 6,000.00\n- **Payback (months):** 8.47\n- **ROI at 12 months:** 42 %\n\n**Assumptions**\n\n- Implementation cost: 6,000.00\n- Monthly tooling cost: 50.00\n- Expected time reduction for step <step-1>: 50 %\n- Expected time reduction for step <step-2>: 50 %\n- Expected time reduction for step <step-3>: 50 %\n- Expected time reduction for step <step-4>: 50 %\n- 1 step(s) have no expected reduction and count as zero savings\n\n## Risks\n\n- [RULES / DATA] Extract invoice fields handles sensitive data\n- [AI / STEP] Data protection: restrict access and log processing\n- [RULES / OPERATIONAL] Resolve discrepancies with supplier depends on human judgement\n- [RULES / DATA] Approve payment handles sensitive data\n- [RULES / OPERATIONAL] Approve payment is business critical\n- [AI / STEP] Data protection: restrict access and log processing\n- [AI / OPERATIONAL] Exceptions need an owner once the happy path is automated\n\n## Human controls\n\n- **Download invoice from shared mailbox:** REQUIRED. Reviewer decision: Reviewer keeps this step manual\n- **Extract invoice fields:** RECOMMENDED. handles sensitive data\n- **Resolve discrepancies with supplier:** REQUIRED. requires human judgement\n- **Approve payment:** REQUIRED. requires human approval\n\n## Workflow specification\n\n1. Trigger: a new process execution starts\n2. Download invoice from shared mailbox: MANUAL, then wait for a person to approve before continuing\n3. Extract invoice fields: API_INTEGRATION, with a person reviewing a sample or the flagged cases\n4. Match invoice with purchase order: HYBRID\n5. Resolve discrepancies with supplier: HYBRID, then wait for a person to approve before continuing\n6. Approve payment: RULE_BASED, then wait for a person to approve before continuing\n7. End: record the outcome and the time spent for later comparison\n",
+  "blueprint_md": "# Automation blueprint: Order intake from distributors\n\n## Process summary\n\n- **Description:** A manufacturer of zoned HVAC controls receives purchase orders from its distributors by email, as PDF or spreadsheet. Customer service keys them into the ERP, checks prices and stock and confirms a delivery date.\n- **Owner:** Customer Service\n- **Executions per month:** 1100\n- **Steps:** 6\n- **Analysis:** <timestamp>, process version 1, rules scoring-v1, LLM ok (fake/fake-deterministic-v1)\n\n## Current state\n\n- **Monthly hours:** 278.30\n- **Monthly cost:** 5,844.30\n\n## Automation opportunities\n\nOrdered by monthly time. Suitability measures whether a step can be automated, not how much it is worth.\n\n| # | Step | Method | Human control | Decided by | Hours/month | Suitability |\n|---|---|---|---|---|---:|---:|\n| 2 | Key order lines into the ERP | AI_CANDIDATE | NONE | RULES | 110.00 | 73 |\n| 3 | Check prices against the distributor agreement | RULE_BASED | NONE | RULES | 55.00 | 95 |\n| 5 | Confirm stock and delivery date | RULE_BASED | NONE | RULES | 55.00 | 95 |\n| 4 | Fix discontinued or wrong product codes | HYBRID | REQUIRED | AI | 22.00 | 1 |\n| 6 | Release orders blocked by the credit limit | HYBRID | REQUIRED | AI | 8.80 | 35 |\n\n- **Key order lines into the ERP:** unstructured digital input without required human judgement\n- **Check prices against the distributor agreement:** clear rules over structured digital input with few exceptions\n- **Confirm stock and delivery date:** clear rules over structured digital input with few exceptions\n- **Fix discontinued or wrong product codes:** Input is mixed and integration readiness is none.\n- **Release orders blocked by the credit limit:** Input is digital structured and integration readiness is partial.\n\n## Proposed architecture\n\n- Workflow engine that runs the steps in order, with retries and an audit log\n- Rules step in the workflow engine with explicit, versioned validation rules\n- Model-based extraction or classification behind a schema-validated contract\n- Automated draft with a person confirming the result\n- Human review queue: flagged items wait for a decision, which is logged\n- Orchestrate the automated steps from a single workflow engine with retries\n- Route low-confidence and flagged items to a human review queue\n\n## Business impact\n\nEvery economic figure below depends on the assumptions listed after it.\n\n- **Hours freed per month:** 134.75\n- **Gross monthly savings:** 2,829.75\n- **Monthly tooling cost:** 50.00\n- **Net monthly savings:** 2,779.75\n- **Implementation cost:** 6,000.00\n- **Payback (months):** 2.16\n- **ROI at 12 months:** 456 %\n\n**Assumptions**\n\n- Implementation cost: 6,000.00\n- Monthly tooling cost: 50.00\n- Expected time reduction for step <step-1>: 50 %\n- Expected time reduction for step <step-2>: 50 %\n- Expected time reduction for step <step-3>: 50 %\n- Expected time reduction for step <step-4>: 50 %\n- Expected time reduction for step <step-5>: 50 %\n- 1 step(s) have no expected reduction and count as zero savings\n\n## Risks\n\n- [RULES / OPERATIONAL] Fix discontinued or wrong product codes depends on human judgement\n- [RULES / DATA] Release orders blocked by the credit limit handles sensitive data\n- [RULES / OPERATIONAL] Release orders blocked by the credit limit is business critical\n- [AI / STEP] Data protection: restrict access and log processing\n- [AI / OPERATIONAL] Exceptions need an owner once the happy path is automated\n\n## Human controls\n\n- **Read the order email and identify the distributor:** REQUIRED. Reviewer decision: Reviewer keeps this step manual\n- **Fix discontinued or wrong product codes:** REQUIRED. requires human judgement\n- **Release orders blocked by the credit limit:** REQUIRED. requires human approval\n\n## Workflow specification\n\n1. Trigger: a new process execution starts\n2. Read the order email and identify the distributor: MANUAL, then wait for a person to approve before continuing\n3. Key order lines into the ERP: AI_CANDIDATE\n4. Check prices against the distributor agreement: RULE_BASED\n5. Fix discontinued or wrong product codes: HYBRID, then wait for a person to approve before continuing\n6. Confirm stock and delivery date: RULE_BASED\n7. Release orders blocked by the credit limit: HYBRID, then wait for a person to approve before continuing\n8. End: record the outcome and the time spent for later comparison\n",
   "history": [
     {
       "created_at": "<timestamp>",
@@ -509,6 +551,16 @@
       "process_version": 1,
       "provider": "fake",
       "rules_version": "scoring-v1"
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<other-1>",
+      "llm_status": "not_requested",
+      "model": null,
+      "override_count": 0,
+      "process_version": 1,
+      "provider": null,
+      "rules_version": "scoring-v1"
     }
   ],
   "reviewed": {
@@ -518,7 +570,7 @@
     ],
     "automation_suitability": {
       "policy_version": "scoring-v1",
-      "process_score": "65.9"
+      "process_score": "76.8"
     },
     "business_impact": {
       "assumptions": {
@@ -526,26 +578,27 @@
           "<step-1>": "0.5",
           "<step-2>": "0.5",
           "<step-3>": "0.5",
-          "<step-4>": "0.5"
+          "<step-4>": "0.5",
+          "<step-5>": "0.5"
         },
         "implementation_cost": "6000",
         "monthly_tooling_cost": "50"
       },
-      "estimated_hours_saved": "41.00",
-      "estimated_monthly_savings": "758.50",
+      "estimated_hours_saved": "134.75",
+      "estimated_monthly_savings": "2829.75",
       "implementation_cost": "6000.00",
       "monthly_tooling_cost": "50.00",
-      "net_monthly_savings": "708.50",
-      "payback_months": "8.47",
-      "roi_12_months": "0.42",
+      "net_monthly_savings": "2779.75",
+      "payback_months": "2.16",
+      "roi_12_months": "4.56",
       "steps_without_reduction": [
-        "<step-5>"
+        "<step-6>"
       ]
     },
     "created_at": "<timestamp>",
     "current_state": {
-      "monthly_cost": "1763.67",
-      "monthly_hours": "95.33"
+      "monthly_cost": "5844.30",
+      "monthly_hours": "278.30"
     },
     "human_controls": [
       {
@@ -554,15 +607,7 @@
           "Reviewer decision: Reviewer keeps this step manual"
         ],
         "step_id": "<step-1>",
-        "step_name": "Download invoice from shared mailbox"
-      },
-      {
-        "control": "RECOMMENDED",
-        "reasons": [
-          "handles sensitive data"
-        ],
-        "step_id": "<step-2>",
-        "step_name": "Extract invoice fields"
+        "step_name": "Read the order email and identify the distributor"
       },
       {
         "control": "REQUIRED",
@@ -570,15 +615,15 @@
           "requires human judgement"
         ],
         "step_id": "<step-4>",
-        "step_name": "Resolve discrepancies with supplier"
+        "step_name": "Fix discontinued or wrong product codes"
       },
       {
         "control": "REQUIRED",
         "reasons": [
           "requires human approval"
         ],
-        "step_id": "<step-5>",
-        "step_name": "Approve payment"
+        "step_id": "<step-6>",
+        "step_name": "Release orders blocked by the credit limit"
       }
     ],
     "id": "<analysis>",
@@ -593,39 +638,27 @@
     "process_version": 1,
     "risks": [
       {
-        "description": "Extract invoice fields handles sensitive data",
-        "source": "RULES",
-        "step_id": "<step-2>",
-        "type": "DATA"
-      },
-      {
-        "description": "Data protection: restrict access and log processing",
-        "source": "AI",
-        "step_id": "<step-2>",
-        "type": "STEP"
-      },
-      {
-        "description": "Resolve discrepancies with supplier depends on human judgement",
+        "description": "Fix discontinued or wrong product codes depends on human judgement",
         "source": "RULES",
         "step_id": "<step-4>",
         "type": "OPERATIONAL"
       },
       {
-        "description": "Approve payment handles sensitive data",
+        "description": "Release orders blocked by the credit limit handles sensitive data",
         "source": "RULES",
-        "step_id": "<step-5>",
+        "step_id": "<step-6>",
         "type": "DATA"
       },
       {
-        "description": "Approve payment is business critical",
+        "description": "Release orders blocked by the credit limit is business critical",
         "source": "RULES",
-        "step_id": "<step-5>",
+        "step_id": "<step-6>",
         "type": "OPERATIONAL"
       },
       {
         "description": "Data protection: restrict access and log processing",
         "source": "AI",
-        "step_id": "<step-5>",
+        "step_id": "<step-6>",
         "type": "STEP"
       },
       {
@@ -642,12 +675,12 @@
           "confidence": 0.6,
           "dependencies": [
             "Access to Email",
-            "Access to File share"
+            "Access to ERP"
           ],
           "human_control_recommended": false,
-          "interpretation": "Download invoice from shared mailbox: Save the PDF attachment to the invoices folder with a standard file name",
-          "method": "RULE_BASED",
-          "rationale": "Input is digital structured and integration readiness is good.",
+          "interpretation": "Read the order email and identify the distributor: Open the order mailbox, identify the distributor account and save the attachment to the order",
+          "method": "API_INTEGRATION",
+          "rationale": "Input is digital unstructured and integration readiness is good.",
           "risks": [],
           "uncertainties": []
         },
@@ -655,26 +688,26 @@
         "final_method": "MANUAL",
         "final_source": "HUMAN",
         "human_control_reasons": [],
-        "monthly_hours": "10.00",
-        "name": "Download invoice from shared mailbox",
+        "monthly_hours": "27.50",
+        "name": "Read the order email and identify the distributor",
         "override": {
           "created_at": "<timestamp>",
           "id": "<override>",
           "new_human_control": "REQUIRED",
           "new_method": "MANUAL",
           "original_human_control": "NONE",
-          "original_method": "RULE_BASED",
+          "original_method": "API_INTEGRATION",
           "reason": "Reviewer keeps this step manual",
           "step_id": "<step-1>"
         },
         "position": 1,
         "reconciliation_notes": [],
         "rules_human_control": "NONE",
-        "rules_method": "RULE_BASED",
-        "rules_method_reason": "clear rules over structured digital input with few exceptions",
+        "rules_method": "API_INTEGRATION",
+        "rules_method_reason": "the systems involved expose a usable integration",
         "score_factors": [
           {
-            "detail": "400 effective executions/month",
+            "detail": "1100 effective executions/month",
             "max_points": 20,
             "name": "frequency",
             "points": 20
@@ -692,13 +725,13 @@
             "points": 20
           },
           {
-            "detail": "DIGITAL_STRUCTURED",
+            "detail": "DIGITAL_UNSTRUCTURED",
             "max_points": 15,
             "name": "input_type",
-            "points": 15
+            "points": 8
           },
           {
-            "detail": "0.02 of executions",
+            "detail": "0.03 of executions",
             "max_points": 15,
             "name": "exception_rate",
             "points": 15
@@ -713,41 +746,37 @@
         "score_penalties": [],
         "score_unknowns": [],
         "step_id": "<step-1>",
-        "suitability_score": 100
+        "suitability_score": 93
       },
       {
         "ai_suggestion": {
           "confidence": 0.6,
           "dependencies": [
-            "Access to Email",
-            "Access to ERP"
+            "Access to ERP",
+            "Access to Spreadsheet"
           ],
-          "human_control_recommended": true,
-          "interpretation": "Extract invoice fields: Copy supplier, invoice number, dates, lines and totals from the PDF into the ERP",
-          "method": "API_INTEGRATION",
-          "rationale": "Input is digital unstructured and integration readiness is good.",
-          "risks": [
-            "Data protection: restrict access and log processing"
-          ],
+          "human_control_recommended": false,
+          "interpretation": "Key order lines into the ERP: Copy product codes, quantities, requested dates and the delivery address from each distributor's own order format",
+          "method": "AI_CANDIDATE",
+          "rationale": "Input is digital unstructured and integration readiness is partial.",
+          "risks": [],
           "uncertainties": []
         },
-        "final_human_control": "RECOMMENDED",
-        "final_method": "API_INTEGRATION",
+        "final_human_control": "NONE",
+        "final_method": "AI_CANDIDATE",
         "final_source": "RULES",
-        "human_control_reasons": [
-          "handles sensitive data"
-        ],
-        "monthly_hours": "26.67",
-        "name": "Extract invoice fields",
+        "human_control_reasons": [],
+        "monthly_hours": "110.00",
+        "name": "Key order lines into the ERP",
         "override": null,
         "position": 2,
         "reconciliation_notes": [],
-        "rules_human_control": "RECOMMENDED",
-        "rules_method": "API_INTEGRATION",
-        "rules_method_reason": "the systems involved expose a usable integration",
+        "rules_human_control": "NONE",
+        "rules_method": "AI_CANDIDATE",
+        "rules_method_reason": "unstructured digital input without required human judgement",
         "score_factors": [
           {
-            "detail": "400 effective executions/month",
+            "detail": "1100 effective executions/month",
             "max_points": 20,
             "name": "frequency",
             "points": 20
@@ -771,82 +800,7 @@
             "points": 8
           },
           {
-            "detail": "0.08 of executions",
-            "max_points": 15,
-            "name": "exception_rate",
-            "points": 10
-          },
-          {
-            "detail": "GOOD",
-            "max_points": 10,
-            "name": "integration_readiness",
-            "points": 10
-          }
-        ],
-        "score_penalties": [
-          {
-            "name": "sensitive_data",
-            "points": 10
-          }
-        ],
-        "score_unknowns": [],
-        "step_id": "<step-2>",
-        "suitability_score": 68
-      },
-      {
-        "ai_suggestion": {
-          "confidence": 0.6,
-          "dependencies": [
-            "Access to ERP"
-          ],
-          "human_control_recommended": false,
-          "interpretation": "Match invoice with purchase order: Three-way match between invoice, purchase order and goods receipt",
-          "method": "HYBRID",
-          "rationale": "Input is digital structured and integration readiness is partial.",
-          "risks": [],
-          "uncertainties": [
-            "Exception handling is not described"
-          ]
-        },
-        "final_human_control": "NONE",
-        "final_method": "HYBRID",
-        "final_source": "AI",
-        "human_control_reasons": [],
-        "monthly_hours": "33.33",
-        "name": "Match invoice with purchase order",
-        "override": null,
-        "position": 3,
-        "reconciliation_notes": [],
-        "rules_human_control": "NONE",
-        "rules_method": "NEEDS_REVIEW",
-        "rules_method_reason": "no deterministic rule applies; needs analyst review",
-        "score_factors": [
-          {
-            "detail": "400 effective executions/month",
-            "max_points": 20,
-            "name": "frequency",
-            "points": 20
-          },
-          {
-            "detail": "HIGH",
-            "max_points": 20,
-            "name": "repetitiveness",
-            "points": 20
-          },
-          {
-            "detail": "MEDIUM",
-            "max_points": 20,
-            "name": "rule_clarity",
-            "points": 10
-          },
-          {
-            "detail": "DIGITAL_STRUCTURED",
-            "max_points": 15,
-            "name": "input_type",
-            "points": 15
-          },
-          {
-            "detail": "0.12 of executions",
+            "detail": "0.1 of executions",
             "max_points": 15,
             "name": "exception_rate",
             "points": 10
@@ -860,18 +814,87 @@
         ],
         "score_penalties": [],
         "score_unknowns": [],
+        "step_id": "<step-2>",
+        "suitability_score": 73
+      },
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to ERP"
+          ],
+          "human_control_recommended": false,
+          "interpretation": "Check prices against the distributor agreement: Compare each line price with the distributor's price list and volume discounts",
+          "method": "RULE_BASED",
+          "rationale": "Input is digital structured and integration readiness is good.",
+          "risks": [],
+          "uncertainties": []
+        },
+        "final_human_control": "NONE",
+        "final_method": "RULE_BASED",
+        "final_source": "RULES",
+        "human_control_reasons": [],
+        "monthly_hours": "55.00",
+        "name": "Check prices against the distributor agreement",
+        "override": null,
+        "position": 3,
+        "reconciliation_notes": [],
+        "rules_human_control": "NONE",
+        "rules_method": "RULE_BASED",
+        "rules_method_reason": "clear rules over structured digital input with few exceptions",
+        "score_factors": [
+          {
+            "detail": "1100 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
+            "points": 20
+          },
+          {
+            "detail": "HIGH",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 20
+          },
+          {
+            "detail": "HIGH",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 20
+          },
+          {
+            "detail": "DIGITAL_STRUCTURED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 15
+          },
+          {
+            "detail": "0.06 of executions",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 10
+          },
+          {
+            "detail": "GOOD",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 10
+          }
+        ],
+        "score_penalties": [],
+        "score_unknowns": [],
         "step_id": "<step-3>",
-        "suitability_score": 80
+        "suitability_score": 95
       },
       {
         "ai_suggestion": {
           "confidence": 0.6,
           "dependencies": [
             "Access to Email",
-            "Access to Phone"
+            "Access to Phone",
+            "Access to Product catalogue"
           ],
           "human_control_recommended": true,
-          "interpretation": "Resolve discrepancies with supplier: Call or email the supplier when quantities or prices do not match",
+          "interpretation": "Fix discontinued or wrong product codes: Agree a replacement product with the distributor when a code is discontinued or does not exist",
           "method": "HYBRID",
           "rationale": "Input is mixed and integration readiness is none.",
           "risks": [],
@@ -885,8 +908,8 @@
         "human_control_reasons": [
           "requires human judgement"
         ],
-        "monthly_hours": "12.00",
-        "name": "Resolve discrepancies with supplier",
+        "monthly_hours": "22.00",
+        "name": "Fix discontinued or wrong product codes",
         "override": null,
         "position": 4,
         "reconciliation_notes": [],
@@ -895,10 +918,10 @@
         "rules_method_reason": "no deterministic rule applies; needs analyst review",
         "score_factors": [
           {
-            "detail": "48 effective executions/month",
+            "detail": "132 effective executions/month",
             "max_points": 20,
             "name": "frequency",
-            "points": 10
+            "points": 15
           },
           {
             "detail": "LOW",
@@ -939,49 +962,46 @@
         ],
         "score_unknowns": [],
         "step_id": "<step-4>",
-        "suitability_score": 0
+        "suitability_score": 1
       },
       {
         "ai_suggestion": {
           "confidence": 0.6,
           "dependencies": [
-            "Access to ERP"
+            "Access to ERP",
+            "Access to Email"
           ],
-          "human_control_recommended": true,
-          "interpretation": "Approve payment: Finance manager approves matched invoices for the next payment run",
+          "human_control_recommended": false,
+          "interpretation": "Confirm stock and delivery date: Check stock per warehouse and send the order confirmation with the delivery date",
           "method": "RULE_BASED",
-          "rationale": "Input is digital structured and integration readiness is partial.",
-          "risks": [
-            "Data protection: restrict access and log processing"
-          ],
+          "rationale": "Input is digital structured and integration readiness is good.",
+          "risks": [],
           "uncertainties": []
         },
-        "final_human_control": "REQUIRED",
+        "final_human_control": "NONE",
         "final_method": "RULE_BASED",
         "final_source": "RULES",
-        "human_control_reasons": [
-          "requires human approval"
-        ],
-        "monthly_hours": "13.33",
-        "name": "Approve payment",
+        "human_control_reasons": [],
+        "monthly_hours": "55.00",
+        "name": "Confirm stock and delivery date",
         "override": null,
         "position": 5,
         "reconciliation_notes": [],
-        "rules_human_control": "REQUIRED",
+        "rules_human_control": "NONE",
         "rules_method": "RULE_BASED",
         "rules_method_reason": "clear rules over structured digital input with few exceptions",
         "score_factors": [
           {
-            "detail": "400 effective executions/month",
+            "detail": "1100 effective executions/month",
             "max_points": 20,
             "name": "frequency",
             "points": 20
           },
           {
-            "detail": "MEDIUM",
+            "detail": "HIGH",
             "max_points": 20,
             "name": "repetitiveness",
-            "points": 10
+            "points": 20
           },
           {
             "detail": "HIGH",
@@ -996,10 +1016,84 @@
             "points": 15
           },
           {
-            "detail": "0.03 of executions",
+            "detail": "0.08 of executions",
             "max_points": 15,
             "name": "exception_rate",
+            "points": 10
+          },
+          {
+            "detail": "GOOD",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 10
+          }
+        ],
+        "score_penalties": [],
+        "score_unknowns": [],
+        "step_id": "<step-5>",
+        "suitability_score": 95
+      },
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to ERP"
+          ],
+          "human_control_recommended": true,
+          "interpretation": "Release orders blocked by the credit limit: The credit controller reviews the distributor's open balance and releases or holds the order",
+          "method": "HYBRID",
+          "rationale": "Input is digital structured and integration readiness is partial.",
+          "risks": [
+            "Data protection: restrict access and log processing"
+          ],
+          "uncertainties": [
+            "Exception handling is not described"
+          ]
+        },
+        "final_human_control": "REQUIRED",
+        "final_method": "HYBRID",
+        "final_source": "AI",
+        "human_control_reasons": [
+          "requires human approval"
+        ],
+        "monthly_hours": "8.80",
+        "name": "Release orders blocked by the credit limit",
+        "override": null,
+        "position": 6,
+        "reconciliation_notes": [],
+        "rules_human_control": "REQUIRED",
+        "rules_method": "NEEDS_REVIEW",
+        "rules_method_reason": "no deterministic rule applies; needs analyst review",
+        "score_factors": [
+          {
+            "detail": "66 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
             "points": 15
+          },
+          {
+            "detail": "MEDIUM",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 10
+          },
+          {
+            "detail": "MEDIUM",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 10
+          },
+          {
+            "detail": "DIGITAL_STRUCTURED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 15
+          },
+          {
+            "detail": "0.2 of executions",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 5
           },
           {
             "detail": "PARTIAL",
@@ -1019,12 +1113,12 @@
           }
         ],
         "score_unknowns": [],
-        "step_id": "<step-5>",
-        "suitability_score": 60
+        "step_id": "<step-6>",
+        "suitability_score": 35
       }
     ],
     "unknowns": [
-      "Approve payment: no expected time reduction given"
+      "Release orders blocked by the credit limit: no expected time reduction given"
     ]
   }
 }
