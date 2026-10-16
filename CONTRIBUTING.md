@@ -23,6 +23,8 @@ uv run mutmut run                 # optional, minutes: mutation testing of the d
 
 CI enforces 95 % branch coverage and ruff's complexity limits on every pull request, and a minimum mutation score on the domain every week ([ADR 0011](docs/adr/0011-automated-quality-gauntlet.md)). A surviving mutant in business logic means a missing test: `uv run mutmut results` lists them and `uv run mutmut show <name>` shows the change.
 
+`tests/integration/test_analysis_snapshot.py` freezes the full analysis, review and blueprint of each demo process. A refactor leaves it untouched; a change of behaviour regenerates it with `UPDATE_SNAPSHOTS=1` and the snapshot diff goes into the pull request for review.
+
 ## Rules
 
 - `app/domain/` stays free of frameworks, ORMs, SDKs and Pydantic.
