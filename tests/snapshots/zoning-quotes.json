@@ -1,0 +1,1151 @@
+{
+  "analysis": {
+    "architecture_recommendations": [
+      "Orchestrate the automated steps from a single workflow engine with retries",
+      "Route low-confidence and flagged items to a human review queue"
+    ],
+    "automation_suitability": {
+      "policy_version": "scoring-v1",
+      "process_score": "54.0"
+    },
+    "business_impact": {
+      "assumptions": {
+        "expected_time_reduction_by_step": {
+          "<step-1>": "0.5",
+          "<step-2>": "0.5",
+          "<step-3>": "0.5",
+          "<step-4>": "0.5",
+          "<step-5>": "0.5"
+        },
+        "implementation_cost": "6000",
+        "monthly_tooling_cost": "50"
+      },
+      "estimated_hours_saved": "142.00",
+      "estimated_monthly_savings": "4544.00",
+      "implementation_cost": "6000.00",
+      "monthly_tooling_cost": "50.00",
+      "net_monthly_savings": "4494.00",
+      "payback_months": "1.34",
+      "roi_12_months": "7.99",
+      "steps_without_reduction": [
+        "<step-6>"
+      ]
+    },
+    "created_at": "<timestamp>",
+    "current_state": {
+      "monthly_cost": "9856.00",
+      "monthly_hours": "308.00"
+    },
+    "human_controls": [
+      {
+        "control": "RECOMMENDED",
+        "reasons": [
+          "handles sensitive data"
+        ],
+        "step_id": "<step-1>",
+        "step_name": "Receive the request and the floor plans"
+      },
+      {
+        "control": "REQUIRED",
+        "reasons": [
+          "requires human judgement"
+        ],
+        "step_id": "<step-3>",
+        "step_name": "Size the zones, dampers and grilles"
+      },
+      {
+        "control": "REQUIRED",
+        "reasons": [
+          "requires human approval"
+        ],
+        "step_id": "<step-5>",
+        "step_name": "Technical review of large projects"
+      }
+    ],
+    "id": "<analysis>",
+    "llm": {
+      "error_kind": null,
+      "model": "fake-deterministic-v1",
+      "prompt_version": "process-analysis-2026-10-07",
+      "provider": "fake",
+      "status": "ok"
+    },
+    "process_id": "<process>",
+    "process_version": 1,
+    "risks": [
+      {
+        "description": "Receive the request and the floor plans handles sensitive data",
+        "source": "RULES",
+        "step_id": "<step-1>",
+        "type": "DATA"
+      },
+      {
+        "description": "Data protection: restrict access and log processing",
+        "source": "AI",
+        "step_id": "<step-1>",
+        "type": "STEP"
+      },
+      {
+        "description": "Size the zones, dampers and grilles depends on human judgement",
+        "source": "RULES",
+        "step_id": "<step-3>",
+        "type": "OPERATIONAL"
+      },
+      {
+        "description": "Technical review of large projects is business critical",
+        "source": "RULES",
+        "step_id": "<step-5>",
+        "type": "OPERATIONAL"
+      },
+      {
+        "description": "Exceptions need an owner once the happy path is automated",
+        "source": "AI",
+        "step_id": null,
+        "type": "OPERATIONAL"
+      }
+    ],
+    "rules_version": "scoring-v1",
+    "step_assessments": [
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to Email",
+            "Access to CRM"
+          ],
+          "human_control_recommended": true,
+          "interpretation": "Receive the request and the floor plans: Register the installer's request with the plans, photos and the end customer's address",
+          "method": "AI_CANDIDATE",
+          "rationale": "Input is digital unstructured and integration readiness is partial.",
+          "risks": [
+            "Data protection: restrict access and log processing"
+          ],
+          "uncertainties": []
+        },
+        "final_human_control": "RECOMMENDED",
+        "final_method": "AI_CANDIDATE",
+        "final_source": "RULES",
+        "human_control_reasons": [
+          "handles sensitive data"
+        ],
+        "monthly_hours": "12.00",
+        "name": "Receive the request and the floor plans",
+        "override": null,
+        "position": 1,
+        "reconciliation_notes": [],
+        "rules_human_control": "RECOMMENDED",
+        "rules_method": "AI_CANDIDATE",
+        "rules_method_reason": "unstructured digital input without required human judgement",
+        "score_factors": [
+          {
+            "detail": "240 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
+            "points": 20
+          },
+          {
+            "detail": "HIGH",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 20
+          },
+          {
+            "detail": "HIGH",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 20
+          },
+          {
+            "detail": "DIGITAL_UNSTRUCTURED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 8
+          },
+          {
+            "detail": "0.1 of executions",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 10
+          },
+          {
+            "detail": "PARTIAL",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 5
+          }
+        ],
+        "score_penalties": [
+          {
+            "name": "sensitive_data",
+            "points": 10
+          }
+        ],
+        "score_unknowns": [],
+        "step_id": "<step-1>",
+        "suitability_score": 73
+      },
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to PDF viewer",
+            "Access to Spreadsheet"
+          ],
+          "human_control_recommended": false,
+          "interpretation": "Take rooms, areas and the existing unit from the plans: Measure each room, note ceiling heights and identify the ducted unit and its outlets",
+          "method": "AI_CANDIDATE",
+          "rationale": "Input is digital unstructured and integration readiness is none.",
+          "risks": [],
+          "uncertainties": []
+        },
+        "final_human_control": "NONE",
+        "final_method": "AI_CANDIDATE",
+        "final_source": "RULES",
+        "human_control_reasons": [],
+        "monthly_hours": "100.00",
+        "name": "Take rooms, areas and the existing unit from the plans",
+        "override": null,
+        "position": 2,
+        "reconciliation_notes": [],
+        "rules_human_control": "NONE",
+        "rules_method": "AI_CANDIDATE",
+        "rules_method_reason": "unstructured digital input without required human judgement",
+        "score_factors": [
+          {
+            "detail": "240 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
+            "points": 20
+          },
+          {
+            "detail": "MEDIUM",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 10
+          },
+          {
+            "detail": "MEDIUM",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 10
+          },
+          {
+            "detail": "DIGITAL_UNSTRUCTURED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 8
+          },
+          {
+            "detail": "0.25 of executions",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 5
+          },
+          {
+            "detail": "NONE",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 0
+          }
+        ],
+        "score_penalties": [],
+        "score_unknowns": [],
+        "step_id": "<step-2>",
+        "suitability_score": 53
+      },
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to Duct design software"
+          ],
+          "human_control_recommended": true,
+          "interpretation": "Size the zones, dampers and grilles: Group rooms into zones and size motorised dampers, grilles and ducts in the design tool",
+          "method": "HYBRID",
+          "rationale": "Input is digital structured and integration readiness is partial.",
+          "risks": [],
+          "uncertainties": [
+            "Exception handling is not described"
+          ]
+        },
+        "final_human_control": "REQUIRED",
+        "final_method": "HYBRID",
+        "final_source": "AI",
+        "human_control_reasons": [
+          "requires human judgement"
+        ],
+        "monthly_hours": "120.00",
+        "name": "Size the zones, dampers and grilles",
+        "override": null,
+        "position": 3,
+        "reconciliation_notes": [],
+        "rules_human_control": "REQUIRED",
+        "rules_method": "NEEDS_REVIEW",
+        "rules_method_reason": "no deterministic rule applies; needs analyst review",
+        "score_factors": [
+          {
+            "detail": "240 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
+            "points": 20
+          },
+          {
+            "detail": "MEDIUM",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 10
+          },
+          {
+            "detail": "MEDIUM",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 10
+          },
+          {
+            "detail": "DIGITAL_STRUCTURED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 15
+          },
+          {
+            "detail": "0.2 of executions",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 5
+          },
+          {
+            "detail": "PARTIAL",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 5
+          }
+        ],
+        "score_penalties": [
+          {
+            "name": "human_judgement",
+            "points": 25
+          }
+        ],
+        "score_unknowns": [],
+        "step_id": "<step-3>",
+        "suitability_score": 40
+      },
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to Duct design software",
+            "Access to ERP"
+          ],
+          "human_control_recommended": false,
+          "interpretation": "Build the bill of materials and the quote: Turn the design into product codes and apply the installer's price list",
+          "method": "RULE_BASED",
+          "rationale": "Input is digital structured and integration readiness is good.",
+          "risks": [],
+          "uncertainties": []
+        },
+        "final_human_control": "NONE",
+        "final_method": "RULE_BASED",
+        "final_source": "RULES",
+        "human_control_reasons": [],
+        "monthly_hours": "40.00",
+        "name": "Build the bill of materials and the quote",
+        "override": null,
+        "position": 4,
+        "reconciliation_notes": [],
+        "rules_human_control": "NONE",
+        "rules_method": "RULE_BASED",
+        "rules_method_reason": "clear rules over structured digital input with few exceptions",
+        "score_factors": [
+          {
+            "detail": "240 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
+            "points": 20
+          },
+          {
+            "detail": "HIGH",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 20
+          },
+          {
+            "detail": "HIGH",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 20
+          },
+          {
+            "detail": "DIGITAL_STRUCTURED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 15
+          },
+          {
+            "detail": "0.05 of executions",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 15
+          },
+          {
+            "detail": "GOOD",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 10
+          }
+        ],
+        "score_penalties": [],
+        "score_unknowns": [],
+        "step_id": "<step-4>",
+        "suitability_score": 100
+      },
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to Duct design software"
+          ],
+          "human_control_recommended": true,
+          "interpretation": "Technical review of large projects: A senior engineer reviews and signs off designs above a size threshold",
+          "method": "HYBRID",
+          "rationale": "Input is digital structured and integration readiness is none.",
+          "risks": [],
+          "uncertainties": [
+            "Exception handling is not described"
+          ]
+        },
+        "final_human_control": "REQUIRED",
+        "final_method": "HYBRID",
+        "final_source": "AI",
+        "human_control_reasons": [
+          "requires human approval"
+        ],
+        "monthly_hours": "12.00",
+        "name": "Technical review of large projects",
+        "override": null,
+        "position": 5,
+        "reconciliation_notes": [],
+        "rules_human_control": "REQUIRED",
+        "rules_method": "NEEDS_REVIEW",
+        "rules_method_reason": "no deterministic rule applies; needs analyst review",
+        "score_factors": [
+          {
+            "detail": "36 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
+            "points": 10
+          },
+          {
+            "detail": "LOW",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 3
+          },
+          {
+            "detail": "MEDIUM",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 10
+          },
+          {
+            "detail": "DIGITAL_STRUCTURED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 15
+          },
+          {
+            "detail": "0.3 of executions",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 5
+          },
+          {
+            "detail": "NONE",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 0
+          }
+        ],
+        "score_penalties": [
+          {
+            "name": "high_criticality",
+            "points": 15
+          }
+        ],
+        "score_unknowns": [],
+        "step_id": "<step-5>",
+        "suitability_score": 28
+      },
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to Email",
+            "Access to CRM"
+          ],
+          "human_control_recommended": false,
+          "interpretation": "Send the quote and follow up: Send the quote to the installer and chase an answer after a week",
+          "method": "HYBRID",
+          "rationale": "Input is mixed and integration readiness is unknown.",
+          "risks": [],
+          "uncertainties": [
+            "Exception handling is not described"
+          ]
+        },
+        "final_human_control": "NONE",
+        "final_method": "HYBRID",
+        "final_source": "AI",
+        "human_control_reasons": [],
+        "monthly_hours": "24.00",
+        "name": "Send the quote and follow up",
+        "override": null,
+        "position": 6,
+        "reconciliation_notes": [],
+        "rules_human_control": "NONE",
+        "rules_method": "NEEDS_REVIEW",
+        "rules_method_reason": "no deterministic rule applies; needs analyst review",
+        "score_factors": [
+          {
+            "detail": "240 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
+            "points": 20
+          },
+          {
+            "detail": "HIGH",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 20
+          },
+          {
+            "detail": "MEDIUM",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 10
+          },
+          {
+            "detail": "MIXED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 5
+          },
+          {
+            "detail": "unknown",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 0
+          },
+          {
+            "detail": "UNKNOWN",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 0
+          }
+        ],
+        "score_penalties": [],
+        "score_unknowns": [
+          "exception_rate",
+          "integration_readiness"
+        ],
+        "step_id": "<step-6>",
+        "suitability_score": 55
+      }
+    ],
+    "unknowns": [
+      "Send the quote and follow up: exception_rate is unknown",
+      "Send the quote and follow up: integration_readiness is unknown",
+      "Send the quote and follow up: no expected time reduction given"
+    ]
+  },
+  "blueprint_md": "# Automation blueprint: Zoning design and quote for installers\n\n## Process summary\n\n- **Description:** Installers send the floor plans of a home or office and ask a manufacturer of zoned HVAC controls for a zoning design and a quote. A pre-sales engineer reads the plans, sizes the zones and builds the bill of materials.\n- **Owner:** Pre-sales Engineering\n- **Executions per month:** 240\n- **Steps:** 6\n- **Analysis:** <timestamp>, process version 1, rules scoring-v1, LLM ok (fake/fake-deterministic-v1)\n\n## Current state\n\n- **Monthly hours:** 308.00\n- **Monthly cost:** 9,856.00\n\n## Automation opportunities\n\nOrdered by monthly time. Suitability measures whether a step can be automated, not how much it is worth.\n\n| # | Step | Method | Human control | Decided by | Hours/month | Suitability |\n|---|---|---|---|---|---:|---:|\n| 3 | Size the zones, dampers and grilles | HYBRID | REQUIRED | AI | 120.00 | 40 |\n| 2 | Take rooms, areas and the existing unit from the plans | AI_CANDIDATE | NONE | RULES | 100.00 | 53 |\n| 4 | Build the bill of materials and the quote | RULE_BASED | NONE | RULES | 40.00 | 100 |\n| 6 | Send the quote and follow up | HYBRID | NONE | AI | 24.00 | 55 |\n| 5 | Technical review of large projects | HYBRID | REQUIRED | AI | 12.00 | 28 |\n\n- **Size the zones, dampers and grilles:** Input is digital structured and integration readiness is partial.\n- **Take rooms, areas and the existing unit from the plans:** unstructured digital input without required human judgement\n- **Build the bill of materials and the quote:** clear rules over structured digital input with few exceptions\n- **Send the quote and follow up:** Input is mixed and integration readiness is unknown.\n- **Technical review of large projects:** Input is digital structured and integration readiness is none.\n\n## Proposed architecture\n\n- Workflow engine that runs the steps in order, with retries and an audit log\n- Rules step in the workflow engine with explicit, versioned validation rules\n- Model-based extraction or classification behind a schema-validated contract\n- Automated draft with a person confirming the result\n- Human review queue: flagged items wait for a decision, which is logged\n- Orchestrate the automated steps from a single workflow engine with retries\n- Route low-confidence and flagged items to a human review queue\n\n## Business impact\n\nEvery economic figure below depends on the assumptions listed after it.\n\n- **Hours freed per month:** 142.00\n- **Gross monthly savings:** 4,544.00\n- **Monthly tooling cost:** 50.00\n- **Net monthly savings:** 4,494.00\n- **Implementation cost:** 6,000.00\n- **Payback (months):** 1.34\n- **ROI at 12 months:** 799 %\n\n**Assumptions**\n\n- Implementation cost: 6,000.00\n- Monthly tooling cost: 50.00\n- Expected time reduction for step <step-1>: 50 %\n- Expected time reduction for step <step-2>: 50 %\n- Expected time reduction for step <step-3>: 50 %\n- Expected time reduction for step <step-4>: 50 %\n- Expected time reduction for step <step-5>: 50 %\n- 1 step(s) have no expected reduction and count as zero savings\n\n## Risks\n\n- [RULES / DATA] Receive the request and the floor plans handles sensitive data\n- [AI / STEP] Data protection: restrict access and log processing\n- [RULES / OPERATIONAL] Size the zones, dampers and grilles depends on human judgement\n- [RULES / OPERATIONAL] Technical review of large projects is business critical\n- [AI / OPERATIONAL] Exceptions need an owner once the happy path is automated\n\n## Human controls\n\n- **Receive the request and the floor plans:** REQUIRED. handles sensitive data; Reviewer decision: Reviewer keeps this step manual\n- **Size the zones, dampers and grilles:** REQUIRED. requires human judgement\n- **Technical review of large projects:** REQUIRED. requires human approval\n\n## Workflow specification\n\n1. Trigger: a new process execution starts\n2. Receive the request and the floor plans: MANUAL, then wait for a person to approve before continuing\n3. Take rooms, areas and the existing unit from the plans: AI_CANDIDATE\n4. Size the zones, dampers and grilles: HYBRID, then wait for a person to approve before continuing\n5. Build the bill of materials and the quote: RULE_BASED\n6. Technical review of large projects: HYBRID, then wait for a person to approve before continuing\n7. Send the quote and follow up: HYBRID\n8. End: record the outcome and the time spent for later comparison\n",
+  "history": [
+    {
+      "created_at": "<timestamp>",
+      "id": "<analysis>",
+      "llm_status": "ok",
+      "model": "fake-deterministic-v1",
+      "override_count": 1,
+      "process_version": 1,
+      "provider": "fake",
+      "rules_version": "scoring-v1"
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<other-1>",
+      "llm_status": "not_requested",
+      "model": null,
+      "override_count": 0,
+      "process_version": 1,
+      "provider": null,
+      "rules_version": "scoring-v1"
+    }
+  ],
+  "reviewed": {
+    "architecture_recommendations": [
+      "Orchestrate the automated steps from a single workflow engine with retries",
+      "Route low-confidence and flagged items to a human review queue"
+    ],
+    "automation_suitability": {
+      "policy_version": "scoring-v1",
+      "process_score": "54.0"
+    },
+    "business_impact": {
+      "assumptions": {
+        "expected_time_reduction_by_step": {
+          "<step-1>": "0.5",
+          "<step-2>": "0.5",
+          "<step-3>": "0.5",
+          "<step-4>": "0.5",
+          "<step-5>": "0.5"
+        },
+        "implementation_cost": "6000",
+        "monthly_tooling_cost": "50"
+      },
+      "estimated_hours_saved": "142.00",
+      "estimated_monthly_savings": "4544.00",
+      "implementation_cost": "6000.00",
+      "monthly_tooling_cost": "50.00",
+      "net_monthly_savings": "4494.00",
+      "payback_months": "1.34",
+      "roi_12_months": "7.99",
+      "steps_without_reduction": [
+        "<step-6>"
+      ]
+    },
+    "created_at": "<timestamp>",
+    "current_state": {
+      "monthly_cost": "9856.00",
+      "monthly_hours": "308.00"
+    },
+    "human_controls": [
+      {
+        "control": "REQUIRED",
+        "reasons": [
+          "handles sensitive data",
+          "Reviewer decision: Reviewer keeps this step manual"
+        ],
+        "step_id": "<step-1>",
+        "step_name": "Receive the request and the floor plans"
+      },
+      {
+        "control": "REQUIRED",
+        "reasons": [
+          "requires human judgement"
+        ],
+        "step_id": "<step-3>",
+        "step_name": "Size the zones, dampers and grilles"
+      },
+      {
+        "control": "REQUIRED",
+        "reasons": [
+          "requires human approval"
+        ],
+        "step_id": "<step-5>",
+        "step_name": "Technical review of large projects"
+      }
+    ],
+    "id": "<analysis>",
+    "llm": {
+      "error_kind": null,
+      "model": "fake-deterministic-v1",
+      "prompt_version": "process-analysis-2026-10-07",
+      "provider": "fake",
+      "status": "ok"
+    },
+    "process_id": "<process>",
+    "process_version": 1,
+    "risks": [
+      {
+        "description": "Receive the request and the floor plans handles sensitive data",
+        "source": "RULES",
+        "step_id": "<step-1>",
+        "type": "DATA"
+      },
+      {
+        "description": "Data protection: restrict access and log processing",
+        "source": "AI",
+        "step_id": "<step-1>",
+        "type": "STEP"
+      },
+      {
+        "description": "Size the zones, dampers and grilles depends on human judgement",
+        "source": "RULES",
+        "step_id": "<step-3>",
+        "type": "OPERATIONAL"
+      },
+      {
+        "description": "Technical review of large projects is business critical",
+        "source": "RULES",
+        "step_id": "<step-5>",
+        "type": "OPERATIONAL"
+      },
+      {
+        "description": "Exceptions need an owner once the happy path is automated",
+        "source": "AI",
+        "step_id": null,
+        "type": "OPERATIONAL"
+      }
+    ],
+    "rules_version": "scoring-v1",
+    "step_assessments": [
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to Email",
+            "Access to CRM"
+          ],
+          "human_control_recommended": true,
+          "interpretation": "Receive the request and the floor plans: Register the installer's request with the plans, photos and the end customer's address",
+          "method": "AI_CANDIDATE",
+          "rationale": "Input is digital unstructured and integration readiness is partial.",
+          "risks": [
+            "Data protection: restrict access and log processing"
+          ],
+          "uncertainties": []
+        },
+        "final_human_control": "REQUIRED",
+        "final_method": "MANUAL",
+        "final_source": "HUMAN",
+        "human_control_reasons": [
+          "handles sensitive data"
+        ],
+        "monthly_hours": "12.00",
+        "name": "Receive the request and the floor plans",
+        "override": {
+          "created_at": "<timestamp>",
+          "id": "<override>",
+          "new_human_control": "REQUIRED",
+          "new_method": "MANUAL",
+          "original_human_control": "RECOMMENDED",
+          "original_method": "AI_CANDIDATE",
+          "reason": "Reviewer keeps this step manual",
+          "step_id": "<step-1>"
+        },
+        "position": 1,
+        "reconciliation_notes": [],
+        "rules_human_control": "RECOMMENDED",
+        "rules_method": "AI_CANDIDATE",
+        "rules_method_reason": "unstructured digital input without required human judgement",
+        "score_factors": [
+          {
+            "detail": "240 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
+            "points": 20
+          },
+          {
+            "detail": "HIGH",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 20
+          },
+          {
+            "detail": "HIGH",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 20
+          },
+          {
+            "detail": "DIGITAL_UNSTRUCTURED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 8
+          },
+          {
+            "detail": "0.1 of executions",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 10
+          },
+          {
+            "detail": "PARTIAL",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 5
+          }
+        ],
+        "score_penalties": [
+          {
+            "name": "sensitive_data",
+            "points": 10
+          }
+        ],
+        "score_unknowns": [],
+        "step_id": "<step-1>",
+        "suitability_score": 73
+      },
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to PDF viewer",
+            "Access to Spreadsheet"
+          ],
+          "human_control_recommended": false,
+          "interpretation": "Take rooms, areas and the existing unit from the plans: Measure each room, note ceiling heights and identify the ducted unit and its outlets",
+          "method": "AI_CANDIDATE",
+          "rationale": "Input is digital unstructured and integration readiness is none.",
+          "risks": [],
+          "uncertainties": []
+        },
+        "final_human_control": "NONE",
+        "final_method": "AI_CANDIDATE",
+        "final_source": "RULES",
+        "human_control_reasons": [],
+        "monthly_hours": "100.00",
+        "name": "Take rooms, areas and the existing unit from the plans",
+        "override": null,
+        "position": 2,
+        "reconciliation_notes": [],
+        "rules_human_control": "NONE",
+        "rules_method": "AI_CANDIDATE",
+        "rules_method_reason": "unstructured digital input without required human judgement",
+        "score_factors": [
+          {
+            "detail": "240 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
+            "points": 20
+          },
+          {
+            "detail": "MEDIUM",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 10
+          },
+          {
+            "detail": "MEDIUM",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 10
+          },
+          {
+            "detail": "DIGITAL_UNSTRUCTURED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 8
+          },
+          {
+            "detail": "0.25 of executions",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 5
+          },
+          {
+            "detail": "NONE",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 0
+          }
+        ],
+        "score_penalties": [],
+        "score_unknowns": [],
+        "step_id": "<step-2>",
+        "suitability_score": 53
+      },
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to Duct design software"
+          ],
+          "human_control_recommended": true,
+          "interpretation": "Size the zones, dampers and grilles: Group rooms into zones and size motorised dampers, grilles and ducts in the design tool",
+          "method": "HYBRID",
+          "rationale": "Input is digital structured and integration readiness is partial.",
+          "risks": [],
+          "uncertainties": [
+            "Exception handling is not described"
+          ]
+        },
+        "final_human_control": "REQUIRED",
+        "final_method": "HYBRID",
+        "final_source": "AI",
+        "human_control_reasons": [
+          "requires human judgement"
+        ],
+        "monthly_hours": "120.00",
+        "name": "Size the zones, dampers and grilles",
+        "override": null,
+        "position": 3,
+        "reconciliation_notes": [],
+        "rules_human_control": "REQUIRED",
+        "rules_method": "NEEDS_REVIEW",
+        "rules_method_reason": "no deterministic rule applies; needs analyst review",
+        "score_factors": [
+          {
+            "detail": "240 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
+            "points": 20
+          },
+          {
+            "detail": "MEDIUM",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 10
+          },
+          {
+            "detail": "MEDIUM",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 10
+          },
+          {
+            "detail": "DIGITAL_STRUCTURED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 15
+          },
+          {
+            "detail": "0.2 of executions",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 5
+          },
+          {
+            "detail": "PARTIAL",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 5
+          }
+        ],
+        "score_penalties": [
+          {
+            "name": "human_judgement",
+            "points": 25
+          }
+        ],
+        "score_unknowns": [],
+        "step_id": "<step-3>",
+        "suitability_score": 40
+      },
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to Duct design software",
+            "Access to ERP"
+          ],
+          "human_control_recommended": false,
+          "interpretation": "Build the bill of materials and the quote: Turn the design into product codes and apply the installer's price list",
+          "method": "RULE_BASED",
+          "rationale": "Input is digital structured and integration readiness is good.",
+          "risks": [],
+          "uncertainties": []
+        },
+        "final_human_control": "NONE",
+        "final_method": "RULE_BASED",
+        "final_source": "RULES",
+        "human_control_reasons": [],
+        "monthly_hours": "40.00",
+        "name": "Build the bill of materials and the quote",
+        "override": null,
+        "position": 4,
+        "reconciliation_notes": [],
+        "rules_human_control": "NONE",
+        "rules_method": "RULE_BASED",
+        "rules_method_reason": "clear rules over structured digital input with few exceptions",
+        "score_factors": [
+          {
+            "detail": "240 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
+            "points": 20
+          },
+          {
+            "detail": "HIGH",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 20
+          },
+          {
+            "detail": "HIGH",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 20
+          },
+          {
+            "detail": "DIGITAL_STRUCTURED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 15
+          },
+          {
+            "detail": "0.05 of executions",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 15
+          },
+          {
+            "detail": "GOOD",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 10
+          }
+        ],
+        "score_penalties": [],
+        "score_unknowns": [],
+        "step_id": "<step-4>",
+        "suitability_score": 100
+      },
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to Duct design software"
+          ],
+          "human_control_recommended": true,
+          "interpretation": "Technical review of large projects: A senior engineer reviews and signs off designs above a size threshold",
+          "method": "HYBRID",
+          "rationale": "Input is digital structured and integration readiness is none.",
+          "risks": [],
+          "uncertainties": [
+            "Exception handling is not described"
+          ]
+        },
+        "final_human_control": "REQUIRED",
+        "final_method": "HYBRID",
+        "final_source": "AI",
+        "human_control_reasons": [
+          "requires human approval"
+        ],
+        "monthly_hours": "12.00",
+        "name": "Technical review of large projects",
+        "override": null,
+        "position": 5,
+        "reconciliation_notes": [],
+        "rules_human_control": "REQUIRED",
+        "rules_method": "NEEDS_REVIEW",
+        "rules_method_reason": "no deterministic rule applies; needs analyst review",
+        "score_factors": [
+          {
+            "detail": "36 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
+            "points": 10
+          },
+          {
+            "detail": "LOW",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 3
+          },
+          {
+            "detail": "MEDIUM",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 10
+          },
+          {
+            "detail": "DIGITAL_STRUCTURED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 15
+          },
+          {
+            "detail": "0.3 of executions",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 5
+          },
+          {
+            "detail": "NONE",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 0
+          }
+        ],
+        "score_penalties": [
+          {
+            "name": "high_criticality",
+            "points": 15
+          }
+        ],
+        "score_unknowns": [],
+        "step_id": "<step-5>",
+        "suitability_score": 28
+      },
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to Email",
+            "Access to CRM"
+          ],
+          "human_control_recommended": false,
+          "interpretation": "Send the quote and follow up: Send the quote to the installer and chase an answer after a week",
+          "method": "HYBRID",
+          "rationale": "Input is mixed and integration readiness is unknown.",
+          "risks": [],
+          "uncertainties": [
+            "Exception handling is not described"
+          ]
+        },
+        "final_human_control": "NONE",
+        "final_method": "HYBRID",
+        "final_source": "AI",
+        "human_control_reasons": [],
+        "monthly_hours": "24.00",
+        "name": "Send the quote and follow up",
+        "override": null,
+        "position": 6,
+        "reconciliation_notes": [],
+        "rules_human_control": "NONE",
+        "rules_method": "NEEDS_REVIEW",
+        "rules_method_reason": "no deterministic rule applies; needs analyst review",
+        "score_factors": [
+          {
+            "detail": "240 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
+            "points": 20
+          },
+          {
+            "detail": "HIGH",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 20
+          },
+          {
+            "detail": "MEDIUM",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 10
+          },
+          {
+            "detail": "MIXED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 5
+          },
+          {
+            "detail": "unknown",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 0
+          },
+          {
+            "detail": "UNKNOWN",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 0
+          }
+        ],
+        "score_penalties": [],
+        "score_unknowns": [
+          "exception_rate",
+          "integration_readiness"
+        ],
+        "step_id": "<step-6>",
+        "suitability_score": 55
+      }
+    ],
+    "unknowns": [
+      "Send the quote and follow up: exception_rate is unknown",
+      "Send the quote and follow up: integration_readiness is unknown",
+      "Send the quote and follow up: no expected time reduction given"
+    ]
+  }
+}

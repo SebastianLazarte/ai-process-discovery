@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.core.config import Settings
 from app.llm.provider import LLMProvider
 from app.services.analysis_service import AnalysisService
+from app.services.demo_service import DemoService
 from app.services.process_service import ProcessService
 
 
@@ -45,3 +46,10 @@ def get_analysis_service(
 
 ProcessServiceDep = Annotated[ProcessService, Depends(get_process_service)]
 AnalysisServiceDep = Annotated[AnalysisService, Depends(get_analysis_service)]
+
+
+def get_demo_service(processes: ProcessServiceDep, analyses: AnalysisServiceDep) -> DemoService:
+    return DemoService(processes, analyses)
+
+
+DemoServiceDep = Annotated[DemoService, Depends(get_demo_service)]

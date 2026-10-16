@@ -561,7 +561,7 @@ i_want = "schema changes to ship as Alembic migrations that run before a new ver
 so_that = "a release never breaks or silently changes the live database"
 points = 5
 priority = "must"
-rank = 2
+rank = 3
 
 [[requirement.criteria]]
 given = "a PostgreSQL database in CI"
@@ -654,7 +654,7 @@ i_want = "deploy.sh to deploy one validated tag (backup, pull, migrate, start, h
 so_that = "a bad release rolls back on its own instead of leaving the demo down"
 points = 5
 priority = "must"
-rank = 3
+rank = 4
 
 [[requirement.criteria]]
 given = "a tag outside vX.Y.Z"
@@ -688,7 +688,7 @@ i_want = "a merged release to deploy itself over SSH and check the live site"
 so_that = "shipping needs no manual step and a broken deploy is visible at once"
 points = 3
 priority = "must"
-rank = 4
+rank = 5
 
 [[requirement.criteria]]
 given = "a published release"
@@ -712,7 +712,7 @@ i_want = "nightly backups and purges from systemd timers, with a rehearsed resto
 so_that = "a lost database costs at most one day of demo data"
 points = 5
 priority = "must"
-rank = 5
+rank = 6
 
 [[requirement.criteria]]
 given = "last night's backup"
@@ -738,7 +738,7 @@ kind = "enabler"
 title = "API served under /api with a committed OpenAPI contract"
 points = 3
 priority = "must"
-rank = 6
+rank = 7
 
 [[requirement.criteria]]
 given = "the API during the migration"
@@ -764,7 +764,7 @@ kind = "enabler"
 title = "Next.js project with lint, types and tests in CI"
 points = 5
 priority = "must"
-rank = 7
+rank = 8
 
 [[requirement.criteria]]
 given = "a pull request that touches frontend/"
@@ -790,7 +790,7 @@ kind = "enabler"
 title = "Typed API client generated from OpenAPI, with TanStack Query"
 points = 3
 priority = "must"
-rank = 8
+rank = 9
 
 [[requirement.criteria]]
 given = "a change to openapi.json"
@@ -816,7 +816,7 @@ kind = "enabler"
 title = "Strict security headers with a per-request CSP nonce"
 points = 3
 priority = "must"
-rank = 9
+rank = 10
 
 [[requirement.criteria]]
 given = "any page of the frontend"
@@ -840,7 +840,7 @@ i_want = "to list my processes, load a demo process, create one and delete one i
 so_that = "I can start an analysis in a few clicks"
 points = 5
 priority = "must"
-rank = 10
+rank = 11
 
 [[requirement.criteria]]
 given = "the process list"
@@ -922,7 +922,7 @@ kind = "enabler"
 title = "Quality gauntlet: mutation testing on the domain, property-based tests, complexity limits and 95 % coverage (ADR 0011)"
 points = 3
 priority = "must"
-rank = 11
+rank = 12
 
 [[requirement.criteria]]
 given = "the domain tests"
@@ -953,7 +953,7 @@ kind = "enabler"
 title = "Characterization tests for the analysis services before refactoring them"
 points = 3
 priority = "must"
-rank = 12
+rank = 13
 
 [[requirement.criteria]]
 given = "each demo process and the fake LLM provider"
@@ -979,7 +979,7 @@ kind = "enabler"
 title = "Rule-based risks live in the domain, and human-control notes no longer depend on message wording"
 points = 2
 priority = "should"
-rank = 13
+rank = 14
 
 [[requirement.criteria]]
 given = "a step that handles sensitive data, is critical or needs human judgement"
@@ -1005,7 +1005,7 @@ kind = "enabler"
 title = "Split the analysis service into orchestration, LLM enrichment and response mapping"
 points = 5
 priority = "should"
-rank = 14
+rank = 15
 
 [[requirement.criteria]]
 given = "the analysis service"
@@ -1031,7 +1031,7 @@ kind = "enabler"
 title = "Render the blueprint Markdown one section per function"
 points = 2
 priority = "could"
-rank = 15
+rank = 16
 
 [[requirement.criteria]]
 given = "a blueprint"
@@ -1052,7 +1052,7 @@ kind = "enabler"
 title = "Domain cleanup guided by surviving mutants"
 points = 2
 priority = "could"
-rank = 16
+rank = 17
 
 [[requirement.criteria]]
 given = "score_step"
@@ -1078,7 +1078,7 @@ kind = "enabler"
 title = "Test suite cleanup: shared helpers and fixtures"
 points = 2
 priority = "could"
-rank = 17
+rank = 18
 
 [[requirement.criteria]]
 given = "helpers duplicated across integration tests"
@@ -1099,7 +1099,7 @@ kind = "enabler"
 title = "Raise the quality bar after the refactor"
 points = 1
 priority = "could"
-rank = 18
+rank = 19
 
 [[requirement.criteria]]
 given = "the refactors RS-83 to RS-87 merged"
@@ -1110,3 +1110,32 @@ then = "the minimum score rises to the new result, rounded down"
 given = "ADR 0011"
 when = "the final limits are known"
 then = "an amending ADR records them"
+
+[[requirement]]
+id = "RS-89"
+ru = "RU-09"
+block = "B11"
+area = "api"
+kind = "story"
+title = "Demo processes come with preset assumptions and a first analysis"
+as_a = "demo visitor"
+i_want = "each demo process to come with realistic assumptions and a first analysis already run"
+so_that = "I see savings, payback and human controls in my first minute without typing numbers"
+points = 3
+priority = "must"
+rank = 2
+
+[[requirement.criteria]]
+given = "a demo with preset assumptions"
+when = "it is loaded"
+then = "an analysis with those assumptions is stored and its business impact is not zero"
+
+[[requirement.criteria]]
+given = "a loaded demo"
+when = "its first analysis is created"
+then = "it does not call the LLM and does not count against the daily quota"
+
+[[requirement.criteria]]
+given = "any demo file"
+when = "the test suite runs"
+then = "its assumptions only name steps that exist in that demo"

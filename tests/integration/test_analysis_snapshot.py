@@ -17,7 +17,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 SNAPSHOTS = Path(__file__).resolve().parents[1] / "snapshots"
-DEMOS = ("bank-reconciliation", "customer-onboarding", "invoice-intake")
+DEMOS = ("distributor-orders", "warranty-claims", "zoning-quotes")
 
 _UUID = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
 _TIMESTAMP = re.compile(r"\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?")

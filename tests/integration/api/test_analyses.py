@@ -267,7 +267,7 @@ def test_invalid_assumptions_return_422(client: TestClient) -> None:
 
 
 def test_blueprint_json_and_markdown(client: TestClient) -> None:
-    demo = client.post("/demo-processes/invoice-intake").json()
+    demo = client.post("/demo-processes/warranty-claims").json()
     reductions = {s["id"]: "0.5" for s in demo["steps"]}
     analysis = _analyse(
         client,
@@ -297,7 +297,7 @@ def test_blueprint_json_and_markdown(client: TestClient) -> None:
     assert response.status_code == 200
     assert response.headers["content-type"].startswith("text/markdown")
     text = response.text
-    assert text.startswith("# Automation blueprint: Invoice intake and validation")
+    assert text.startswith("# Automation blueprint: Warranty claims from installers")
     assert "Implementation cost: 6,000.00" in text
     assert "## Human controls" in text
 
