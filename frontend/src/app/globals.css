@@ -1,2 +1,14 @@
-/* Design tokens arrive with their own backlog item (ADR 0013). */
+/* Design tokens arrive with their own backlog item (ADR 0013). Until then, only the base
+   rules every page needs: a visible focus ring and underlined links. */
 @import "tailwindcss";
+
+@layer base {
+  :focus-visible {
+    outline: 3px solid var(--color-blue-600);
+    outline-offset: 2px;
+  }
+
+  a {
+    text-underline-offset: 4px;
+  }
+}

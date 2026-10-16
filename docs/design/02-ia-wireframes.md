@@ -21,7 +21,7 @@ The current client has a sidebar that repeats the process list from the home pag
 | Sidebar with process list | Switch between processes in one click | Duplicates the home list, takes about 240 px from the four results panels, and has to collapse on mobile anyway |
 | **Top bar and breadcrumbs** | Full width for content, the same pattern at every size, and the breadcrumb answers "where am I" | Solved: the process segment of the breadcrumb is a menu that lists the processes, so switching takes one click and a choice |
 
-Breadcrumb inside a process: `Processes / Invoice intake and validation / Results`. The process tabs (Steps, Analyse, Results, Blueprint, History) stay below the page title.
+Breadcrumb inside a process: `Processes / Warranty claims from installers / Results`. The process tabs (Steps, Analyse, Results, Blueprint, History) stay below the page title.
 
 **Principle: Jakob's law.** People spend most of their time on other sites, so a top bar with breadcrumbs is a pattern they already know.
 
@@ -98,10 +98,10 @@ Desktop, 1280 px:
 |                                                                              |
 |  Try a demo                                                            (h2)  |
 |  +------------------------+ +------------------------+ +------------------+  |
-|  | Invoice intake and     | | B2B customer           | | Daily bank       |  |
-|  | validation             | | onboarding             | | reconciliation   |  |
-|  | Supplier invoices      | | A new business         | | Bank movements   |  |
-|  | arrive by email as...  | | customer goes from...  | | are matched...   |  |
+|  | Order intake from      | | Warranty claims from   | | Zoning design    |  |
+|  | distributors           | | installers             | | and quote        |  |
+|  | A manufacturer of      | | A manufacturer of      | | Installers send  |  |
+|  | zoned HVAC controls... | | zoned HVAC controls... | | the floor...     |  |
 |  | [ Load and open    > ] | | [ Load and open    > ] | | [Load and open >]|  |
 |  +------------------------+ +------------------------+ +------------------+  |
 |                                                                              |
@@ -109,8 +109,8 @@ Desktop, 1280 px:
 |  +------------------------------------------------------------------------+  |
 |  | Name                      Owner     Runs/month  Steps  Version Updated |  |
 |  |------------------------------------------------------------------------|  |
-|  | Invoice intake and val... Finance          400      5       v3  15 Oct |  |
-|  | Daily bank reconciliation No owner         ...    ...      ...  15 Oct |  |
+|  | Warranty claims from i... Service          180      7       v1  16 Oct |  |
+|  | Order intake from dist... No owner         ...    ...      ...  16 Oct |  |
 |  +------------------------------------------------------------------------+  |
 +------------------------------------------------------------------------------+
 ```
@@ -134,18 +134,18 @@ Mobile, 375 px:
 |                                   |
 | Try a demo                        |
 | +-------------------------------+ |
-| | Invoice intake and validation | |
-| | Supplier invoices arrive by   | |
-| | email as PDF, are keyed...    | |
+| | Warranty claims from          | |
+| | installers                    | |
+| | A manufacturer of zoned...    | |
 | | [ Load and open           > ] | |
 | +-------------------------------+ |
 | (two more cards, stacked)         |
 |                                   |
 | Processes                         |
 | +-------------------------------+ |
-| | Invoice intake and validation | |
-| | Finance . 5 steps . v3        | |
-| | 400 runs/month . 15 Oct       | |
+| | Warranty claims from inst...  | |
+| | Service . 7 steps . v1        | |
+| | 180 runs/month . 16 Oct       | |
 | +-------------------------------+ |
 +-----------------------------------+
 ```

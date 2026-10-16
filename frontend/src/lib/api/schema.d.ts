@@ -467,6 +467,15 @@ export interface components {
             /** Monthly Cost */
             monthly_cost: string | null;
         };
+        /** DemoSummary */
+        DemoSummary: {
+            /** Slug */
+            slug: string;
+            /** Name */
+            name: string;
+            /** Description */
+            description: string;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -1065,9 +1074,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: string;
-                    }[];
+                    "application/json": components["schemas"]["DemoSummary"][];
                 };
             };
         };
