@@ -38,8 +38,8 @@ describe("loading a demo", () => {
     expect(await screen.findByText("No processes yet. Load a demo or create one.")).toBeDefined();
     fireEvent.click(await screen.findByRole("button", { name: `Load and open: ${DEMO.name}` }));
 
-    const list = await screen.findByRole("list", { name: "Processes" });
-    expect(within(list).getByRole("link", { name: new RegExp(DEMO.name) })).toBeDefined();
+    const table = await screen.findByRole("table", { name: "Your processes" });
+    expect(within(table).getByRole("link", { name: DEMO.name })).toBeDefined();
     expect(push).toHaveBeenCalledWith(`/processes/${loaded.id}`);
     expect(calls).toContain("POST /demo-processes/warranty-claims");
   });

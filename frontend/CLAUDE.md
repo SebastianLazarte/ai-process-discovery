@@ -15,6 +15,7 @@ The client that replaces `web/` (block B12): Next.js App Router, strict TypeScri
   - Only `src/lib/api/` calls `fetch`. Lint fails anywhere else. Components import from `@/lib/api`: the typed `api` client and `unwrap()`, which turns every failure into an `ApiError`.
   - `dangerouslySetInnerHTML` is forbidden everywhere, including `src/lib/api/`. Lint fails on the attribute and on a props object that carries it.
 - A package that ADR 0009 or ADR 0013 does not name needs an ADR. Versions are exact in `package.json`, and a new one is at least a week old (ADR 0010).
+- Colours, radii and fonts come from `src/styles/tokens.css` through semantic utilities (`bg-surface`, `text-muted`, `border-line`). The default Tailwind palette is switched off, and `src/styles/tokens.test.ts` fails on a colour literal, a palette class or a text pair below WCAG AA (ADR 0013, ADR 0014).
 - Tests query by accessible role and name (`getByRole`), never by class or test id.
 - Component tests render with `renderWithProviders` (`src/test/render.tsx`) and answer requests with `fakeApi` (`src/test/fake-api.ts`), so the real client, query cache and toast run in every test.
 - Option lists match the domain enums from `/api/meta`.

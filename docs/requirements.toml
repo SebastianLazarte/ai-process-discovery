@@ -1139,3 +1139,29 @@ then = "it does not call the LLM and does not count against the daily quota"
 given = "any demo file"
 when = "the test suite runs"
 then = "its assumptions only name steps that exist in that demo"
+
+[[requirement]]
+id = "RS-90"
+ru = "RU-11"
+block = "B12"
+area = "ui"
+kind = "enabler"
+title = "Design tokens with the dark theme and the sidebar of the vanilla client (ADR 0014)"
+points = 3
+priority = "must"
+rank = 20
+
+[[requirement.criteria]]
+given = "a component or page under frontend/src"
+when = "it writes a colour literal or uses a default Tailwind palette class"
+then = "the frontend job fails"
+
+[[requirement.criteria]]
+given = "the dark theme tokens"
+when = "text, controls and focus are checked against their backgrounds"
+then = "text reaches 4.5:1 and control borders and focus reach 3:1"
+
+[[requirement.criteria]]
+given = "any page"
+when = "it renders"
+then = "the sidebar lists every process and marks the one on screen"

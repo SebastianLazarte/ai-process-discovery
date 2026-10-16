@@ -6,6 +6,8 @@ const config: NextConfig = {
   output: "standalone",
   basePath: "/app",
   poweredByHeader: false,
+  // The dev badge sat over the sidebar foot.
+  devIndicators: { position: "bottom-right" },
   async rewrites() {
     if (process.env.NODE_ENV !== "development") return [];
     return [

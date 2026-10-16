@@ -4,25 +4,36 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { useDemos, useLoadDemo, useProcesses } from "@/lib/api/queries";
-import { count, steps, timestamp, version } from "@/lib/format";
+import { count, timestamp, version } from "@/lib/format";
 
 import { buttonClass } from "./button";
+import { Eyebrow, Panel } from "./panel";
+import { ProcessForm } from "./process-form";
 
-// Home (RS-73), alternative C of docs/design/02-ia-wireframes.md: demos first with one-click
-// loading, then the process list; the creation form lives on its own page.
+// Home (RS-73), laid out as the home of the vanilla client: the promise, the demos, then
+// the creation form beside the process table.
 export function HomeView() {
   return (
     <>
-      <header className="max-w-2xl">
-        <h1 className="text-3xl font-semibold tracking-tight">
-          Map a process. Get numbers you can defend.
+      <header className="mb-6">
+        <Eyebrow>AI Process Discovery</Eyebrow>
+        <h1 className="mb-3 text-[27px] leading-[1.15] font-semibold tracking-[-1.1px] md:text-[34px]">
+          Map a process.
+          <br />
+          Get numbers you can defend.
         </h1>
-        <p className="mt-3 text-gray-700">
-          Rules compute every hour and cost. The AI only interprets.
+        <p className="max-w-[760px] text-[15px] text-muted">
+          Describe the steps, and the rules engine computes hours, cost, suitability and payback.
+          The LLM only adds interpretation, and it can raise a human control but never remove one.
         </p>
       </header>
       <Demos />
-      <Processes />
+      <div className="mt-6 grid items-start gap-6 xl:grid-cols-[1fr_1.3fr]">
+        <Panel id="new-process-title" title="New process">
+          <ProcessForm />
+        </Panel>
+        <Processes />
+      </div>
     </>
   );
 }
@@ -33,22 +44,22 @@ function Demos() {
   const router = useRouter();
 
   return (
-    <section aria-labelledby="demos-title" className="mt-10">
-      <h2 id="demos-title" className="text-lg font-semibold">
-        Try a demo
-      </h2>
-      {demos.isPending && <p className="mt-3 text-gray-600">Loading demos…</p>}
-      {demos.isError && <p className="mt-3 text-gray-600">Demos are not available right now.</p>}
-      <ul aria-labelledby="demos-title" className="mt-4 grid gap-4 md:grid-cols-3">
+    <Panel id="demos-title" title="Start from a demo">
+      {demos.isPending && <p className="text-sm text-muted">Loading demos…</p>}
+      {demos.isError && <p className="text-sm text-muted">Demos are not available right now.</p>}
+      <ul aria-labelledby="demos-title" className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {demos.data?.map((demo) => {
           const loading = load.isPending && load.variables === demo.slug;
           return (
-            <li key={demo.slug} className="flex flex-col rounded-lg border border-gray-200 p-4">
-              <h3 className="font-medium">{demo.name}</h3>
-              <p className="mt-2 line-clamp-3 flex-1 text-sm text-gray-700">{demo.description}</p>
+            <li
+              key={demo.slug}
+              className="flex flex-col rounded-card border border-line bg-surface-raised p-[18px]"
+            >
+              <h3 className="mb-1.5 text-[15px] font-semibold">{demo.name}</h3>
+              <p className="mb-4 flex-1 text-[13px] text-muted">{demo.description}</p>
               <button
                 type="button"
-                className={`${buttonClass("secondary")} mt-4`}
+                className={`${buttonClass("secondary")} self-start`}
                 disabled={loading}
                 onClick={() =>
                   load.mutate(demo.slug, {
@@ -63,70 +74,95 @@ function Demos() {
           );
         })}
       </ul>
-    </section>
+    </Panel>
   );
 }
+
+const HEAD =
+  "border-b border-line px-2.5 py-2.5 text-[10px] font-medium tracking-[1px] whitespace-nowrap text-table-head uppercase";
+const CELL = "border-b border-line-soft px-2.5 py-3 align-top";
 
 function Processes() {
   const processes = useProcesses();
 
   return (
-    <section aria-labelledby="processes-title" className="mt-12">
-      <div className="flex items-center justify-between gap-4">
-        <h2 id="processes-title" className="text-lg font-semibold">
-          Processes
-        </h2>
-        <Link href="/processes/new" className={buttonClass("secondary")}>
-          New process
-        </Link>
-      </div>
+    <Panel id="processes-title" title="Your processes">
       {processes.isPending && <SkeletonRows />}
       {processes.isError && (
-        <p className="mt-4 text-gray-700">
+        <p className="text-sm text-muted">
           The processes could not be loaded.{" "}
-          <button type="button" className="underline" onClick={() => processes.refetch()}>
+          <button
+            type="button"
+            className="text-accent underline"
+            onClick={() => processes.refetch()}
+          >
             Try again
           </button>
         </p>
       )}
       {processes.data?.length === 0 && (
-        <p className="mt-4 text-gray-700">No processes yet. Load a demo or create one.</p>
+        <p className="py-7 text-center text-[13px] text-muted">
+          No processes yet. Load a demo or create one.
+        </p>
       )}
       {processes.data && processes.data.length > 0 && (
-        <ul
-          aria-labelledby="processes-title"
-          className="mt-4 divide-y divide-gray-200 rounded-lg border border-gray-200"
-        >
-          {processes.data.map((process) => (
-            <li key={process.id}>
-              <Link
-                href={`/processes/${process.id}`}
-                className="grid min-h-11 gap-1 px-4 py-3 no-underline hover:bg-gray-50 md:grid-cols-[1fr_auto]"
-              >
-                <span>
-                  <span className="font-medium underline">{process.name}</span>
-                  <span className="block text-sm text-gray-600">{process.owner ?? "No owner"}</span>
-                </span>
-                <span className="text-sm tabular-nums text-gray-600 md:text-right">
-                  {count(process.executions_per_month)} runs/month · {steps(process.step_count)} ·{" "}
-                  {version(process.version)} · {timestamp(process.updated_at)}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <div className="overflow-x-auto">
+          <table aria-labelledby="processes-title" className="w-full border-collapse text-[13px]">
+            <thead>
+              <tr>
+                <th scope="col" className={`${HEAD} text-left`}>
+                  Process
+                </th>
+                <th scope="col" className={`${HEAD} text-right`}>
+                  Runs / month
+                </th>
+                <th scope="col" className={`${HEAD} text-right`}>
+                  Steps
+                </th>
+                <th scope="col" className={`${HEAD} text-left`}>
+                  Version
+                </th>
+                <th scope="col" className={`${HEAD} text-left`}>
+                  Updated
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {processes.data.map((process) => (
+                <tr key={process.id}>
+                  <td className={CELL}>
+                    <Link href={`/processes/${process.id}`} className="font-semibold">
+                      {process.name}
+                    </Link>
+                    <span className="mt-0.5 block text-xs text-muted">
+                      {process.owner ?? "No owner"}
+                    </span>
+                  </td>
+                  <td className={`${CELL} text-right tabular-nums`}>
+                    {count(process.executions_per_month)}
+                  </td>
+                  <td className={`${CELL} text-right tabular-nums`}>{count(process.step_count)}</td>
+                  <td className={CELL}>{version(process.version)}</td>
+                  <td className={`${CELL} whitespace-nowrap tabular-nums`}>
+                    {timestamp(process.updated_at)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
-    </section>
+    </Panel>
   );
 }
 
 function SkeletonRows() {
   return (
-    <ul aria-hidden="true" className="mt-4 space-y-3">
+    <ul aria-hidden="true" className="space-y-3">
       {[0, 1, 2].map((row) => (
         <li
           key={row}
-          className="h-14 animate-pulse rounded-lg bg-gray-100 motion-reduce:animate-none"
+          className="h-12 animate-pulse rounded-control bg-surface-raised motion-reduce:animate-none"
         />
       ))}
     </ul>

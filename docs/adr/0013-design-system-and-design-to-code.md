@@ -1,6 +1,6 @@
 # ADR 0013: Design system and design-to-code workflow
 
-**Status:** proposed · 2026-10-16 · amends the dependencies of ADR 0009
+**Status:** proposed · 2026-10-16 · amends the dependencies of ADR 0009; navigation and themes amended by ADR 0014
 
 ## Context
 
