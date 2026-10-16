@@ -4,7 +4,13 @@ from decimal import Decimal
 
 from app.domain.enums import AutomationMethod, HumanControl
 from app.domain.reconciliation import RecommendationSource
-from app.models.schemas.analysis import AnalysisRead, Blueprint, BlueprintStep, StepAssessmentOut
+from app.models.schemas.analysis import (
+    AnalysisRead,
+    Blueprint,
+    BlueprintStep,
+    BusinessImpactOut,
+    StepAssessmentOut,
+)
 from app.models.schemas.process import ProcessRead
 
 _COMPONENT_BY_METHOD = {
@@ -53,11 +59,21 @@ def build_blueprint(analysis: AnalysisRead, process: ProcessRead) -> Blueprint:
         current_state=analysis.current_state,
         automation_opportunities=opportunities,
         proposed_architecture=_architecture(analysis),
-        business_impact=analysis.business_impact,
+        business_impact=_reductions_in_step_order(analysis),
         risks=analysis.risks,
         human_controls=analysis.human_controls,
         workflow_specification=_workflow(analysis),
     )
+
+
+def _reductions_in_step_order(analysis: AnalysisRead) -> BusinessImpactOut:
+    """List the assumed reductions by step position: stored JSON may not keep key order."""
+    impact = analysis.business_impact
+    position = {step.step_id: step.position for step in analysis.step_assessments}
+    reductions = impact.assumptions.expected_time_reduction_by_step
+    ordered = dict(sorted(reductions.items(), key=lambda item: position.get(item[0], 0)))
+    assumptions = impact.assumptions.model_copy(update={"expected_time_reduction_by_step": ordered})
+    return impact.model_copy(update={"assumptions": assumptions})
 
 
 _SUITABILITY_NOTE = (
