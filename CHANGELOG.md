@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.4.0](https://github.com/SebastianLazarte/ai-process-discovery/compare/v1.3.1...v1.4.0) (2026-10-16)
+
+
+### Features
+
+* **api:** HVAC manufacturer demos with preset assumptions and a first analysis (RS-89) ([#108](https://github.com/SebastianLazarte/ai-process-discovery/issues/108)) ([9b41504](https://github.com/SebastianLazarte/ai-process-discovery/commit/9b41504d995b6d50bd079eba0e4f8931deab76be))
+* **api:** serve the API under /api with a committed OpenAPI contract (RS-69) ([#116](https://github.com/SebastianLazarte/ai-process-discovery/issues/116)) ([6921cd5](https://github.com/SebastianLazarte/ai-process-discovery/commit/6921cd5d6813ce6b79342df341759da4630165f2))
+* **ui:** dark theme tokens and the sidebar of the vanilla client (RS-90) ([#120](https://github.com/SebastianLazarte/ai-process-discovery/issues/120)) ([b52d4c0](https://github.com/SebastianLazarte/ai-process-discovery/commit/b52d4c04d3c5478e2e60aeeb11befdf76888f13d))
+* **ui:** Next.js project with lint, types and tests in CI (RS-70) ([#109](https://github.com/SebastianLazarte/ai-process-discovery/issues/109)) ([a2859ba](https://github.com/SebastianLazarte/ai-process-discovery/commit/a2859bac0b255a23bb8c192d3ee8fdc552ee7dcf))
+* **ui:** process list, demo loading, creation and deletion in the new client (RS-73) ([#118](https://github.com/SebastianLazarte/ai-process-discovery/issues/118)) ([f626b70](https://github.com/SebastianLazarte/ai-process-discovery/commit/f626b70c0cbc1ecb210a7f1431750115fdccd4c3))
+* **ui:** typed API client generated from OpenAPI, with TanStack Query (RS-71) ([#117](https://github.com/SebastianLazarte/ai-process-discovery/issues/117)) ([f5d3e70](https://github.com/SebastianLazarte/ai-process-discovery/commit/f5d3e702c13c419f33c5af7fbd5afdf3b8f016ef))
+
+
+### Bug Fixes
+
+* **api:** keep the release version out of the committed OpenAPI contract ([#121](https://github.com/SebastianLazarte/ai-process-discovery/issues/121)) ([2e7700b](https://github.com/SebastianLazarte/ai-process-discovery/commit/2e7700b3c90709a79cc28c598facde3c69728339))
+
 ## [1.3.1](https://github.com/SebastianLazarte/ai-process-discovery/compare/v1.3.0...v1.3.1) (2026-10-16)
 
 
