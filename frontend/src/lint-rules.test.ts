@@ -6,8 +6,9 @@ import { beforeAll, describe, expect, it } from "vitest";
 const eslint = new ESLint();
 
 // The first lint loads the Next presets and the TypeScript parser, which takes seconds on a
-// cold start. Paying it once here keeps each test within the default timeout.
-beforeAll(() => eslint.lintText("", { filePath: "src/warm-up.ts" }), 60_000);
+// cold start, and far longer on a busy machine. Paying it once here keeps each test within
+// the default timeout.
+beforeAll(() => eslint.lintText("", { filePath: "src/warm-up.ts" }), 180_000);
 
 async function ruleIds(code: string, filePath: string): Promise<string[]> {
   const [result] = await eslint.lintText(code, { filePath });

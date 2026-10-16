@@ -5,58 +5,74 @@ import { useState } from "react";
 
 import { ApiError } from "@/lib/api";
 import { useDeleteProcess, useProcess } from "@/lib/api/queries";
-import { count, money, steps, version } from "@/lib/format";
+import { count, money, version } from "@/lib/format";
 
-import { Breadcrumbs } from "./breadcrumbs";
 import { buttonClass } from "./button";
+import { Eyebrow, Panel } from "./panel";
 import { useToast } from "./toast";
 
-// The page a process opens on. RS-74 turns it into the step editor; for now it shows the
-// process and lets you delete it.
+// The page a process opens on, laid out as in the vanilla client. RS-74 adds the step
+// editor; for now it shows the process and lets you delete it.
 export function ProcessView({ id }: { id: string }) {
   const process = useProcess(id);
 
-  if (process.isPending) return <p className="text-gray-600">Loading the process…</p>;
+  if (process.isPending)
+    return <p className="py-24 text-center text-muted">Loading the process…</p>;
   if (process.isError) {
     const missing = process.error instanceof ApiError && process.error.status === 404;
     return (
-      <>
-        <Breadcrumbs items={[{ label: "Processes", href: "/" }, { label: "Not found" }]} />
-        <h1 className="mt-4 text-2xl font-semibold">
+      <header>
+        <Eyebrow>Process</Eyebrow>
+        <h1 className="mb-3 text-[27px] font-semibold tracking-[-1.1px] md:text-[34px]">
           {missing ? "This process does not exist" : "The process could not be loaded"}
         </h1>
-        <p className="mt-2 text-gray-700">
-          {missing ? "It may have been deleted. Public demo data is deleted daily." : null}
-        </p>
-      </>
+        {missing && (
+          <p className="text-muted">It may have been deleted. Public demo data is deleted daily.</p>
+        )}
+      </header>
     );
   }
 
   const data = process.data;
   return (
     <>
-      <Breadcrumbs items={[{ label: "Processes", href: "/" }, { label: data.name }]} />
-      <h1 className="mt-4 text-2xl font-semibold">{data.name}</h1>
-      {data.description && <p className="mt-2 max-w-2xl text-gray-700">{data.description}</p>}
-      <dl className="mt-6 grid max-w-2xl grid-cols-2 gap-4 sm:grid-cols-4">
-        <Fact term="Executions / month" value={count(data.executions_per_month)} />
-        <Fact term="Hourly cost" value={money(data.hourly_cost)} />
-        <Fact term="Steps" value={steps(data.steps.length)} />
-        <Fact term="Version" value={version(data.version)} />
+      <header className="mb-6">
+        <Eyebrow>Process · {version(data.version)}</Eyebrow>
+        <h1 className="mb-3 text-[27px] leading-[1.15] font-semibold tracking-[-1.1px] md:text-[34px]">
+          {data.name}
+        </h1>
+        {data.description && (
+          <p className="max-w-[760px] text-[15px] text-muted">{data.description}</p>
+        )}
+      </header>
+      <dl className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Metric term="Executions / month" value={count(data.executions_per_month)} />
+        <Metric
+          term="Hourly cost"
+          value={money(data.hourly_cost)}
+          note={data.hourly_cost === null ? "Costs stay unknown" : undefined}
+        />
+        <Metric term="Steps" value={count(data.steps.length)} />
+        <Metric term="Owner" value={data.owner ?? "None"} />
       </dl>
-      <p className="mt-8 text-gray-700">
-        The step editor arrives with the next release of this client.
-      </p>
+      <Panel id="steps-title" title="Steps" className="mb-6">
+        <p className="text-[13px] text-muted">
+          The step editor arrives with the next release of this client.
+        </p>
+      </Panel>
       <DeleteProcess id={data.id} name={data.name} />
     </>
   );
 }
 
-function Fact({ term, value }: { term: string; value: string }) {
+function Metric({ term, value, note }: { term: string; value: string; note?: string }) {
   return (
-    <div>
-      <dt className="text-sm text-gray-600">{term}</dt>
-      <dd className="font-medium tabular-nums">{value}</dd>
+    <div className="min-w-0 rounded-panel border border-line bg-surface px-5 py-[18px]">
+      <dt className="text-xs text-muted">{term}</dt>
+      <dd className="text-[26px] leading-snug font-semibold tracking-[-0.5px] break-words tabular-nums">
+        {value}
+      </dd>
+      {note && <dd className="text-xs text-muted">{note}</dd>}
     </div>
   );
 }
@@ -71,23 +87,21 @@ function DeleteProcess({ id, name }: { id: string; name: string }) {
 
   if (!confirming) {
     return (
-      <div className="mt-10">
-        <button type="button" className={buttonClass("danger")} onClick={() => setConfirming(true)}>
-          Delete process
-        </button>
-      </div>
+      <button type="button" className={buttonClass("danger")} onClick={() => setConfirming(true)}>
+        Delete process
+      </button>
     );
   }
   return (
     <div
       role="group"
       aria-labelledby="delete-title"
-      className="mt-10 max-w-xl rounded-lg border border-red-700 p-4"
+      className="max-w-xl rounded-r-control border-l-[3px] border-bad bg-bad-bg px-4 py-3"
     >
-      <p id="delete-title" className="font-medium">
+      <p id="delete-title" className="text-sm text-ink">
         Delete “{name}” and all its analyses? This cannot be undone.
       </p>
-      <div className="mt-4 flex flex-wrap gap-3">
+      <div className="mt-3 flex flex-wrap gap-3">
         <button
           type="button"
           className={buttonClass("danger")}

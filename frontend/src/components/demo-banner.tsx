@@ -7,7 +7,10 @@ export function DemoBanner() {
   const meta = useMeta();
   if (!meta.data?.public_demo) return null;
   return (
-    <p role="note" className="bg-amber-100 px-4 py-2 text-sm text-amber-950">
+    <p
+      role="note"
+      className="border-b border-line bg-warn-bg px-4 py-2.5 text-[13px] text-warn-ink md:px-11"
+    >
       <strong>Public demo {`v${meta.data.version}`}.</strong> Anything you enter is visible to other
       visitors and deleted daily. Do not enter real or personal data.
     </p>

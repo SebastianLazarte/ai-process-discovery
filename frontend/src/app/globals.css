@@ -1,14 +1,67 @@
-/* Design tokens arrive with their own backlog item (ADR 0013). Until then, only the base
-   rules every page needs: a visible focus ring and underlined links. */
 @import "tailwindcss";
+@import "../styles/tokens.css";
+
+/* Tailwind exposes the semantic tokens only. The default palette is switched off, so a
+   palette class generates nothing and every colour comes from tokens.css. */
+@theme inline {
+  --color-*: initial;
+  --color-bg: var(--bg);
+  --color-sidebar: var(--sidebar);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-label: var(--label);
+  --color-muted: var(--muted);
+  --color-table-head: var(--table-head);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+  --color-input-bg: var(--input-bg);
+  --color-input-line: var(--input-line);
+  --color-icon-bg: var(--icon-bg);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-good: var(--good);
+  --color-good-bg: var(--good-bg);
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+  --color-warn: var(--warn);
+  --color-warn-bg: var(--warn-bg);
+  --color-warn-ink: var(--warn-ink);
+  --color-bad: var(--bad);
+  --color-bad-bg: var(--bad-bg);
+  --color-toast: var(--toast-bg);
+  --color-toast-line: var(--toast-line);
+  --color-toast-error: var(--toast-error-bg);
+  --color-toast-error-line: var(--toast-error-line);
+  --color-transparent: transparent;
+
+  --font-sans: var(--font-inter), "Segoe UI", system-ui, sans-serif;
+  --radius-panel: 14px;
+  --radius-card: 12px;
+  --radius-control: 8px;
+}
 
 @layer base {
+  html {
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
   :focus-visible {
-    outline: 3px solid var(--color-blue-600);
-    outline-offset: 2px;
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
   }
 
   a {
+    color: var(--accent);
     text-underline-offset: 4px;
+  }
+
+  a:hover {
+    text-decoration: underline;
   }
 }

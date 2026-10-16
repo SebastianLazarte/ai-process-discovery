@@ -152,7 +152,7 @@ Requires [uv](https://docs.astral.sh/uv/).
 ```bash
 uv sync --all-extras
 cp .env.example .env            # optional: LLM_PROVIDER=anthropic and a key
-uv run uvicorn app.main:app --reload
+uv run uvicorn app.main:app --reload --reload-dir src
 ```
 
 The web client is on `:8000/ui/` and the API docs on `/api/docs`. The default `FakeLLMProvider` is deterministic and needs no key.

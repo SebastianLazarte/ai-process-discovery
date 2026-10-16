@@ -78,7 +78,7 @@ export function ProcessForm() {
   };
 
   return (
-    <form onSubmit={submit} noValidate className="grid max-w-xl gap-5">
+    <form onSubmit={submit} noValidate className="grid gap-4 sm:grid-cols-2">
       <TextField {...field("name", "Name")} id="name" required register={register("name")} />
       <TextField {...field("owner", "Owner")} id="owner" register={register("owner")} />
       <TextField
@@ -98,14 +98,15 @@ export function ProcessForm() {
         {...field("description", "Description")}
         id="description"
         multiline
+        wide
         register={register("description")}
       />
       {formError.length > 0 && (
-        <p role="alert" className="text-sm text-red-800">
+        <p role="alert" className="text-[13px] whitespace-pre-line text-bad sm:col-span-2">
           {formError.join(" ")}
         </p>
       )}
-      <div>
+      <div className="sm:col-span-2">
         <button type="submit" className={buttonClass("primary")} disabled={create.isPending}>
           {create.isPending ? "Creating…" : "Create process"}
         </button>
@@ -122,6 +123,7 @@ type TextFieldProps = {
   describedBy?: string;
   required?: boolean;
   multiline?: boolean;
+  wide?: boolean;
   inputMode?: "numeric" | "decimal";
   register: UseFormRegisterReturn;
 };
@@ -134,6 +136,7 @@ function TextField({
   describedBy,
   required,
   multiline,
+  wide,
   inputMode,
   register,
 }: TextFieldProps) {
@@ -143,14 +146,14 @@ function TextField({
     "aria-describedby": describedBy,
     "aria-required": required || undefined,
     className:
-      "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 aria-invalid:border-red-700",
+      "mt-1.5 block min-h-11 w-full rounded-[7px] border border-input-line bg-input-bg px-3 py-2.5 text-sm text-ink aria-invalid:border-bad",
     ...register,
   };
   return (
-    <div>
-      <label htmlFor={id} className="font-medium">
+    <div className={wide ? "sm:col-span-2" : undefined}>
+      <label htmlFor={id} className="block text-[13px] font-medium text-label">
         {label}
-        {required && <span className="text-gray-600"> (required)</span>}
+        {required && <span className="font-normal text-muted"> (required)</span>}
       </label>
       {multiline ? (
         <textarea rows={3} {...control} />
@@ -158,12 +161,12 @@ function TextField({
         <input inputMode={inputMode} {...control} />
       )}
       {hint && (
-        <p id={`${id}-hint`} className="mt-1 text-sm text-gray-600">
+        <p id={`${id}-hint`} className="mt-1.5 text-xs text-muted">
           {hint}
         </p>
       )}
       {error && (
-        <p id={`${id}-error`} className="mt-1 text-sm text-red-800">
+        <p id={`${id}-error`} className="mt-1 text-xs text-bad">
           {error}
         </p>
       )}
