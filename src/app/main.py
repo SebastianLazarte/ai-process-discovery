@@ -1,9 +1,9 @@
 import logging
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 
 from app import __version__
 from app.api.routes import analyses, processes, system, web
@@ -16,6 +16,11 @@ from app.llm.provider import LLMProvider
 from app.llm.providers import build_provider
 
 logger = logging.getLogger(__name__)
+
+# ADR 0009: the API lives under /api. Until 2.0.0 (RS-80) every route also answers at the
+# root, for the vanilla client. The schema documents each path once, relative to /api.
+API_PREFIX = "/api"
+LEGACY_DOCS = {"/docs": "/api/docs", "/redoc": "/api/redoc", "/openapi.json": "/api/openapi.json"}
 
 
 def create_app(settings: Settings | None = None, provider: LLMProvider | None = None) -> FastAPI:
@@ -45,6 +50,10 @@ def create_app(settings: Settings | None = None, provider: LLMProvider | None = 
             "automation blueprint. Deterministic first: the LLM never produces a number."
         ),
         lifespan=lifespan,
+        servers=[{"url": API_PREFIX}],
+        docs_url=f"{API_PREFIX}/docs",
+        redoc_url=f"{API_PREFIX}/redoc",
+        openapi_url=f"{API_PREFIX}/openapi.json",
     )
     app.state.settings = settings
 
@@ -59,11 +68,22 @@ def create_app(settings: Settings | None = None, provider: LLMProvider | None = 
             status_code=422,
         )
 
-    app.include_router(system.router)
-    app.include_router(processes.router)
-    app.include_router(analyses.router)
+    for router in (system.router, processes.router, analyses.router):
+        app.include_router(router, prefix=API_PREFIX, include_in_schema=False)
+        app.include_router(router)
+
+    for old, new in LEGACY_DOCS.items():
+        app.add_api_route(old, _redirect_to(new), methods=["GET"], include_in_schema=False)
+
     web.mount_web_client(app, settings.web_dir)
     return app
+
+
+def _redirect_to(target: str) -> Callable[[], RedirectResponse]:
+    def redirect() -> RedirectResponse:
+        return RedirectResponse(target, status_code=308)
+
+    return redirect
 
 
 app = create_app()

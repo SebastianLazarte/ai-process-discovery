@@ -169,6 +169,7 @@ jobs:
         run: |
           docker compose up -d --wait --wait-timeout 120
           curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:8000/health
+          curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:8000/api/health
           curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:8000/ui/
           curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:8501/_stcore/health
       # RS-64: the production stack runs with the same image, a read-only root and no
@@ -190,6 +191,7 @@ jobs:
           fi
           docker compose -f deploy/compose.prod.yaml up -d --wait --wait-timeout 120
           curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://127.0.0.1:8100/health
+          curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://127.0.0.1:8100/api/health
           curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://127.0.0.1:8100/ui/
       - name: Logs on failure
         if: failure()

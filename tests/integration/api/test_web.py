@@ -63,7 +63,7 @@ def test_client_responses_carry_security_headers(web: TestClient) -> None:
 
 
 def test_api_docs_keep_their_own_headers(web: TestClient) -> None:
-    response = web.get("/docs")
+    response = web.get("/api/docs")
     assert response.status_code == 200
     assert "content-security-policy" not in response.headers
 

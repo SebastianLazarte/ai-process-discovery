@@ -140,13 +140,18 @@ def test_no_http_route_triggers_a_purge(
         "name": "index.html",
     }
 
-    # Every documented operation, plus the routes kept out of the schema on purpose.
-    operations = [
+    # Every documented operation at the root and under /api, plus the routes kept out of
+    # the schema on purpose.
+    documented = [
         (method.upper(), path)
-        for path, item in client.get("/openapi.json").json()["paths"].items()
+        for path, item in client.get("/api/openapi.json").json()["paths"].items()
         for method in item
     ]
-    operations += [("GET", path) for path in ("/", "/ui", "/ui/", "/ui/app.js", "/docs", "/redoc")]
+    operations = documented + [(method, f"/api{path}") for method, path in documented]
+    operations += [
+        ("GET", path)
+        for path in ("/", "/ui", "/ui/", "/ui/app.js", "/docs", "/redoc", "/api/docs", "/api/redoc")
+    ]
     for method, template in operations:
         path = re.sub(r"\{(\w+)\}", lambda m: values[m.group(1)], template)
         client.request(method, path, json=None if method == "GET" else {})
