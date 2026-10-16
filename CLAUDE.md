@@ -28,7 +28,7 @@ Areas marked * have their own CLAUDE.md with Read, Rules and Verify. It loads wh
 | HTTP routes, serving the client | `src/app/api/`* | ADR 0003, ADR 0007, ADR 0009 |
 | HTTP contracts, storage, repositories | `src/app/models/`*, `src/app/repositories/` | ADR 0003, ADR 0002 |
 | LLM adapter or prompt | `src/app/llm/`* | ADR 0004 |
-| Next.js frontend (block B12) | `frontend/` | ADR 0009, ADR 0013 |
+| Next.js frontend (block B12) | `frontend/`* | ADR 0009, ADR 0013 |
 | UX research, wireframes, tokens, component specs | `docs/design/` | ADR 0013 |
 | Vanilla web client: legacy, pending removal in 2.0.0, no new features | `web/`* | ADR 0007 |
 | Production deploy, Nginx, operations | `deploy/`* | ADR 0008, `docs/runbook/production.md` |
@@ -52,6 +52,8 @@ ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locall
 | API and web client on `:8000/ui/` | `uv run uvicorn app.main:app --reload` |
 | Mutation testing of the domain (minutes) | `uv run mutmut run && uv run mutmut results` |
 | Web client tests | `node --test web/tests/*.test.js` |
+| Next.js client: install, then lint, format, types, tests, build | `cd frontend && corepack pnpm install && corepack pnpm lint && corepack pnpm format && corepack pnpm typecheck && corepack pnpm test && corepack pnpm build` |
+| Next.js client in development on `:3000/app` | `cd frontend && corepack pnpm dev` |
 | Whole stack on PostgreSQL | `docker compose up --build` |
 | Purge demo data older than 24 h | `uv run python -m app.purge --older-than-hours 24` |
 | Legacy Streamlit on `:8501` | `uv run streamlit run ui/streamlit_app.py` |
@@ -61,7 +63,7 @@ ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locall
 - **Inputs:** one issue, which is one backlog item `RS-nn` in `docs/requirements.toml` with its acceptance criteria (Ready, when refined: see the Scrum section of `docs/CLAUDE.md`); the ADRs routed above.
 - **Process:** branch from `main` (`feat/rs-12-process-score`, `fix/...`, `docs/...`, `ci/...`). A test proves each acceptance criterion. A new dependency or a reversed decision comes with an ADR.
 - **Outputs:** one pull request with the template and a Conventional Commits title (`feat(scoring): ...`), squash merged. The description answers the verification questions of the checklist comment (`.github/pr-checklist.toml`).
-- **Verify:** pre-commit, `uv run pytest` and the Node tests pass locally. Required checks: `quality`, `web`, `test (3.12)`, `test (3.13)`, `test-postgres`, `docker`, `pr-title`.
+- **Verify:** pre-commit, `uv run pytest`, the Node tests and the `frontend/` checks pass locally. Required checks: `quality`, `web`, `frontend`, `test (3.12)`, `test (3.13)`, `test-postgres`, `docker`, `pr-title`.
 
 ## Hard rules
 

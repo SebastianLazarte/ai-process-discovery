@@ -146,6 +146,21 @@ why = "Files are served by name from an allowlist, never by directory."
 ref = "src/app/api/routes/web.py"
 
 [[area]]
+id = "frontend"
+title = "Next.js client"
+paths = ["frontend/"]
+
+[[area.item]]
+text = "The client computes no metric, and only `src/lib/format` turns figures into text"
+why = "Figures come from the API, so the browser can never disagree with the backend. Lint cannot see arithmetic on API values."
+ref = "docs/adr/0009-nextjs-frontend-as-separate-service.md"
+
+[[area.item]]
+text = "A new package is named in ADR 0009 or ADR 0013, or comes with its own ADR"
+why = "Every dependency is a decision with a maintenance cost (ADR 0010)."
+ref = "docs/adr/0010-dependency-update-policy.md"
+
+[[area]]
 id = "ci"
 title = "CI and repository"
 paths = [".github/", "scripts/", "release-please-config.json"]
