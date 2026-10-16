@@ -1,0 +1,79 @@
+/* Design tokens (ADR 0013). Every colour, radius and type decision of the client lives here.
+
+   Primitive: the palette. Only the semantic layer below uses it. The values are the dark
+   theme of web/styles.css, written in OKLCH (the hex each one came from is in its comment),
+   so the two clients look like the same product during the migration.
+   Semantic: what components use, through the Tailwind utilities in globals.css. A light
+   theme redefines this layer only. */
+
+:root {
+  /* Primitive */
+  --navy-950: oklch(17.68% 0.0229 260.39); /* #0b111b */
+  --navy-925: oklch(18.98% 0.0274 258.29); /* #0c1420 */
+  --navy-900: oklch(19.86% 0.0272 258.3); /* #0e1622 */
+  --navy-850: oklch(22.07% 0.0307 259.02); /* #121b29 */
+  --navy-800: oklch(25.84% 0.0381 258.29); /* #182436 */
+  --navy-775: oklch(25.68% 0.0473 261.22); /* #16233a */
+  --navy-750: oklch(28.68% 0.0372 258.3); /* #1f2b3d */
+  --navy-700: oklch(32.3% 0.0437 259.23); /* #26344a */
+  --navy-550: oklch(51.86% 0.0574 261.28); /* #56698a */
+  --slate-100: oklch(94.12% 0.0138 258.35); /* #e6ecf5 */
+  --slate-200: oklch(84.76% 0.0241 256.11); /* #c3cedd */
+  --slate-250: oklch(83.58% 0.0267 259.05); /* #bfcadb */
+  --slate-400: oklch(72.68% 0.0318 256.04); /* #9aa8bb */
+  --slate-450: oklch(69.08% 0.0372 256.37); /* #8d9db3 */
+  --blue-250: oklch(82.14% 0.0887 265.42); /* #a9c4ff */
+  --blue-300: oklch(76.93% 0.1175 261.56); /* #8ab4ff */
+  --blue-700: oklch(46.69% 0.0863 259.46); /* #3c5a8a */
+  --blue-850: oklch(31.92% 0.0624 257.13); /* #1d3352 */
+  --blue-900: oklch(29.6% 0.0649 261.62); /* #1a2c4d */
+  --blue-925: oklch(28.68% 0.0577 261.53); /* #1a2a47 */
+  --blue-975: oklch(22% 0.0533 260.04); /* #0b1a33 */
+  --green-300: oklch(82.64% 0.0908 161.8); /* #8fd9b4 */
+  --green-900: oklch(29.78% 0.0416 169.95); /* #15342a */
+  --amber-150: oklch(87.21% 0.0553 89.92); /* #e3d4ac */
+  --amber-300: oklch(84.31% 0.0985 85.11); /* #e9c77f */
+  --amber-900: oklch(30.07% 0.0319 86.54); /* #352d1b */
+  --red-300: oklch(82.08% 0.1003 25.46); /* #ffaba3 */
+  --red-700: oklch(44.79% 0.0762 13.65); /* #794248 */
+  --red-850: oklch(32.3% 0.0403 14.71); /* #462b2d */
+  --red-900: oklch(29.14% 0.0404 7.37); /* #3d2328 */
+
+  /* Semantic: surfaces and text */
+  color-scheme: dark;
+  --bg: var(--navy-950);
+  --sidebar: var(--navy-900);
+  --surface: var(--navy-850);
+  --surface-raised: var(--navy-800);
+  --ink: var(--slate-100);
+  --ink-soft: var(--slate-200);
+  --label: var(--slate-250);
+  --muted: var(--slate-400);
+  --table-head: var(--slate-450);
+  --line: var(--navy-700);
+  --line-soft: var(--navy-750);
+  --input-bg: var(--navy-925);
+  /* web/ used #33445e here, 1.9:1 against the input; WCAG 1.4.11 asks 3:1 for a control. */
+  --input-line: var(--navy-550);
+  --icon-bg: var(--navy-775);
+
+  /* Semantic: accent and status. Status colours only ever mean status. */
+  --accent: var(--blue-300);
+  --accent-ink: var(--blue-975);
+  --accent-soft: var(--blue-900);
+  --good: var(--green-300);
+  --good-bg: var(--green-900);
+  --info: var(--blue-250);
+  --info-bg: var(--blue-925);
+  --warn: var(--amber-300);
+  --warn-bg: var(--amber-900);
+  --warn-ink: var(--amber-150);
+  --bad: var(--red-300);
+  --bad-bg: var(--red-900);
+
+  /* Semantic: overlays */
+  --toast-bg: var(--blue-850);
+  --toast-line: var(--blue-700);
+  --toast-error-bg: var(--red-850);
+  --toast-error-line: var(--red-700);
+}

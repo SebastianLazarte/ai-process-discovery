@@ -14,7 +14,7 @@ Second step of the design process in ADR 0013. Each screen is sketched from `01-
 
 ## Navigation
 
-The current client has a sidebar that repeats the process list from the home page. The new client replaces it with a top bar and breadcrumbs (decided in `00-brief.md`).
+The current client has a sidebar that repeats the process list from the home page. This section compared it with a top bar and breadcrumbs, and the top bar was chosen first. ADR 0014 brought the sidebar back, so that the new client keeps the look of the vanilla one. The comparison stays below as a record of the trade-off.
 
 | Option | For | Against |
 |---|---|---|

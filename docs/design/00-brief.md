@@ -21,9 +21,9 @@ When the two conflict, the home page and the demo path favour the visitor, and t
 |---|---|
 | Personality | Sober and technical: neutral base, one accent, type and spacing doing the work |
 | Brand | Evolves `web/`: accent `#8ab4ff` and the dark navy base, moved to OKLCH scales, plus a light theme |
-| Themes | Light and dark, following the system by default, with a System, Light and Dark toggle stored in a cookie and rendered on the server |
+| Themes | Dark first, with the exact palette of `web/` (ADR 0014). Light comes later, following the system by default, with a System, Light and Dark toggle stored in a cookie and rendered on the server |
 | Language | English, sentence case |
-| Navigation | Top bar and breadcrumbs, no sidebar. The process segment of the breadcrumb is a menu for switching process |
+| Navigation | The sidebar of `web/`: brand, "+ New process" and every process one click away, the current one marked (ADR 0014) |
 | Type | Inter from a versioned package, tabular figures for numbers |
 | Density | Medium, rows of about 44 px |
 | Figures | Numbers, meters and horizontal CSS bars from API values, no chart library |

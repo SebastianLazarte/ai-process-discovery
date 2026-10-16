@@ -27,7 +27,8 @@ Stable reference for the whole repo. Code changes read from here; this folder ch
 | ADR 0009 | Next.js frontend as a separate service, API under `/api` (block B12, RS-69 to RS-80) | accepted; dependencies amended by ADR 0013 |
 | ADR 0010 | Dependency updates: grouped minor and patch after a cooldown, majors planned, Python version fixed | accepted |
 | ADR 0011 | Automated quality gauntlet: mutation testing on the domain, property-based tests, complexity limits, coverage 95 % | proposed |
-| ADR 0013 | Design system: tokens in CSS as source of truth, light and dark by system setting with a cookie toggle, WCAG 2.2 AA, Penpot and Claude Design as free tools | proposed |
+| ADR 0013 | Design system: tokens in CSS as source of truth, light and dark by system setting with a cookie toggle, WCAG 2.2 AA, Penpot and Claude Design as free tools | proposed; navigation and themes amended by ADR 0014 |
+| ADR 0014 | Keep the look of the vanilla client: its sidebar and its exact dark palette as tokens, light theme later | accepted |
 
 Adding or changing a decision updates this index, and the routing table in the root `CLAUDE.md` when it opens a new area.
 
