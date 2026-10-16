@@ -1,3 +1,4 @@
+import re
 from collections.abc import Callable
 
 from fastapi.testclient import TestClient
@@ -299,3 +300,18 @@ def test_blueprint_json_and_markdown(client: TestClient) -> None:
     assert text.startswith("# Automation blueprint: Invoice intake and validation")
     assert "Implementation cost: 6,000.00" in text
     assert "## Human controls" in text
+
+
+def test_blueprint_lists_assumed_reductions_in_step_order(client: TestClient) -> None:
+    # PostgreSQL stores JSON without key order, so the order sent must not matter.
+    steps = [step_payload(name=f"Step {n}") for n in (1, 2, 3)]
+    process = _process(client, steps=steps)
+    ids = [s["id"] for s in sorted(process["steps"], key=lambda s: s["position"])]
+    reductions = {step_id: "0.5" for step_id in reversed(ids)}
+    analysis = _analyse(
+        client, process["id"], assumptions={"expected_time_reduction_by_step": reductions}
+    )
+
+    text = client.get(f"/analyses/{analysis['id']}/blueprint.md").text
+    listed = re.findall(r"Expected time reduction for step (\S+):", text)
+    assert listed == ids
