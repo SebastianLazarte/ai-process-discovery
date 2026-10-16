@@ -53,6 +53,9 @@ services:
       - --forwarded-allow-ips=*
     environment:
       DATABASE_URL: postgresql+psycopg://apd:${POSTGRES_PASSWORD}@postgres:5432/apd
+      # Alembic owns the schema (RS-59): `docker compose run --rm api alembic upgrade head`
+      # runs before a new version starts, and the API never creates tables itself.
+      CREATE_SCHEMA_ON_STARTUP: "false"
       LLM_PROVIDER: ${LLM_PROVIDER:-anthropic}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-}

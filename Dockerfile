@@ -17,6 +17,7 @@ WORKDIR /app
 COPY pyproject.toml uv.lock README.md ./
 RUN uv sync --locked --no-dev --all-extras --no-install-project
 
+COPY alembic.ini ./
 COPY src ./src
 COPY ui ./ui
 COPY web ./web

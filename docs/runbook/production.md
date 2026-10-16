@@ -41,6 +41,26 @@ sudo -u apd /opt/apd/deploy.sh v1.2.1
 
 `deploy.sh` backs up the database, pulls the image, runs `alembic upgrade head` in a one-off container, starts the new version and checks `/health`. If the check fails, it starts the previous tag again and exits with an error.
 
+## Schema migrations
+
+Alembic owns the schema in production. The API runs with `CREATE_SCHEMA_ON_STARTUP=false`, so it never creates or changes a table itself. Migrations run from the release image in a one-off container, before the new version starts:
+
+```bash
+cd /opt/apd && docker compose run --rm api alembic upgrade head
+```
+
+Until `deploy.sh` lands (RS-66), run that command by hand after `docker compose pull` and before `docker compose up -d`, with a backup first (next sections).
+
+**Once, on the database that `create_all` built.** The live database of the first stage already has the tables of revision `0001`. Before starting the first release that contains RS-59, back it up and mark it as migrated instead of running the initial migration:
+
+```bash
+cd /opt/apd && docker compose run --rm api alembic stamp 0001
+docker compose run --rm api alembic upgrade head
+docker compose run --rm api alembic check
+```
+
+Stamp `0001` by name, not `head`: a later release may already carry newer revisions that this database still needs. `upgrade` then applies only those, and `check` confirms the schema matches the models.
+
 ## Roll back
 
 Deploy the previous tag the same way. Migrations follow expand and contract: a release only adds columns or tables that the previous version can ignore, and removals ship one release later. That keeps the previous image compatible with the current schema. If a migration itself is wrong, restore the backup taken by that deploy (next section).

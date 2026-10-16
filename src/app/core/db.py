@@ -27,7 +27,10 @@ def build_engine(database_url: str) -> Engine:
 
 
 def init_db(engine: Engine) -> None:
-    """Create missing tables. See ADR 0002: no migrations until a schema has been released."""
+    """Create missing tables for local runs and tests.
+
+    Production leaves this off and runs Alembic migrations instead (ADR 0008, RS-59).
+    """
     Base.metadata.create_all(engine)
 
 

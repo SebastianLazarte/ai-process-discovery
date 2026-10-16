@@ -16,6 +16,7 @@ Production stack of the public demo on the maintainer's VPS: `compose.prod.yaml`
 - Cost controls stay in layers: Anthropic workspace spend limit, daily LLM quota (`LLM_DAILY_LIMIT`), Nginx rate limit on analysis runs, schema limits.
 - Security headers are set once, at server level in `apd.conf`, and only where the upstream response lacks them: the application owns its CSP. A location with its own `add_header` inherits none of them.
 - Nginx zone names and fail2ban zone filters start with `apd_`, so they never match the other sites on the host.
+- The API runs with `CREATE_SCHEMA_ON_STARTUP=false`. Alembic migrations run in a one-off container before a new version starts, never on API startup (RS-59).
 - Streamlit is not deployed.
 
 ## Verify
