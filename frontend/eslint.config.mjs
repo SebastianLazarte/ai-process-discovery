@@ -32,5 +32,5 @@ export default defineConfig([
     files: ["src/lib/api/**"],
     rules: { "no-restricted-globals": "off", "no-restricted-properties": "off" },
   },
-  globalIgnores([".next/**", "coverage/**", "next-env.d.ts"]),
+  globalIgnores([".next/**", "coverage/**", "next-env.d.ts", "src/lib/api/schema.d.ts"]),
 ]);

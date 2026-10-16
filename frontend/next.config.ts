@@ -9,7 +9,7 @@ const config: NextConfig = {
   async rewrites() {
     if (process.env.NODE_ENV !== "development") return [];
     return [
-      { source: "/api/:path*", destination: "http://localhost:8000/:path*", basePath: false },
+      { source: "/api/:path*", destination: "http://localhost:8000/api/:path*", basePath: false },
     ];
   },
 };
