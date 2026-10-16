@@ -18,7 +18,7 @@ Describe a business process step by step and get a quantified, explainable autom
 docker run --rm -p 8000:8000 ghcr.io/sebastianlazarte/ai-process-discovery:latest
 ```
 
-Then open <http://localhost:8000/ui/>. The API docs are at `/docs`.
+Then open <http://localhost:8000/ui/>. The API docs are at `/api/docs`.
 
 ## A two-minute tour
 
@@ -155,7 +155,7 @@ cp .env.example .env            # optional: LLM_PROVIDER=anthropic and a key
 uv run uvicorn app.main:app --reload
 ```
 
-The web client is on `:8000/ui/` and the API docs on `/docs`. The default `FakeLLMProvider` is deterministic and needs no key.
+The web client is on `:8000/ui/` and the API docs on `/api/docs`. The default `FakeLLMProvider` is deterministic and needs no key.
 
 The whole stack with PostgreSQL:
 

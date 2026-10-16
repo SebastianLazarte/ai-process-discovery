@@ -52,6 +52,7 @@ ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locall
 | API and web client on `:8000/ui/` | `uv run uvicorn app.main:app --reload` |
 | Mutation testing of the domain (minutes) | `uv run mutmut run && uv run mutmut results` |
 | Web client tests | `node --test web/tests/*.test.js` |
+| Regenerate the API contract `frontend/openapi.json` | `uv run python scripts/export_openapi.py` |
 | Next.js client: install, then lint, format, types, tests, build | `cd frontend && corepack pnpm install && corepack pnpm lint && corepack pnpm format && corepack pnpm typecheck && corepack pnpm test && corepack pnpm build` |
 | Next.js client in development on `:3000/app` | `cd frontend && corepack pnpm dev` |
 | Whole stack on PostgreSQL | `docker compose up --build` |
