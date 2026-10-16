@@ -136,9 +136,9 @@ def test_unknown_ids_return_404(client: TestClient) -> None:
 def test_demo_processes_load(client: TestClient) -> None:
     demos = client.get("/demo-processes").json()
     assert {d["slug"] for d in demos} == {
-        "invoice-intake",
-        "customer-onboarding",
-        "bank-reconciliation",
+        "distributor-orders",
+        "warranty-claims",
+        "zoning-quotes",
     }
     for demo in demos:
         response = client.post(f"/demo-processes/{demo['slug']}")

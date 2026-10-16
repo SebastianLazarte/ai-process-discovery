@@ -231,7 +231,9 @@ const ACTIONS = {
   'load-demo': async el => {
     const created = await call('loadDemo', { slug: el.dataset.slug });
     toast(`Loaded "${created.name}".`);
-    location.hash = `#/processes/${created.id}`;
+    // A demo with preset assumptions comes with its first analysis (RS-89): open its results.
+    const [first] = await call('listAnalyses', { process_id: created.id });
+    location.hash = first ? `#/analyses/${first.id}` : `#/processes/${created.id}`;
   },
   'add-step': el => openDialog(pv.stepForm(el.dataset.process)),
   'edit-step': el => openDialog(pv.stepForm(el.dataset.process, current.process.steps.find(s => s.id === el.dataset.step))),
