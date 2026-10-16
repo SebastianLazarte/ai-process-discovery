@@ -647,16 +647,58 @@ id = "RS-66"
 ru = "RU-10"
 block = "B11"
 area = "infra"
+kind = "story"
 title = "deploy.sh deploys one validated tag: backup, pull, migrate, start, health check, automatic rollback"
-acceptance = ["A tag outside vX.Y.Z is rejected", "A failing health check restores the previous tag", "shellcheck passes in CI"]
+as_a = "maintainer"
+i_want = "deploy.sh to deploy one validated tag (backup, pull, migrate, start, health check)"
+so_that = "a bad release rolls back on its own instead of leaving the demo down"
+points = 5
+priority = "must"
+rank = 3
+
+[[requirement.criteria]]
+given = "a tag outside vX.Y.Z"
+when = "deploy.sh runs"
+then = "it exits with an error and the running version is untouched"
+
+[[requirement.criteria]]
+given = "a valid tag"
+when = "deploy.sh runs"
+then = "it backs up the database and runs alembic upgrade head before starting the new version"
+
+[[requirement.criteria]]
+given = "a new version whose health check fails"
+when = "deploy.sh runs"
+then = "the previous tag runs again and the script exits with an error"
+
+[[requirement.criteria]]
+given = "a pull request"
+when = "CI runs"
+then = "shellcheck passes on deploy.sh"
 
 [[requirement]]
 id = "RS-67"
 ru = "RU-10"
 block = "B11"
 area = "infra"
+kind = "story"
 title = "A release deploys over SSH with a forced-command key and a pinned host key, then runs an HTTPS smoke test"
-acceptance = ["The deploy job runs only in the production environment", "The smoke test checks /health and /ui/ over HTTPS"]
+as_a = "maintainer"
+i_want = "a merged release to deploy itself over SSH and check the live site"
+so_that = "shipping needs no manual step and a broken deploy is visible at once"
+points = 3
+priority = "must"
+rank = 4
+
+[[requirement.criteria]]
+given = "a published release"
+when = "the release workflow runs"
+then = "the deploy job runs only in the production environment, over SSH with the pinned host key"
+
+[[requirement.criteria]]
+given = "the deploy finished"
+when = "the smoke test runs"
+then = "it checks /health and /ui/ over HTTPS and fails the job on any error"
 
 [[requirement]]
 id = "RS-68"
@@ -670,7 +712,7 @@ i_want = "nightly backups and purges from systemd timers, with a rehearsed resto
 so_that = "a lost database costs at most one day of demo data"
 points = 5
 priority = "must"
-rank = 3
+rank = 5
 
 [[requirement.criteria]]
 given = "last night's backup"

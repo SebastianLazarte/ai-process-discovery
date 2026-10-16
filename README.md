@@ -4,38 +4,67 @@
 [![CodeQL](https://github.com/SebastianLazarte/ai-process-discovery/actions/workflows/codeql.yml/badge.svg)](https://github.com/SebastianLazarte/ai-process-discovery/actions/workflows/codeql.yml)
 [![Release](https://img.shields.io/github/v/release/SebastianLazarte/ai-process-discovery?include_prereleases)](https://github.com/SebastianLazarte/ai-process-discovery/releases)
 
-Turns a business process described step by step into a quantified, explainable automation blueprint. Code computes every number. The LLM only interprets what is ambiguous, and it cannot remove a human control.
+Describe a business process step by step and get a quantified, explainable automation plan: which steps to automate, how, what it saves, and where a person must stay in control.
 
-## Problem
+**Code computes every number. The AI only interprets, and it can never remove a human control.**
 
-Teams decide what to automate by intuition. Nobody measures how much time each step takes, which steps are technically suitable, which ones must keep a person in the loop, or whether the savings survive honest assumptions.
+## Try it
 
-## What it does
+**Live demo:** coming with the public demo release (block B11). No sign-up, synthetic data, deleted daily.
 
-```text
-Describe the process
-  → quantify the current state            (hours, cost)
-  → deterministic automation assessment   (score, method, human control)
-  → AI-assisted analysis                  (interpretation, risks, architecture)
-  → human review                          (overrides with a reason)
-  → automation blueprint                  (JSON and Markdown)
+**On your machine, one command** (Docker, no API key needed):
+
+```bash
+docker run --rm -p 8000:8000 ghcr.io/sebastianlazarte/ai-process-discovery:latest
 ```
 
-## Design principles
+Then open <http://localhost:8000/ui/>. The API docs are at `/docs`.
 
-- **Deterministic first.** Hours, cost, scores, savings, payback and ROI come from Python with `Decimal` arithmetic.
-- **Structured LLM output.** The model fills a Pydantic schema that has no field for any business number.
-- **Human in the loop.** Rules decide the minimum human control. The AI may raise it, never lower it. People may override, with a reason that is stored next to the original.
-- **Explainable scoring.** Every score keeps its factors, penalties, unknown inputs and policy version.
-- **Provider abstraction.** Services depend on an `LLMProvider` protocol. A deterministic fake is the default.
-- **API first.** The web client is just another HTTP client, and so is the Streamlit UI it replaces.
+## A two-minute tour
+
+1. **Load the "Invoice intake and validation" demo.** 400 invoices a month, 5 steps, 18.50 per hour.
+2. **Open Analyse.** Set an implementation cost of 6000, tooling of 50 per month and a 60 % expected reduction on every step. Tick "Enrich with the LLM" to see the AI layer, and confirm the notice about steps with sensitive data. Without a key, a deterministic fake provider plays the LLM.
+3. **Run the analysis.** You get four separate answers:
+
+| Question | Answer for this demo |
+|---|---|
+| What does the process cost today? | 95.33 hours and 1,763.67 per month |
+| How suitable is it for automation? | 65.9 / 100, weighted by the time each step takes |
+| Is it worth it? | 1,008.20 net savings per month, payback in 5.95 months |
+| Where must a person stay in control? | "Approve payment" is `RULE_BASED` and still keeps `REQUIRED` human control, because the step needs an approval. The AI cannot change that. |
+
+4. **Override a recommendation** on any step. The reason is mandatory and is stored next to the original.
+5. **Open Blueprint** and download it as Markdown: eight sections, ready to hand to a team.
+
+## Why it is built this way
+
+Teams decide what to automate by intuition, and LLMs make it tempting to let a model produce the numbers. This project takes the opposite position:
+
+- **Deterministic first.** Hours, cost, scores, savings, payback and ROI come from Python with `Decimal` arithmetic ([ADR 0001](docs/adr/0001-deterministic-first-analysis.md)).
+- **The LLM cannot produce a business number.** Its output is a Pydantic schema with no field for hours, cost, score, savings, payback or ROI, and it never sees monetary inputs.
+- **Human in the loop.** Rules set the minimum human control. The AI may raise it, never lower it. People may override with a reason.
+- **Explainable scoring.** Every score keeps its factors, penalties, unknown inputs and policy version. Unknown values are reported, never invented.
+- **Degrades gracefully.** If the provider times out, refuses or returns invalid output, the analysis is still stored with its deterministic part complete.
+
+## For engineers: where to look
+
+| To see | Open |
+|---|---|
+| The scoring rules, as pure functions | [`src/app/domain/scoring.py`](src/app/domain/scoring.py), [`policies.py`](src/app/domain/policies.py) |
+| How rules and AI are reconciled (raise, never lower) | [`src/app/domain/reconciliation.py`](src/app/domain/reconciliation.py) |
+| The LLM output schema with no room for numbers | [`src/app/llm/schemas.py`](src/app/llm/schemas.py) and its test [`test_schemas.py`](tests/unit/llm/test_schemas.py) |
+| A test that fails if the domain imports a framework | [`tests/unit/test_boundaries.py`](tests/unit/test_boundaries.py) |
+| Property-based tests of the domain | [`tests/unit/domain/test_properties.py`](tests/unit/domain/test_properties.py) |
+| Every decision and its trade-offs | [`docs/adr/`](docs/adr/) |
+| The product backlog with Given/When/Then criteria | [`docs/requirements.toml`](docs/requirements.toml) |
+
+Quality bar on every pull request: formatting, lint, strict typing, tests on Python 3.12 and 3.13 with 95 % minimum coverage and complexity limits, the integration suite on PostgreSQL, web client tests on Node 22, a Docker build with a smoke test, CodeQL and dependency review. A weekly job runs mutation testing on the domain ([ADR 0011](docs/adr/0011-automated-quality-gauntlet.md)). Releases are versioned by release-please and the image ships to GHCR with provenance and SBOM ([ADR 0006](docs/adr/0006-github-flow-ci-and-releases.md)).
 
 ## Architecture
 
 ```mermaid
 flowchart TB
     WEB[Web client /ui/] -->|REST JSON| API[FastAPI]
-    UI[Streamlit UI, until 1.2] -->|REST JSON| API
     API --> PS[ProcessService]
     API --> AS[AnalysisService]
     API --> BS[Blueprint]
@@ -115,27 +144,23 @@ Method classification, first match wins:
 | List dependencies, risks and uncertainties | Lower a human control |
 | Suggest architecture components | See hourly cost or any monetary input |
 
-If the provider times out, refuses or returns invalid output, the analysis is still stored with `llm_status=unavailable` and its deterministic part complete.
-
-## Setup
+## Run from source
 
 Requires [uv](https://docs.astral.sh/uv/).
 
 ```bash
 uv sync --all-extras
 cp .env.example .env            # optional: LLM_PROVIDER=anthropic and a key
-
-uv run uvicorn app.main:app --reload                 # API and web client on :8000/ui/, docs at /docs
-uv run streamlit run ui/streamlit_app.py             # legacy Streamlit UI on :8501, until 1.2
+uv run uvicorn app.main:app --reload
 ```
 
-Or the whole stack with PostgreSQL:
+The web client is on `:8000/ui/` and the API docs on `/docs`. The default `FakeLLMProvider` is deterministic and needs no key.
+
+The whole stack with PostgreSQL:
 
 ```bash
 docker compose up --build
 ```
-
-Released images: `docker pull ghcr.io/sebastianlazarte/ai-process-discovery:latest`.
 
 ## Tests
 
@@ -163,50 +188,26 @@ node --test web/tests/*.test.js     # web client, Node 22
 | `GET` `POST` | `/demo-processes`, `/demo-processes/{slug}` | Synthetic demo processes |
 | `GET` | `/health` | Application and database state |
 
-## Example
-
-The `invoice-intake` demo: 400 invoices a month, 5 steps, 18.50 per hour.
-
-| | Value |
-|---|---|
-| Current monthly hours | 95.33 |
-| Current monthly cost | 1,763.67 |
-| Process suitability | 65.9 / 100 |
-| Hours freed at 60 % reduction | 57.20 |
-| Net monthly savings (tooling 50) | 1,008.20 |
-| Payback on 6,000 | 5.95 months |
-
-The "Approve payment" step scores 60 and is `RULE_BASED`, and it still keeps `REQUIRED` human control because the step requires approval. The AI cannot change that.
-
 ## Trade-offs
 
 - **SQLite locally, PostgreSQL in CI.** The demo runs with nothing but `uv`; the `test-postgres` job proves the PostgreSQL path on every pull request ([ADR 0002](docs/adr/0002-sqlite-locally-postgresql-in-ci.md)).
-- **No migrations yet.** `create_all` until a schema is released.
-- **Web client without a framework.** ES modules served by FastAPI at `/ui/`, no build step and no dependencies; the client prints the API's numbers and never computes one ([ADR 0007](docs/adr/0007-vanilla-web-client-served-by-fastapi.md)). Streamlit runs next to it in 1.1 and leaves in 1.2 ([ADR 0005](docs/adr/0005-streamlit-as-rest-client.md)).
+- **No migrations yet.** `create_all` until the public demo ships; Alembic arrives first in block B11 (RS-59).
+- **Web client without a framework.** ES modules served by FastAPI at `/ui/`, no build step and no dependencies; the client prints the API's numbers and never computes one ([ADR 0007](docs/adr/0007-vanilla-web-client-served-by-fastapi.md)). A Next.js client replaces it in 2.0.0 ([ADR 0009](docs/adr/0009-nextjs-frontend-as-separate-service.md)). The legacy Streamlit UI in `ui/` leaves at the same time.
 - **One real LLM provider.** The interface is the deliverable; a second adapter is one module ([ADR 0004](docs/adr/0004-provider-agnostic-llm-anthropic-first.md)).
 - **Synchronous LLM call.** Simple and adequate for one analysis at a time; a queue is the next step if analyses grow.
 
-## CI/CD
-
-GitHub Flow with a protected `main`. Every pull request runs formatting, lint, strict typing, tests on Python 3.12 and 3.13 with 95 % minimum coverage and complexity limits, the integration suite on PostgreSQL, the web client tests on Node 22, a Docker build with a compose smoke test, CodeQL and dependency review. A weekly job runs mutation testing on the domain and fails below a minimum score ([ADR 0011](docs/adr/0011-automated-quality-gauntlet.md)). Pull request titles follow Conventional Commits. release-please turns merged changes into versioned releases and the image is published to GHCR with provenance and SBOM. Details in [ADR 0006](docs/adr/0006-github-flow-ci-and-releases.md) and [CONTRIBUTING](CONTRIBUTING.md).
-
 ## Roadmap
 
-| Block | Content |
-|---|---|
-| B0 | Repository, CI/CD, planning |
-| B1 | Domain and metrics |
-| B2 | Deterministic scoring |
-| B3 | Business case |
-| B4 | Persistence and API |
-| B5 | LLM layer |
-| B6 | Reconciliation |
-| B7 | Blueprint |
-| B8 | Streamlit UI |
-| B9 | Docs and 1.0 release |
-| B10 | Web client |
+| Block | Content | Status |
+|---|---|---|
+| B0 to B9 | Domain, scoring, business case, API, LLM layer, reconciliation, blueprint, 1.0 release | Done |
+| B10 | Web client | Done (1.1) |
+| B11 | Public demo: limits, LLM quota, demo banner, purge, production compose and Nginx | Done (1.2, 1.3) |
+| B11 | Public demo: migrations, deploy with rollback, automatic release deploy, backups | Next |
+| B12 | Next.js client and API under `/api` (2.0) | Planned |
+| B13 | Quality gauntlet and refactors | In progress |
 
-Requirements and acceptance criteria: [docs/requirements.toml](docs/requirements.toml). Scope and non-goals: [PDR 001](docs/pdr/001-mvp-scope.md).
+Requirements and acceptance criteria: [docs/requirements.toml](docs/requirements.toml). Scope and non-goals: [PDR 001](docs/pdr/001-mvp-scope.md). Product Goal and roles: [PDR 002](docs/pdr/002-portfolio-product-goal-and-roles.md). Contributing: [CONTRIBUTING](CONTRIBUTING.md).
 
 ## License
 
