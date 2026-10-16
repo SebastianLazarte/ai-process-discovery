@@ -919,14 +919,14 @@ when = "an analysis runs"
 then = "its full result matches a committed snapshot once ids and timestamps are normalised"
 
 [[requirement.criteria]]
-given = "an analysis with overrides"
-when = "the reviewer view is built"
-then = "overrides, human controls and rule risks are checked by unit tests without HTTP"
+given = "an analysis with an override"
+when = "the reviewer view and the history are read"
+then = "methods, human controls with their reasons and rule risks match the committed snapshot"
 
 [[requirement.criteria]]
 given = "a blueprint"
 when = "it is rendered as Markdown"
-then = "each section's content is asserted, not only its presence"
+then = "its full text matches the committed snapshot, not only the presence of each section"
 
 [[requirement]]
 id = "RS-83"
