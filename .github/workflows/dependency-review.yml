@@ -17,3 +17,9 @@ jobs:
         with:
           fail-on-severity: moderate
           comment-summary-in-pr: on-failure
+          # Each exception names one advisory, why it is safe, and when it goes.
+          # GHSA-vfj7-8cjw-p6xm: braces <= 3.0.3, denial of service through deeply nested
+          # patterns, with no patched release yet. It reaches frontend/ only as a development
+          # tool (eslint-config-next > fast-glob > micromatch > braces) that expands patterns
+          # we write, and it ships in no image. Remove it once Dependabot brings a fix.
+          allow-ghsas: GHSA-vfj7-8cjw-p6xm
