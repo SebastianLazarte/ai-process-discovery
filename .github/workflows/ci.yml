@@ -63,6 +63,12 @@ jobs:
           cache: pnpm
           cache-dependency-path: frontend/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
+      # RS-71: the types are generated from openapi.json, which a pytest check keeps equal
+      # to the API (RS-69). A contract change without regenerated types fails here.
+      - name: API types up to date
+        run: |
+          pnpm api:types
+          git diff --exit-code -- src/lib/api/schema.d.ts             || { echo "::error::Run 'pnpm api:types' in frontend/ and commit src/lib/api/schema.d.ts"; exit 1; }
       - name: Lint
         run: pnpm lint
       - name: Format
