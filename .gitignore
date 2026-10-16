@@ -22,3 +22,7 @@ htmlcov/
 *.db
 output/
 CLAUDE.local.md
+
+# Mutation testing
+mutants/
+.hypothesis/

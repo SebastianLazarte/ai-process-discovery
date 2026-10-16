@@ -1,0 +1,45 @@
+name: Mutation testing
+
+# Measures whether the domain tests catch deliberate bugs (ADR 0011). Too slow for every
+# pull request, so it runs weekly and on demand, and is not a required check.
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  UV_LOCKED: "1"
+  # Ratchet: raise it when the score rises, never lower it without an ADR.
+  MIN_MUTATION_SCORE: "83"
+
+jobs:
+  mutation:
+    name: mutation
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          enable-cache: true
+      - run: uv sync --all-extras
+      - name: Mutate the domain and run its tests
+        run: uv run mutmut run --max-children 4
+      - name: Score
+        run: |
+          uv run mutmut export-cicd-stats
+          uv run python scripts/mutation_score.py mutants/mutmut-cicd-stats.json \
+            --min "$MIN_MUTATION_SCORE" >> "$GITHUB_STEP_SUMMARY"
+      - name: Surviving mutants
+        if: always()
+        run: uv run mutmut results > mutants/survivors.txt || true
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: mutation-report
+          path: |
+            mutants/mutmut-cicd-stats.json
+            mutants/survivors.txt

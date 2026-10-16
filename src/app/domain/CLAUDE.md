@@ -14,9 +14,11 @@ Business behaviour as plain Python: metrics, scoring, method classification, hum
 - Hard rule 3: `reconciliation.py` lets the LLM raise a human control, never lower it, and decide a method only where the rules return `NEEDS_REVIEW`.
 - Every figure must still come out with the LLM off or failing (`llm_status=unavailable`).
 - Unknown inputs stay unknown and are reported; they are never guessed.
+- A new rule gets an example test and, when it holds for every input, a property in `tests/unit/domain/test_properties.py` (ADR 0011).
 
 ## Verify
 
 ```bash
 uv run pytest tests/unit/domain tests/unit/test_boundaries.py
+uv run mutmut run && uv run mutmut results   # minutes; a surviving mutant in a rule means a missing test
 ```

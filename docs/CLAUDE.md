@@ -20,11 +20,12 @@ Stable reference for the whole repo. Code changes read from here; this folder ch
 | ADR 0003 | Domain, contracts and persistence are separate models | accepted |
 | ADR 0004 | `LLMProvider` protocol, fake by default, Anthropic first, versioned prompt | accepted |
 | ADR 0005 | Streamlit as a REST client | replaced by ADR 0007 from 1.2.0; Streamlit pending removal |
-| ADR 0006 | GitHub Flow, required checks, release-please, release authorship | accepted; required checks amended by ADR 0009, supply chain by ADR 0010 |
+| ADR 0006 | GitHub Flow, required checks, release-please, release authorship | accepted; required checks amended by ADR 0009, supply chain by ADR 0010, coverage minimum by ADR 0011 |
 | ADR 0007 | Vanilla web client served by FastAPI | replaced by ADR 0009 from 2.0.0; `web/` pending removal |
 | ADR 0008 | Public demo on the maintainer's VPS (block B11, RS-59 to RS-68) | accepted; layout amended by ADR 0009 |
 | ADR 0009 | Next.js frontend as a separate service, API under `/api` (block B12, RS-69 to RS-80) | accepted |
 | ADR 0010 | Dependency updates: grouped minor and patch after a cooldown, majors planned, Python version fixed | accepted |
+| ADR 0011 | Automated quality gauntlet: mutation testing on the domain, property-based tests, complexity limits, coverage 95 % | proposed |
 
 Adding or changing a decision updates this index, and the routing table in the root `CLAUDE.md` when it opens a new area.
 
@@ -49,7 +50,7 @@ The maintainer is the Product Owner and writes and approves the stories. An agen
 | Product Goal | `[product] goal` |
 | Epic | `[user_requirements.RU-nn]`: `name` and a story (`as_a`, `i_want`, `so_that`) |
 | Backlog item | `[[requirement]]` `RS-nn`: a user story or an enabler, one GitHub issue |
-| Release | `block` B0 to B12, one milestone each |
+| Release | `block` B0 to B13, one milestone each |
 | Sprint | One week from `first_sprint`; the Sprint field on the GitHub Project board |
 
 - **Definition of Ready**: a story (`as_a` from `roles`, `i_want`, `so_that`) or an enabler with a clear title; at least one Given/When/Then criterion; `points` in 1, 2, 3, 5 or 8 (split anything larger); `priority` must, should, could or wont; a `rank`; approved by the PO. Only Ready items enter a sprint.

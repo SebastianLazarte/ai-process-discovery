@@ -49,7 +49,7 @@ def test_every_epic_and_role_is_used() -> None:
 def test_every_requirement_traces_to_an_epic_and_a_release() -> None:
     for r in ITEMS:
         assert r["ru"] in EPICS, r["id"]
-        assert r["block"] in {f"B{n}" for n in range(13)}, r["id"]
+        assert r["block"] in {f"B{n}" for n in range(14)}, r["id"]
         assert r["area"] in AREAS, r["id"]
         assert r["title"].strip(), r["id"]
 

@@ -62,7 +62,7 @@ jobs:
       - name: Tests (SQLite)
         run: >
           uv run pytest
-          --cov --cov-report=term --cov-report=xml --cov-fail-under=85
+          --cov --cov-report=term --cov-report=xml --cov-fail-under=95
           --junitxml=junit.xml
       - name: Coverage summary
         if: always()

@@ -1,0 +1,915 @@
+{
+  "analysis": {
+    "architecture_recommendations": [
+      "Orchestrate the automated steps from a single workflow engine with retries",
+      "Route low-confidence and flagged items to a human review queue"
+    ],
+    "automation_suitability": {
+      "policy_version": "scoring-v1",
+      "process_score": "44.0"
+    },
+    "business_impact": {
+      "assumptions": {
+        "expected_time_reduction_by_step": {
+          "<step-1>": "0.5",
+          "<step-2>": "0.5",
+          "<step-3>": "0.5"
+        },
+        "implementation_cost": "6000",
+        "monthly_tooling_cost": "50"
+      },
+      "estimated_hours_saved": "12.47",
+      "estimated_monthly_savings": null,
+      "implementation_cost": "6000.00",
+      "monthly_tooling_cost": "50.00",
+      "net_monthly_savings": null,
+      "payback_months": null,
+      "roi_12_months": null,
+      "steps_without_reduction": [
+        "<step-4>"
+      ]
+    },
+    "created_at": "<timestamp>",
+    "current_state": {
+      "monthly_cost": null,
+      "monthly_hours": "26.77"
+    },
+    "human_controls": [
+      {
+        "control": "RECOMMENDED",
+        "reasons": [
+          "handles sensitive data"
+        ],
+        "step_id": "<step-1>",
+        "step_name": "Export bank statement"
+      },
+      {
+        "control": "RECOMMENDED",
+        "reasons": [
+          "handles sensitive data"
+        ],
+        "step_id": "<step-2>",
+        "step_name": "Match transactions to ledger"
+      },
+      {
+        "control": "REQUIRED",
+        "reasons": [
+          "requires human judgement"
+        ],
+        "step_id": "<step-3>",
+        "step_name": "Investigate unmatched items"
+      },
+      {
+        "control": "REQUIRED",
+        "reasons": [
+          "requires human approval"
+        ],
+        "step_id": "<step-4>",
+        "step_name": "Sign off reconciliation"
+      }
+    ],
+    "id": "<analysis>",
+    "llm": {
+      "error_kind": null,
+      "model": "fake-deterministic-v1",
+      "prompt_version": "process-analysis-2026-10-07",
+      "provider": "fake",
+      "status": "ok"
+    },
+    "process_id": "<process>",
+    "process_version": 1,
+    "risks": [
+      {
+        "description": "Export bank statement handles sensitive data",
+        "source": "RULES",
+        "step_id": "<step-1>",
+        "type": "DATA"
+      },
+      {
+        "description": "Data protection: restrict access and log processing",
+        "source": "AI",
+        "step_id": "<step-1>",
+        "type": "STEP"
+      },
+      {
+        "description": "Match transactions to ledger handles sensitive data",
+        "source": "RULES",
+        "step_id": "<step-2>",
+        "type": "DATA"
+      },
+      {
+        "description": "Data protection: restrict access and log processing",
+        "source": "AI",
+        "step_id": "<step-2>",
+        "type": "STEP"
+      },
+      {
+        "description": "Investigate unmatched items depends on human judgement",
+        "source": "RULES",
+        "step_id": "<step-3>",
+        "type": "OPERATIONAL"
+      },
+      {
+        "description": "Sign off reconciliation is business critical",
+        "source": "RULES",
+        "step_id": "<step-4>",
+        "type": "OPERATIONAL"
+      },
+      {
+        "description": "Exceptions need an owner once the happy path is automated",
+        "source": "AI",
+        "step_id": null,
+        "type": "OPERATIONAL"
+      }
+    ],
+    "rules_version": "scoring-v1",
+    "step_assessments": [
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to Online banking"
+          ],
+          "human_control_recommended": true,
+          "interpretation": "Export bank statement: Download yesterday's movements from online banking",
+          "method": "RULE_BASED",
+          "rationale": "Input is digital structured and integration readiness is good.",
+          "risks": [
+            "Data protection: restrict access and log processing"
+          ],
+          "uncertainties": []
+        },
+        "final_human_control": "RECOMMENDED",
+        "final_method": "RULE_BASED",
+        "final_source": "RULES",
+        "human_control_reasons": [
+          "handles sensitive data"
+        ],
+        "monthly_hours": "1.10",
+        "name": "Export bank statement",
+        "override": null,
+        "position": 1,
+        "reconciliation_notes": [],
+        "rules_human_control": "RECOMMENDED",
+        "rules_method": "RULE_BASED",
+        "rules_method_reason": "clear rules over structured digital input with few exceptions",
+        "score_factors": [
+          {
+            "detail": "22 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
+            "points": 10
+          },
+          {
+            "detail": "HIGH",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 20
+          },
+          {
+            "detail": "HIGH",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 20
+          },
+          {
+            "detail": "DIGITAL_STRUCTURED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 15
+          },
+          {
+            "detail": "0 of executions",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 15
+          },
+          {
+            "detail": "GOOD",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 10
+          }
+        ],
+        "score_penalties": [
+          {
+            "name": "sensitive_data",
+            "points": 10
+          }
+        ],
+        "score_unknowns": [],
+        "step_id": "<step-1>",
+        "suitability_score": 80
+      },
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to Spreadsheet",
+            "Access to ERP"
+          ],
+          "human_control_recommended": true,
+          "interpretation": "Match transactions to ledger: Match each movement to an open item by amount, date and reference",
+          "method": "HYBRID",
+          "rationale": "Input is digital structured and integration readiness is partial.",
+          "risks": [
+            "Data protection: restrict access and log processing"
+          ],
+          "uncertainties": [
+            "Exception handling is not described"
+          ]
+        },
+        "final_human_control": "RECOMMENDED",
+        "final_method": "HYBRID",
+        "final_source": "AI",
+        "human_control_reasons": [
+          "handles sensitive data"
+        ],
+        "monthly_hours": "16.50",
+        "name": "Match transactions to ledger",
+        "override": null,
+        "position": 2,
+        "reconciliation_notes": [],
+        "rules_human_control": "RECOMMENDED",
+        "rules_method": "NEEDS_REVIEW",
+        "rules_method_reason": "no deterministic rule applies; needs analyst review",
+        "score_factors": [
+          {
+            "detail": "22 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
+            "points": 10
+          },
+          {
+            "detail": "HIGH",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 20
+          },
+          {
+            "detail": "MEDIUM",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 10
+          },
+          {
+            "detail": "DIGITAL_STRUCTURED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 15
+          },
+          {
+            "detail": "0.1 of executions",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 10
+          },
+          {
+            "detail": "PARTIAL",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 5
+          }
+        ],
+        "score_penalties": [
+          {
+            "name": "sensitive_data",
+            "points": 10
+          }
+        ],
+        "score_unknowns": [],
+        "step_id": "<step-2>",
+        "suitability_score": 60
+      },
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to Email",
+            "Access to ERP"
+          ],
+          "human_control_recommended": true,
+          "interpretation": "Investigate unmatched items: Find out what each unmatched movement is and who owns it",
+          "method": "HYBRID",
+          "rationale": "Input is mixed and integration readiness is unknown.",
+          "risks": [],
+          "uncertainties": [
+            "Exception handling is not described"
+          ]
+        },
+        "final_human_control": "REQUIRED",
+        "final_method": "HYBRID",
+        "final_source": "AI",
+        "human_control_reasons": [
+          "requires human judgement"
+        ],
+        "monthly_hours": "7.33",
+        "name": "Investigate unmatched items",
+        "override": null,
+        "position": 3,
+        "reconciliation_notes": [],
+        "rules_human_control": "REQUIRED",
+        "rules_method": "NEEDS_REVIEW",
+        "rules_method_reason": "no deterministic rule applies; needs analyst review",
+        "score_factors": [
+          {
+            "detail": "22 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
+            "points": 10
+          },
+          {
+            "detail": "LOW",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 3
+          },
+          {
+            "detail": "LOW",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 3
+          },
+          {
+            "detail": "MIXED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 5
+          },
+          {
+            "detail": "unknown",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 0
+          },
+          {
+            "detail": "UNKNOWN",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 0
+          }
+        ],
+        "score_penalties": [
+          {
+            "name": "human_judgement",
+            "points": 25
+          }
+        ],
+        "score_unknowns": [
+          "exception_rate",
+          "integration_readiness"
+        ],
+        "step_id": "<step-3>",
+        "suitability_score": 0
+      },
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to ERP"
+          ],
+          "human_control_recommended": true,
+          "interpretation": "Sign off reconciliation: Treasury lead reviews and signs off the daily reconciliation",
+          "method": "RULE_BASED",
+          "rationale": "Input is digital structured and integration readiness is none.",
+          "risks": [],
+          "uncertainties": []
+        },
+        "final_human_control": "REQUIRED",
+        "final_method": "RULE_BASED",
+        "final_source": "RULES",
+        "human_control_reasons": [
+          "requires human approval"
+        ],
+        "monthly_hours": "1.83",
+        "name": "Sign off reconciliation",
+        "override": null,
+        "position": 4,
+        "reconciliation_notes": [],
+        "rules_human_control": "REQUIRED",
+        "rules_method": "RULE_BASED",
+        "rules_method_reason": "clear rules over structured digital input with few exceptions",
+        "score_factors": [
+          {
+            "detail": "22 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
+            "points": 10
+          },
+          {
+            "detail": "MEDIUM",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 10
+          },
+          {
+            "detail": "HIGH",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 20
+          },
+          {
+            "detail": "DIGITAL_STRUCTURED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 15
+          },
+          {
+            "detail": "0.02 of executions",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 15
+          },
+          {
+            "detail": "NONE",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 0
+          }
+        ],
+        "score_penalties": [
+          {
+            "name": "high_criticality",
+            "points": 15
+          }
+        ],
+        "score_unknowns": [],
+        "step_id": "<step-4>",
+        "suitability_score": 55
+      }
+    ],
+    "unknowns": [
+      "Investigate unmatched items: exception_rate is unknown",
+      "Investigate unmatched items: integration_readiness is unknown",
+      "Sign off reconciliation: no expected time reduction given"
+    ]
+  },
+  "blueprint_md": "# Automation blueprint: Daily bank reconciliation\n\n## Process summary\n\n- **Description:** Bank movements are matched against the ledger every working day. The hourly cost is deliberately unknown to show that unknown cost is never treated as zero.\n- **Owner:** Treasury\n- **Executions per month:** 22\n- **Steps:** 4\n- **Analysis:** <timestamp>, process version 1, rules scoring-v1, LLM ok (fake/fake-deterministic-v1)\n\n## Current state\n\n- **Monthly hours:** 26.77\n- **Monthly cost:** unknown\n\n## Automation opportunities\n\nOrdered by monthly time. Suitability measures whether a step can be automated, not how much it is worth.\n\n| # | Step | Method | Human control | Decided by | Hours/month | Suitability |\n|---|---|---|---|---|---:|---:|\n| 2 | Match transactions to ledger | HYBRID | RECOMMENDED | AI | 16.50 | 60 |\n| 3 | Investigate unmatched items | HYBRID | REQUIRED | AI | 7.33 | 0 |\n| 4 | Sign off reconciliation | RULE_BASED | REQUIRED | RULES | 1.83 | 55 |\n\n- **Match transactions to ledger:** Input is digital structured and integration readiness is partial.\n- **Investigate unmatched items:** Input is mixed and integration readiness is unknown.\n- **Sign off reconciliation:** clear rules over structured digital input with few exceptions\n\n## Proposed architecture\n\n- Workflow engine that runs the steps in order, with retries and an audit log\n- Rules step in the workflow engine with explicit, versioned validation rules\n- Automated draft with a person confirming the result\n- Human review queue: flagged items wait for a decision, which is logged\n- Orchestrate the automated steps from a single workflow engine with retries\n- Route low-confidence and flagged items to a human review queue\n\n## Business impact\n\nEvery economic figure below depends on the assumptions listed after it.\n\n- **Hours freed per month:** 12.47\n- **Gross monthly savings:** unknown\n- **Monthly tooling cost:** 50.00\n- **Net monthly savings:** unknown\n- **Implementation cost:** 6,000.00\n- **Payback (months):** not applicable\n- **ROI at 12 months:** not applicable\n\n**Assumptions**\n\n- Implementation cost: 6,000.00\n- Monthly tooling cost: 50.00\n- Expected time reduction for step <step-1>: 50 %\n- Expected time reduction for step <step-2>: 50 %\n- Expected time reduction for step <step-3>: 50 %\n- 1 step(s) have no expected reduction and count as zero savings\n\n## Risks\n\n- [RULES / DATA] Export bank statement handles sensitive data\n- [AI / STEP] Data protection: restrict access and log processing\n- [RULES / DATA] Match transactions to ledger handles sensitive data\n- [AI / STEP] Data protection: restrict access and log processing\n- [RULES / OPERATIONAL] Investigate unmatched items depends on human judgement\n- [RULES / OPERATIONAL] Sign off reconciliation is business critical\n- [AI / OPERATIONAL] Exceptions need an owner once the happy path is automated\n\n## Human controls\n\n- **Export bank statement:** REQUIRED. handles sensitive data; Reviewer decision: Reviewer keeps this step manual\n- **Match transactions to ledger:** RECOMMENDED. handles sensitive data\n- **Investigate unmatched items:** REQUIRED. requires human judgement\n- **Sign off reconciliation:** REQUIRED. requires human approval\n\n## Workflow specification\n\n1. Trigger: a new process execution starts\n2. Export bank statement: MANUAL, then wait for a person to approve before continuing\n3. Match transactions to ledger: HYBRID, with a person reviewing a sample or the flagged cases\n4. Investigate unmatched items: HYBRID, then wait for a person to approve before continuing\n5. Sign off reconciliation: RULE_BASED, then wait for a person to approve before continuing\n6. End: record the outcome and the time spent for later comparison\n",
+  "history": [
+    {
+      "created_at": "<timestamp>",
+      "id": "<analysis>",
+      "llm_status": "ok",
+      "model": "fake-deterministic-v1",
+      "override_count": 1,
+      "process_version": 1,
+      "provider": "fake",
+      "rules_version": "scoring-v1"
+    }
+  ],
+  "reviewed": {
+    "architecture_recommendations": [
+      "Orchestrate the automated steps from a single workflow engine with retries",
+      "Route low-confidence and flagged items to a human review queue"
+    ],
+    "automation_suitability": {
+      "policy_version": "scoring-v1",
+      "process_score": "44.0"
+    },
+    "business_impact": {
+      "assumptions": {
+        "expected_time_reduction_by_step": {
+          "<step-1>": "0.5",
+          "<step-2>": "0.5",
+          "<step-3>": "0.5"
+        },
+        "implementation_cost": "6000",
+        "monthly_tooling_cost": "50"
+      },
+      "estimated_hours_saved": "12.47",
+      "estimated_monthly_savings": null,
+      "implementation_cost": "6000.00",
+      "monthly_tooling_cost": "50.00",
+      "net_monthly_savings": null,
+      "payback_months": null,
+      "roi_12_months": null,
+      "steps_without_reduction": [
+        "<step-4>"
+      ]
+    },
+    "created_at": "<timestamp>",
+    "current_state": {
+      "monthly_cost": null,
+      "monthly_hours": "26.77"
+    },
+    "human_controls": [
+      {
+        "control": "REQUIRED",
+        "reasons": [
+          "handles sensitive data",
+          "Reviewer decision: Reviewer keeps this step manual"
+        ],
+        "step_id": "<step-1>",
+        "step_name": "Export bank statement"
+      },
+      {
+        "control": "RECOMMENDED",
+        "reasons": [
+          "handles sensitive data"
+        ],
+        "step_id": "<step-2>",
+        "step_name": "Match transactions to ledger"
+      },
+      {
+        "control": "REQUIRED",
+        "reasons": [
+          "requires human judgement"
+        ],
+        "step_id": "<step-3>",
+        "step_name": "Investigate unmatched items"
+      },
+      {
+        "control": "REQUIRED",
+        "reasons": [
+          "requires human approval"
+        ],
+        "step_id": "<step-4>",
+        "step_name": "Sign off reconciliation"
+      }
+    ],
+    "id": "<analysis>",
+    "llm": {
+      "error_kind": null,
+      "model": "fake-deterministic-v1",
+      "prompt_version": "process-analysis-2026-10-07",
+      "provider": "fake",
+      "status": "ok"
+    },
+    "process_id": "<process>",
+    "process_version": 1,
+    "risks": [
+      {
+        "description": "Export bank statement handles sensitive data",
+        "source": "RULES",
+        "step_id": "<step-1>",
+        "type": "DATA"
+      },
+      {
+        "description": "Data protection: restrict access and log processing",
+        "source": "AI",
+        "step_id": "<step-1>",
+        "type": "STEP"
+      },
+      {
+        "description": "Match transactions to ledger handles sensitive data",
+        "source": "RULES",
+        "step_id": "<step-2>",
+        "type": "DATA"
+      },
+      {
+        "description": "Data protection: restrict access and log processing",
+        "source": "AI",
+        "step_id": "<step-2>",
+        "type": "STEP"
+      },
+      {
+        "description": "Investigate unmatched items depends on human judgement",
+        "source": "RULES",
+        "step_id": "<step-3>",
+        "type": "OPERATIONAL"
+      },
+      {
+        "description": "Sign off reconciliation is business critical",
+        "source": "RULES",
+        "step_id": "<step-4>",
+        "type": "OPERATIONAL"
+      },
+      {
+        "description": "Exceptions need an owner once the happy path is automated",
+        "source": "AI",
+        "step_id": null,
+        "type": "OPERATIONAL"
+      }
+    ],
+    "rules_version": "scoring-v1",
+    "step_assessments": [
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to Online banking"
+          ],
+          "human_control_recommended": true,
+          "interpretation": "Export bank statement: Download yesterday's movements from online banking",
+          "method": "RULE_BASED",
+          "rationale": "Input is digital structured and integration readiness is good.",
+          "risks": [
+            "Data protection: restrict access and log processing"
+          ],
+          "uncertainties": []
+        },
+        "final_human_control": "REQUIRED",
+        "final_method": "MANUAL",
+        "final_source": "HUMAN",
+        "human_control_reasons": [
+          "handles sensitive data"
+        ],
+        "monthly_hours": "1.10",
+        "name": "Export bank statement",
+        "override": {
+          "created_at": "<timestamp>",
+          "id": "<override>",
+          "new_human_control": "REQUIRED",
+          "new_method": "MANUAL",
+          "original_human_control": "RECOMMENDED",
+          "original_method": "RULE_BASED",
+          "reason": "Reviewer keeps this step manual",
+          "step_id": "<step-1>"
+        },
+        "position": 1,
+        "reconciliation_notes": [],
+        "rules_human_control": "RECOMMENDED",
+        "rules_method": "RULE_BASED",
+        "rules_method_reason": "clear rules over structured digital input with few exceptions",
+        "score_factors": [
+          {
+            "detail": "22 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
+            "points": 10
+          },
+          {
+            "detail": "HIGH",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 20
+          },
+          {
+            "detail": "HIGH",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 20
+          },
+          {
+            "detail": "DIGITAL_STRUCTURED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 15
+          },
+          {
+            "detail": "0 of executions",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 15
+          },
+          {
+            "detail": "GOOD",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 10
+          }
+        ],
+        "score_penalties": [
+          {
+            "name": "sensitive_data",
+            "points": 10
+          }
+        ],
+        "score_unknowns": [],
+        "step_id": "<step-1>",
+        "suitability_score": 80
+      },
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to Spreadsheet",
+            "Access to ERP"
+          ],
+          "human_control_recommended": true,
+          "interpretation": "Match transactions to ledger: Match each movement to an open item by amount, date and reference",
+          "method": "HYBRID",
+          "rationale": "Input is digital structured and integration readiness is partial.",
+          "risks": [
+            "Data protection: restrict access and log processing"
+          ],
+          "uncertainties": [
+            "Exception handling is not described"
+          ]
+        },
+        "final_human_control": "RECOMMENDED",
+        "final_method": "HYBRID",
+        "final_source": "AI",
+        "human_control_reasons": [
+          "handles sensitive data"
+        ],
+        "monthly_hours": "16.50",
+        "name": "Match transactions to ledger",
+        "override": null,
+        "position": 2,
+        "reconciliation_notes": [],
+        "rules_human_control": "RECOMMENDED",
+        "rules_method": "NEEDS_REVIEW",
+        "rules_method_reason": "no deterministic rule applies; needs analyst review",
+        "score_factors": [
+          {
+            "detail": "22 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
+            "points": 10
+          },
+          {
+            "detail": "HIGH",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 20
+          },
+          {
+            "detail": "MEDIUM",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 10
+          },
+          {
+            "detail": "DIGITAL_STRUCTURED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 15
+          },
+          {
+            "detail": "0.1 of executions",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 10
+          },
+          {
+            "detail": "PARTIAL",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 5
+          }
+        ],
+        "score_penalties": [
+          {
+            "name": "sensitive_data",
+            "points": 10
+          }
+        ],
+        "score_unknowns": [],
+        "step_id": "<step-2>",
+        "suitability_score": 60
+      },
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to Email",
+            "Access to ERP"
+          ],
+          "human_control_recommended": true,
+          "interpretation": "Investigate unmatched items: Find out what each unmatched movement is and who owns it",
+          "method": "HYBRID",
+          "rationale": "Input is mixed and integration readiness is unknown.",
+          "risks": [],
+          "uncertainties": [
+            "Exception handling is not described"
+          ]
+        },
+        "final_human_control": "REQUIRED",
+        "final_method": "HYBRID",
+        "final_source": "AI",
+        "human_control_reasons": [
+          "requires human judgement"
+        ],
+        "monthly_hours": "7.33",
+        "name": "Investigate unmatched items",
+        "override": null,
+        "position": 3,
+        "reconciliation_notes": [],
+        "rules_human_control": "REQUIRED",
+        "rules_method": "NEEDS_REVIEW",
+        "rules_method_reason": "no deterministic rule applies; needs analyst review",
+        "score_factors": [
+          {
+            "detail": "22 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
+            "points": 10
+          },
+          {
+            "detail": "LOW",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 3
+          },
+          {
+            "detail": "LOW",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 3
+          },
+          {
+            "detail": "MIXED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 5
+          },
+          {
+            "detail": "unknown",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 0
+          },
+          {
+            "detail": "UNKNOWN",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 0
+          }
+        ],
+        "score_penalties": [
+          {
+            "name": "human_judgement",
+            "points": 25
+          }
+        ],
+        "score_unknowns": [
+          "exception_rate",
+          "integration_readiness"
+        ],
+        "step_id": "<step-3>",
+        "suitability_score": 0
+      },
+      {
+        "ai_suggestion": {
+          "confidence": 0.6,
+          "dependencies": [
+            "Access to ERP"
+          ],
+          "human_control_recommended": true,
+          "interpretation": "Sign off reconciliation: Treasury lead reviews and signs off the daily reconciliation",
+          "method": "RULE_BASED",
+          "rationale": "Input is digital structured and integration readiness is none.",
+          "risks": [],
+          "uncertainties": []
+        },
+        "final_human_control": "REQUIRED",
+        "final_method": "RULE_BASED",
+        "final_source": "RULES",
+        "human_control_reasons": [
+          "requires human approval"
+        ],
+        "monthly_hours": "1.83",
+        "name": "Sign off reconciliation",
+        "override": null,
+        "position": 4,
+        "reconciliation_notes": [],
+        "rules_human_control": "REQUIRED",
+        "rules_method": "RULE_BASED",
+        "rules_method_reason": "clear rules over structured digital input with few exceptions",
+        "score_factors": [
+          {
+            "detail": "22 effective executions/month",
+            "max_points": 20,
+            "name": "frequency",
+            "points": 10
+          },
+          {
+            "detail": "MEDIUM",
+            "max_points": 20,
+            "name": "repetitiveness",
+            "points": 10
+          },
+          {
+            "detail": "HIGH",
+            "max_points": 20,
+            "name": "rule_clarity",
+            "points": 20
+          },
+          {
+            "detail": "DIGITAL_STRUCTURED",
+            "max_points": 15,
+            "name": "input_type",
+            "points": 15
+          },
+          {
+            "detail": "0.02 of executions",
+            "max_points": 15,
+            "name": "exception_rate",
+            "points": 15
+          },
+          {
+            "detail": "NONE",
+            "max_points": 10,
+            "name": "integration_readiness",
+            "points": 0
+          }
+        ],
+        "score_penalties": [
+          {
+            "name": "high_criticality",
+            "points": 15
+          }
+        ],
+        "score_unknowns": [],
+        "step_id": "<step-4>",
+        "suitability_score": 55
+      }
+    ],
+    "unknowns": [
+      "Investigate unmatched items: exception_rate is unknown",
+      "Investigate unmatched items: integration_readiness is unknown",
+      "Sign off reconciliation: no expected time reduction given"
+    ]
+  }
+}
