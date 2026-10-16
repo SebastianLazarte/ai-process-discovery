@@ -32,11 +32,12 @@ Areas marked * have their own CLAUDE.md with Read, Rules and Verify. It loads wh
 | Vanilla web client: legacy, pending removal in 2.0.0, no new features | `web/`* | ADR 0007 |
 | Production deploy, Nginx, operations | `deploy/`* | ADR 0008, `docs/runbook/production.md` |
 | CI/CD, releases, GitHub setup, dependency updates | `.github/`, `scripts/bootstrap_github.py` | ADR 0006, ADR 0010 |
+| Test strategy, mutation testing, complexity limits | `tests/`, `pyproject.toml`, `.github/workflows/mutation.yml` | ADR 0011 |
 | Scope, product backlog, stories and acceptance criteria | `docs/requirements.toml` | `docs/pdr/001-mvp-scope.md`, `docs/pdr/002-portfolio-product-goal-and-roles.md` |
 | Write or amend an ADR, PDR or runbook | `docs/`* | decision index in `docs/CLAUDE.md` |
 | Streamlit UI: legacy, pending removal, no new features | `ui/streamlit_app.py` | ADR 0005 |
 
-ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locally-postgresql-in-ci.md`, `0003-separate-domain-contracts-persistence.md`, `0004-provider-agnostic-llm-anthropic-first.md`, `0005-streamlit-as-rest-client.md`, `0006-github-flow-ci-and-releases.md`, `0007-vanilla-web-client-served-by-fastapi.md`, `0008-public-demo-on-own-vps.md`, `0009-nextjs-frontend-as-separate-service.md`, `0010-dependency-update-policy.md`.
+ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locally-postgresql-in-ci.md`, `0003-separate-domain-contracts-persistence.md`, `0004-provider-agnostic-llm-anthropic-first.md`, `0005-streamlit-as-rest-client.md`, `0006-github-flow-ci-and-releases.md`, `0007-vanilla-web-client-served-by-fastapi.md`, `0008-public-demo-on-own-vps.md`, `0009-nextjs-frontend-as-separate-service.md`, `0010-dependency-update-policy.md`, `0011-automated-quality-gauntlet.md`.
 
 ## Commands
 
@@ -48,6 +49,7 @@ ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locall
 | Format, lint, types | `uv run ruff format . && uv run ruff check . && uv run mypy` |
 | All pre-commit hooks | `uv run pre-commit run --all-files` |
 | API and web client on `:8000/ui/` | `uv run uvicorn app.main:app --reload` |
+| Mutation testing of the domain (minutes) | `uv run mutmut run && uv run mutmut results` |
 | Web client tests | `node --test web/tests/*.test.js` |
 | Whole stack on PostgreSQL | `docker compose up --build` |
 | Purge demo data older than 24 h | `uv run python -m app.purge --older-than-hours 24` |

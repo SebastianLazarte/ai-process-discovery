@@ -188,7 +188,7 @@ The "Approve payment" step scores 60 and is `RULE_BASED`, and it still keeps `RE
 
 ## CI/CD
 
-GitHub Flow with a protected `main`. Every pull request runs formatting, lint, strict typing, tests on Python 3.12 and 3.13 with 85 % minimum coverage, the integration suite on PostgreSQL, the web client tests on Node 22, a Docker build with a compose smoke test, CodeQL and dependency review. Pull request titles follow Conventional Commits. release-please turns merged changes into versioned releases and the image is published to GHCR with provenance and SBOM. Details in [ADR 0006](docs/adr/0006-github-flow-ci-and-releases.md) and [CONTRIBUTING](CONTRIBUTING.md).
+GitHub Flow with a protected `main`. Every pull request runs formatting, lint, strict typing, tests on Python 3.12 and 3.13 with 95 % minimum coverage and complexity limits, the integration suite on PostgreSQL, the web client tests on Node 22, a Docker build with a compose smoke test, CodeQL and dependency review. A weekly job runs mutation testing on the domain and fails below a minimum score ([ADR 0011](docs/adr/0011-automated-quality-gauntlet.md)). Pull request titles follow Conventional Commits. release-please turns merged changes into versioned releases and the image is published to GHCR with provenance and SBOM. Details in [ADR 0006](docs/adr/0006-github-flow-ci-and-releases.md) and [CONTRIBUTING](CONTRIBUTING.md).
 
 ## Roadmap
 

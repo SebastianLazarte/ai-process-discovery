@@ -18,7 +18,10 @@ uv run pre-commit install        # once
 uv run pre-commit run --all-files
 uv run pytest
 node --test web/tests/*.test.js   # Node 22
+uv run mutmut run                 # optional, minutes: mutation testing of the domain
 ```
+
+CI enforces 95 % branch coverage and ruff's complexity limits on every pull request, and a minimum mutation score on the domain every week ([ADR 0011](docs/adr/0011-automated-quality-gauntlet.md)). A surviving mutant in business logic means a missing test: `uv run mutmut results` lists them and `uv run mutmut show <name>` shows the change.
 
 ## Rules
 

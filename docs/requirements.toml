@@ -1,7 +1,7 @@
 # Product backlog, one GitHub issue per requirement (scripts/bootstrap_github.py).
 #
 # Scrum mapping: each user requirement (RU) is an epic written as a user story, each system
-# requirement (RS) is a backlog item (a user story or an enabler), and each block (B0 to B12)
+# requirement (RS) is a backlog item (a user story or an enabler), and each block (B0 to B13)
 # is a release with its milestone. Refined items carry Given/When/Then criteria, Fibonacci
 # points, a MoSCoW priority and a rank; items delivered before refinement keep their
 # original title and acceptance list. Status and sprint live in GitHub, not here.
@@ -78,6 +78,12 @@ name = "Modern web interface"
 as_a = "operations lead"
 i_want = "a fast, accessible and secure web interface"
 so_that = "I can work through an analysis on any device without friction"
+
+[user_requirements.RU-12]
+name = "Code that stays trustworthy"
+as_a = "maintainer"
+i_want = "automated quality gates and a clean core around the code agents write"
+so_that = "a change can merge with confidence without reading every line by hand"
 
 [[requirement]]
 id = "RS-01"
@@ -864,3 +870,201 @@ block = "B12"
 area = "ui"
 title = "Retire the vanilla client and the root API routes; Next.js serves / and /ui/ redirects there (2.0.0)"
 acceptance = ["web/, WEB_FILES and the web check are gone", "/processes returns 404 and /api/processes returns 200", "README, CLAUDE.md and the required checks describe the new layout"]
+
+[[requirement]]
+id = "RS-81"
+ru = "RU-12"
+block = "B13"
+area = "infra"
+kind = "enabler"
+title = "Quality gauntlet: mutation testing on the domain, property-based tests, complexity limits and 95 % coverage (ADR 0011)"
+points = 3
+priority = "must"
+rank = 11
+
+[[requirement.criteria]]
+given = "the domain tests"
+when = "a mutant changes a business rule and no test fails"
+then = "the weekly mutation job reports it and fails below the minimum score"
+
+[[requirement.criteria]]
+given = "a pull request with a function over the complexity or size limits"
+when = "CI runs the quality job"
+then = "ruff fails and names the function"
+
+[[requirement.criteria]]
+given = "the test suite"
+when = "total branch coverage drops below 95 %"
+then = "the test job fails"
+
+[[requirement.criteria]]
+given = "any generated step and AI suggestion"
+when = "the rules are reconciled with the AI"
+then = "the final human control is never lower than the rules' control"
+
+[[requirement]]
+id = "RS-82"
+ru = "RU-12"
+block = "B13"
+area = "domain"
+kind = "enabler"
+title = "Characterization tests for the analysis services before refactoring them"
+points = 3
+priority = "must"
+rank = 12
+
+[[requirement.criteria]]
+given = "each demo process and the fake LLM provider"
+when = "an analysis runs"
+then = "its full result matches a committed snapshot once ids and timestamps are normalised"
+
+[[requirement.criteria]]
+given = "an analysis with overrides"
+when = "the reviewer view is built"
+then = "overrides, human controls and rule risks are checked by unit tests without HTTP"
+
+[[requirement.criteria]]
+given = "a blueprint"
+when = "it is rendered as Markdown"
+then = "each section's content is asserted, not only its presence"
+
+[[requirement]]
+id = "RS-83"
+ru = "RU-12"
+block = "B13"
+area = "domain"
+kind = "enabler"
+title = "Rule-based risks live in the domain, and human-control notes no longer depend on message wording"
+points = 2
+priority = "should"
+rank = 13
+
+[[requirement.criteria]]
+given = "a step that handles sensitive data, is critical or needs human judgement"
+when = "the domain derives its risks"
+then = "the risks come from domain/risks.py with typed source and type"
+
+[[requirement.criteria]]
+given = "a reconciliation where the AI raised or kept a human control"
+when = "the human controls are listed"
+then = "their reasons come from a structured field, not from matching note text"
+
+[[requirement.criteria]]
+given = "the analysis snapshot from RS-82"
+when = "the change is applied"
+then = "the snapshot is unchanged"
+
+[[requirement]]
+id = "RS-84"
+ru = "RU-12"
+block = "B13"
+area = "domain"
+kind = "enabler"
+title = "Split the analysis service into orchestration, LLM enrichment and response mapping"
+points = 5
+priority = "should"
+rank = 14
+
+[[requirement.criteria]]
+given = "the analysis service"
+when = "it is split"
+then = "run reads as a short sequence of steps and no module mixes orchestration with mapping"
+
+[[requirement.criteria]]
+given = "the ruff limits"
+when = "max-args is lowered to 5"
+then = "src/ passes without exceptions"
+
+[[requirement.criteria]]
+given = "the analysis snapshot from RS-82"
+when = "the change is applied"
+then = "the snapshot is unchanged"
+
+[[requirement]]
+id = "RS-85"
+ru = "RU-12"
+block = "B13"
+area = "blueprint"
+kind = "enabler"
+title = "Render the blueprint Markdown one section per function"
+points = 2
+priority = "could"
+rank = 15
+
+[[requirement.criteria]]
+given = "a blueprint"
+when = "it is rendered as Markdown"
+then = "the output is identical to before the change"
+
+[[requirement.criteria]]
+given = "the renderer"
+when = "its functions are measured"
+then = "none exceeds the size limits of ADR 0011"
+
+[[requirement]]
+id = "RS-86"
+ru = "RU-12"
+block = "B13"
+area = "domain"
+kind = "enabler"
+title = "Domain cleanup guided by surviving mutants"
+points = 2
+priority = "could"
+rank = 16
+
+[[requirement.criteria]]
+given = "score_step"
+when = "the exception-rate factor is extracted"
+then = "scores are unchanged and the function is under 50 lines"
+
+[[requirement.criteria]]
+given = "the present helpers"
+when = "they share one rounding function"
+then = "rounding stays half up and the property tests pass"
+
+[[requirement.criteria]]
+given = "the surviving mutants that change logic"
+when = "tests are added"
+then = "the weekly job kills them"
+
+[[requirement]]
+id = "RS-87"
+ru = "RU-12"
+block = "B13"
+area = "infra"
+kind = "enabler"
+title = "Test suite cleanup: shared helpers and fixtures"
+points = 2
+priority = "could"
+rank = 17
+
+[[requirement.criteria]]
+given = "helpers duplicated across integration tests"
+when = "they move to tests/payloads.py and tests/factories.py"
+then = "no test body changes its assertions"
+
+[[requirement.criteria]]
+given = "the integration conftest"
+when = "context managers are handled"
+then = "it uses ExitStack instead of calling __enter__ and __exit__ by hand"
+
+[[requirement]]
+id = "RS-88"
+ru = "RU-12"
+block = "B13"
+area = "infra"
+kind = "enabler"
+title = "Raise the quality bar after the refactor"
+points = 1
+priority = "could"
+rank = 18
+
+[[requirement.criteria]]
+given = "the refactors RS-83 to RS-87 merged"
+when = "mutation testing runs again"
+then = "the minimum score rises to the new result, rounded down"
+
+[[requirement.criteria]]
+given = "ADR 0011"
+when = "the final limits are known"
+then = "an amending ADR records them"
