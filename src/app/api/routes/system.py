@@ -36,9 +36,15 @@ def meta(request: Request) -> AppMeta:
     return AppMeta(version=__version__, public_demo=request.app.state.settings.public_demo)
 
 
+class DemoSummary(BaseModel):
+    slug: str
+    name: str
+    description: str
+
+
 @router.get("/demo-processes")
-def list_demo_processes(service: DemoServiceDep) -> list[dict[str, str]]:
-    return service.list()
+def list_demo_processes(service: DemoServiceDep) -> list[DemoSummary]:
+    return [DemoSummary(**demo) for demo in service.list()]
 
 
 @router.post("/demo-processes/{slug}", status_code=status.HTTP_201_CREATED)

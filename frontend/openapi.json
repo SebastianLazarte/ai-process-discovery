@@ -66,10 +66,7 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "additionalProperties": {
-                      "type": "string"
-                    },
-                    "type": "object"
+                    "$ref": "#/components/schemas/DemoSummary"
                   },
                   "type": "array",
                   "title": "Response List Demo Processes Demo Processes Get"
@@ -1421,6 +1418,29 @@
           "monthly_cost"
         ],
         "title": "CurrentStateOut"
+      },
+      "DemoSummary": {
+        "properties": {
+          "slug": {
+            "type": "string",
+            "title": "Slug"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "slug",
+          "name",
+          "description"
+        ],
+        "title": "DemoSummary"
       },
       "HTTPValidationError": {
         "properties": {

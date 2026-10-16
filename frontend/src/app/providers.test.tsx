@@ -41,7 +41,9 @@ function ProcessForm() {
 }
 
 function respond(status: number, body: unknown) {
-  const fetch = vi.fn(async (_request: Request) => Response.json(body, { status }));
+  const fetch = vi.fn<(request: Request) => Promise<Response>>(async () =>
+    Response.json(body, { status }),
+  );
   vi.stubGlobal("fetch", fetch);
   return fetch;
 }
