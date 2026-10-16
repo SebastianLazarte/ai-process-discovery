@@ -48,7 +48,10 @@ class DemoService:
             ids = {step.name: step.id for step in process.steps}
             reductions = preset.get("expected_time_reduction_by_step", {})
             assumptions = BusinessCaseInput.model_validate(
-                {**preset, "expected_time_reduction_by_step": {ids[n]: v for n, v in reductions.items()}}
+                {
+                    **preset,
+                    "expected_time_reduction_by_step": {ids[n]: v for n, v in reductions.items()},
+                }
             )
             self._analyses.run(process.id, AnalysisCreate(assumptions=assumptions))
         return process
