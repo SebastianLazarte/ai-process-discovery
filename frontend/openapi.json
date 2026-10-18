@@ -3,7 +3,7 @@
   "info": {
     "title": "AI Process Discovery & Automation Planner",
     "description": "Quantifies a business process, scores automation suitability with explicit rules, enriches it with an LLM behind a validated contract, and produces an automation blueprint. Deterministic first: the LLM never produces a number.",
-    "version": "1.3.1"
+    "version": "unversioned"
   },
   "servers": [
     {

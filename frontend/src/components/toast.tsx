@@ -30,12 +30,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <div
         role="status"
         aria-live="polite"
-        className="fixed inset-x-4 bottom-4 flex justify-center"
+        className="fixed inset-x-4 bottom-4 z-50 flex justify-end md:inset-x-auto md:right-6 md:bottom-6"
       >
         {toast && (
           <p
             data-tone={toast.tone}
-            className="max-w-md rounded-md border px-4 py-3 shadow-sm data-[tone=error]:border-red-700"
+            className="max-w-[440px] rounded-[10px] border border-toast-line bg-toast px-5 py-3.5 text-sm text-ink shadow-xl data-[tone=error]:border-toast-error-line data-[tone=error]:bg-toast-error"
           >
             {toast.message}
           </p>

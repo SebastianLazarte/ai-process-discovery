@@ -21,7 +21,7 @@ ref = "docs/CLAUDE.md"
 default = ["What did you run, and what did you observe?"]
 feat = [
   "Which test covers each acceptance criterion of the issue?",
-  "Did you try it in the running app (`uv run uvicorn app.main:app --reload`)?",
+  "Did you try it in the running app (`uv run uvicorn app.main:app --reload --reload-dir src`)?",
 ]
 fix = [
   "Which test failed before the fix and passes now?",

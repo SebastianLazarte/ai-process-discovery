@@ -1,39 +1,32 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { buttonClass } from "./button";
 import { DemoBanner } from "./demo-banner";
+import { Sidebar } from "./sidebar";
 
-// Every page: skip link, the public demo banner, the top bar and one main region.
-// Navigation is a top bar with breadcrumbs, no sidebar (docs/design/00-brief.md).
+// Every page: skip link, the sidebar, the public demo banner and one main region, laid out
+// as in the vanilla client (ADR 0014).
 export function AppShell({ children }: { children: ReactNode }) {
   return (
     <>
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-10 focus:bg-white focus:p-2"
+        className="fixed -top-16 left-2 z-50 rounded-control bg-surface p-3 focus:top-2"
       >
         Skip to content
       </a>
-      <DemoBanner />
-      <header className="border-b border-gray-200">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
-          <Link href="/" className="font-semibold no-underline">
-            Process Discovery
-          </Link>
-          <nav aria-label="Main" className="flex items-center gap-2">
-            <Link href="/" className="hidden px-2 sm:inline">
-              Processes
-            </Link>
-            <Link href="/processes/new" className={buttonClass("primary")}>
-              New process
-            </Link>
-          </nav>
+      <div className="min-h-screen md:grid md:grid-cols-[268px_minmax(0,1fr)]">
+        <Sidebar />
+        <div className="min-w-0">
+          <DemoBanner />
+          <main
+            id="main"
+            tabIndex={-1}
+            className="mx-auto max-w-[1320px] px-4 pt-6 pb-12 outline-none md:px-11 md:pt-10 md:pb-16"
+          >
+            {children}
+          </main>
         </div>
-      </header>
-      <main id="main" tabIndex={-1} className="mx-auto max-w-5xl px-4 py-8">
-        {children}
-      </main>
+      </div>
     </>
   );
 }
