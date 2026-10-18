@@ -56,6 +56,7 @@ ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locall
 | Next.js client: install, then lint, format, types, tests, build | `cd frontend && corepack pnpm install && corepack pnpm lint && corepack pnpm format && corepack pnpm typecheck && corepack pnpm test && corepack pnpm build` |
 | Next.js client in development on `:3000/app` | `cd frontend && corepack pnpm dev` |
 | Whole stack on PostgreSQL | `docker compose up --build` |
+| Apply migrations / check them against the models | `uv run alembic upgrade head && uv run alembic check` |
 | Purge demo data older than 24 h | `uv run python -m app.purge --older-than-hours 24` |
 | Legacy Streamlit on `:8501` | `uv run streamlit run ui/streamlit_app.py` |
 

@@ -192,7 +192,7 @@ node --test web/tests/*.test.js     # web client, Node 22
 ## Trade-offs
 
 - **SQLite locally, PostgreSQL in CI.** The demo runs with nothing but `uv`; the `test-postgres` job proves the PostgreSQL path on every pull request ([ADR 0002](docs/adr/0002-sqlite-locally-postgresql-in-ci.md)).
-- **No migrations yet.** `create_all` until the public demo ships; Alembic arrives first in block B11 (RS-59).
+- **Migrations in production, `create_all` locally.** Alembic owns the production schema and runs from the release image before a new version starts (RS-59); local runs and tests still create tables on startup, and a test fails if the models and the migrations disagree.
 - **Web client without a framework.** ES modules served by FastAPI at `/ui/`, no build step and no dependencies; the client prints the API's numbers and never computes one ([ADR 0007](docs/adr/0007-vanilla-web-client-served-by-fastapi.md)). A Next.js client replaces it in 2.0.0 ([ADR 0009](docs/adr/0009-nextjs-frontend-as-separate-service.md)). The legacy Streamlit UI in `ui/` leaves at the same time.
 - **One real LLM provider.** The interface is the deliverable; a second adapter is one module ([ADR 0004](docs/adr/0004-provider-agnostic-llm-anthropic-first.md)).
 - **Synchronous LLM call.** Simple and adequate for one analysis at a time; a queue is the next step if analyses grow.

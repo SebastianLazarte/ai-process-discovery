@@ -139,6 +139,11 @@ jobs:
         with:
           enable-cache: true
       - run: uv sync --all-extras
+      # RS-59: the migrations build the schema the models describe, on an empty database.
+      - name: Migrations against PostgreSQL
+        run: |
+          uv run alembic upgrade head
+          uv run alembic check
       - name: Integration tests against PostgreSQL
         run: uv run pytest tests/integration
 
@@ -195,6 +200,8 @@ jobs:
             echo "::error::deploy/compose.prod.yaml publishes a port beyond 127.0.0.1"
             exit 1
           fi
+          # The API creates no table here (RS-59): migrate first, as the runbook and deploy.sh (RS-66) do.
+          docker compose -f deploy/compose.prod.yaml run --rm api alembic upgrade head
           docker compose -f deploy/compose.prod.yaml up -d --wait --wait-timeout 120
           curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://127.0.0.1:8100/health
           curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://127.0.0.1:8100/api/health
