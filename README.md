@@ -204,8 +204,9 @@ node --test web/tests/*.test.js     # web client, Node 22
 | B0 to B9 | Domain, scoring, business case, API, LLM layer, reconciliation, blueprint, 1.0 release | Done |
 | B10 | Web client | Done (1.1) |
 | B11 | Public demo: limits, LLM quota, demo banner, purge, production compose and Nginx | Done (1.2, 1.3) |
-| B11 | Public demo: migrations, deploy with rollback, automatic release deploy, backups | Next |
-| B12 | Next.js client and API under `/api` (2.0) | Planned |
+| B11 | Public demo: demos with preset assumptions (RS-89), Alembic migrations (RS-59), deploy script with rollback (RS-66) | Done |
+| B11 | Public demo: automatic deploy from the release workflow (RS-67), nightly backups with a rehearsed restore (RS-68) | Next |
+| B12 | Next.js client and API under `/api` (2.0) | In progress: API under `/api`, project, typed client and process list done |
 | B13 | Quality gauntlet and refactors | In progress |
 
 Requirements and acceptance criteria: [docs/requirements.toml](docs/requirements.toml). Scope and non-goals: [PDR 001](docs/pdr/001-mvp-scope.md). Product Goal and roles: [PDR 002](docs/pdr/002-portfolio-product-goal-and-roles.md). Contributing: [CONTRIBUTING](CONTRIBUTING.md).
