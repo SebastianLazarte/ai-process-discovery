@@ -59,7 +59,7 @@ Teams decide what to automate by intuition, and LLMs make it tempting to let a m
 | Every decision and its trade-offs | [`docs/adr/`](docs/adr/) |
 | The product backlog with Given/When/Then criteria | [`docs/requirements.toml`](docs/requirements.toml) |
 
-Quality bar on every pull request: formatting, lint, strict typing, tests on Python 3.12 and 3.13 with 95 % minimum coverage and complexity limits, the integration suite on PostgreSQL, web client tests on Node 22, a Docker build with a smoke test, CodeQL and dependency review. A weekly job runs mutation testing on the domain ([ADR 0011](docs/adr/0011-automated-quality-gauntlet.md)). Releases are versioned by release-please and the image ships to GHCR with provenance and SBOM ([ADR 0006](docs/adr/0006-github-flow-ci-and-releases.md)).
+Quality bar on every pull request: formatting, lint, strict typing, tests on Python 3.12 and 3.13 with 95 % minimum coverage and complexity limits, the integration suite on PostgreSQL, web client tests on Node 22, a Docker build with a smoke test, CodeQL and dependency review. A weekly job runs mutation testing on the domain ([ADR 0011](docs/adr/0011-automated-quality-gauntlet.md)). Releases are versioned by release-please and the API and Next.js images ship to GHCR with the same tag, provenance and SBOM ([ADR 0006](docs/adr/0006-github-flow-ci-and-releases.md)).
 
 ## Architecture
 

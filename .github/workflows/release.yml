@@ -77,6 +77,23 @@ jobs:
           provenance: mode=max
           sbom: true
           cache-from: type=gha
+      # RS-77: the Next.js client ships with the same version tags as the API (ADR 0009).
+      - id: meta-web
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          images: ghcr.io/${{ github.repository }}-web
+          tags: |
+            type=semver,pattern={{version}},value=${{ needs.release-please.outputs.version }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ needs.release-please.outputs.version }}
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: frontend
+          push: true
+          tags: ${{ steps.meta-web.outputs.tags }}
+          labels: ${{ steps.meta-web.outputs.labels }}
+          provenance: mode=max
+          sbom: true
+          cache-from: type=gha,scope=web
 
   # Deploys the new release to the public demo (ADR 0008, RS-67). The repository variable
   # DEPLOY_ENABLED switches it on once the host is ready, and off to take the demo offline.
