@@ -862,56 +862,201 @@ id = "RS-74"
 ru = "RU-01"
 block = "B12"
 area = "ui"
-title = "Next.js client: process editor with add, edit, reorder and delete steps; option lists match the domain enums"
-acceptance = ["A test fails if a domain enum value is missing from the client", "An unknown value from the API stays selected"]
+kind = "story"
+title = "Steps list and step form in the new client"
+as_a = "operations lead"
+i_want = "to see the steps of a process and add or edit one in the new interface"
+so_that = "the analysis starts from how the work is really done"
+points = 5
+priority = "must"
+rank = 21
+
+[[requirement.criteria]]
+given = "a process with steps"
+when = "the Steps page opens"
+then = "each step shows its position, name, minutes per execution and occurrence rate, in order"
+
+[[requirement.criteria]]
+given = "the step form"
+when = "a domain enum value is missing from its option lists"
+then = "the frontend tests fail"
+
+[[requirement.criteria]]
+given = "a step with a stored value the client does not list"
+when = "the form opens"
+then = "that value stays selected and saving keeps it"
+
+[[requirement.criteria]]
+given = "a step with an unknown exception rate"
+when = "it is shown or edited"
+then = "it reads Unknown, and saving it untouched sends null, never 0"
+
+[[requirement.criteria]]
+given = "an occurrence rate outside 0 to 1"
+when = "the form is submitted"
+then = "that field shows the API's error and every other value stays"
 
 [[requirement]]
 id = "RS-75"
 ru = "RU-03"
 block = "B12"
 area = "ui"
-title = "Next.js client: run an analysis and show results in four panels with rules version, prompt version and LLM status"
-acceptance = ["No panel shows a combined score", "Figures print as the API returns them and unknown values show as unknown, never 0", "With the LLM on and sensitive steps, the run button stays disabled until confirmed"]
+kind = "story"
+title = "Analyse form with assumptions and an honest wait for the LLM"
+as_a = "operations lead"
+i_want = "to set my assumptions and run an analysis, knowing what happens while the AI works"
+so_that = "I never wonder whether the analysis is stuck"
+points = 5
+priority = "must"
+rank = 23
+
+[[requirement.criteria]]
+given = "the LLM option on and a step with sensitive data"
+when = "the form shows"
+then = "Run analysis stays disabled until I confirm the notice"
+
+[[requirement.criteria]]
+given = "a run with the LLM in progress"
+when = "I wait"
+then = "an indeterminate indicator, the elapsed time and the expected wait show, and a polite live region announces the start, the end and at most one reminder every 30 seconds"
+
+[[requirement.criteria]]
+given = "a network or server error"
+when = "the run fails"
+then = "the form keeps every value and offers a retry"
+
+[[requirement.criteria]]
+given = "an analysis with llm.status unavailable and error_kind daily_quota"
+when = "its results open"
+then = "a note says the deterministic results are complete and today's AI quota is used up"
 
 [[requirement]]
 id = "RS-76"
 ru = "RU-05"
 block = "B12"
 area = "ui"
-title = "Next.js client: override with a required reason, analysis history and blueprint with .md download"
-acceptance = ["An override without reason marks the field", "Usable at 375 px with labels, visible focus and a skip link"]
+kind = "story"
+title = "Override a recommendation with a required reason in the new client"
+as_a = "operations lead"
+i_want = "to correct a recommendation and state the reason"
+so_that = "my judgement prevails and the change stays auditable"
+points = 3
+priority = "must"
+rank = 25
+
+[[requirement.criteria]]
+given = "the override form"
+when = "I save it without a reason"
+then = "the reason field is marked and nothing is sent"
+
+[[requirement.criteria]]
+given = "a saved override"
+when = "Results reloads"
+then = "the step shows Override with the reason, and the original method and human control stay visible, de-emphasised"
 
 [[requirement]]
 id = "RS-77"
 ru = "RU-10"
 block = "B12"
 area = "infra"
-title = "The ai-process-discovery-web image (multi-stage, non-root, read-only) runs in compose and ships with every release"
-acceptance = ["The docker job starts both images and both become healthy", "publish-image pushes both images with the same tag, SBOM and provenance"]
+kind = "enabler"
+title = "The ai-process-discovery-web image runs in compose and ships with every release"
+points = 5
+priority = "must"
+rank = 28
+
+[[requirement.criteria]]
+given = "the docker job"
+when = "it runs"
+then = "the web image builds in stages, runs as non-root with a read-only root filesystem, and both containers become healthy"
+
+[[requirement.criteria]]
+given = "a release"
+when = "publish-image runs"
+then = "both images are pushed with the same tag, SBOM and provenance"
 
 [[requirement]]
 id = "RS-78"
 ru = "RU-11"
 block = "B12"
 area = "infra"
-title = "Playwright end-to-end tests run against the compose stack with the fake LLM provider"
-acceptance = ["The e2e job loads a demo, runs an analysis, adds an override and downloads the blueprint", "The e2e job is a required check"]
+kind = "enabler"
+title = "Playwright end-to-end tests with axe against the compose stack and the fake LLM provider"
+points = 5
+priority = "must"
+rank = 29
+
+[[requirement.criteria]]
+given = "the compose stack with the fake LLM provider"
+when = "the e2e job runs"
+then = "it loads a demo, runs an analysis, saves an override and downloads the blueprint"
+
+[[requirement.criteria]]
+given = "each page of that path"
+when = "axe runs at 1280 and 375 px"
+then = "it finds no serious or critical violation"
+
+[[requirement.criteria]]
+given = "the required checks"
+when = "they are listed"
+then = "e2e is one of them"
 
 [[requirement]]
 id = "RS-79"
 ru = "RU-09"
 block = "B12"
 area = "infra"
+kind = "enabler"
 title = "Production serves /app/ from Next.js and /api/ from FastAPI; deploy.sh moves both images to one tag"
-acceptance = ["The analysis rate limit matches /api/processes/{id}/analyses", "The smoke test checks /api/health and /app/ over HTTPS", "A failing health check restores both previous images"]
+points = 5
+priority = "must"
+rank = 30
+
+[[requirement.criteria]]
+given = "production Nginx"
+when = "/app/ and /api/ are requested"
+then = "Next.js and FastAPI answer them, and the analysis rate limit applies to /api/processes/{id}/analyses"
+
+[[requirement.criteria]]
+given = "a finished deploy"
+when = "the smoke test runs"
+then = "it checks /api/health and /app/ over HTTPS"
+
+[[requirement.criteria]]
+given = "a new version whose health check fails"
+when = "deploy.sh runs"
+then = "both previous images run again"
 
 [[requirement]]
 id = "RS-80"
 ru = "RU-11"
 block = "B12"
 area = "ui"
+kind = "enabler"
 title = "Retire the vanilla client and the root API routes; Next.js serves / and /ui/ redirects there (2.0.0)"
-acceptance = ["web/, WEB_FILES and the web check are gone", "/processes returns 404 and /api/processes returns 200", "README, CLAUDE.md and the required checks describe the new layout"]
+points = 3
+priority = "must"
+rank = 31
+
+[[requirement.criteria]]
+given = "version 2.0.0"
+when = "the repository is checked"
+then = "web/, WEB_FILES and the web check are gone"
+
+[[requirement.criteria]]
+given = "the API"
+when = "/processes and /api/processes are requested"
+then = "the first returns 404 and the second 200"
+
+[[requirement.criteria]]
+given = "a request to /ui/"
+when = "it is served"
+then = "it redirects to /, which Next.js serves"
+
+[[requirement.criteria]]
+given = "README, CLAUDE.md and the required checks"
+when = "they are read"
+then = "they describe the new layout"
 
 [[requirement]]
 id = "RS-81"
@@ -1165,3 +1310,114 @@ then = "text reaches 4.5:1 and control borders and focus reach 3:1"
 given = "any page"
 when = "it renders"
 then = "the sidebar lists every process and marks the one on screen"
+
+[[requirement]]
+id = "RS-91"
+ru = "RU-01"
+block = "B12"
+area = "ui"
+kind = "story"
+title = "Reorder and delete steps in the new client"
+as_a = "operations lead"
+i_want = "to reorder and delete the steps of a process"
+so_that = "the process follows the real sequence of the work"
+points = 3
+priority = "should"
+rank = 22
+
+[[requirement.criteria]]
+given = "three steps"
+when = "I move the third one up using only the keyboard"
+then = "the new order is saved and focus stays on the moved step"
+
+[[requirement.criteria]]
+given = "a step"
+when = "I delete it"
+then = "a confirmation names the step, and after I confirm, the list and the process version update"
+
+[[requirement.criteria]]
+given = "a reorder the API rejects"
+when = "it fails"
+then = "the list returns to the saved order and a toast says why"
+
+[[requirement]]
+id = "RS-92"
+ru = "RU-03"
+block = "B12"
+area = "ui"
+kind = "story"
+title = "Results in four panels with the language of trust"
+as_a = "operations lead"
+i_want = "the results in four panels that say which figures come from the rules, my assumptions or the AI"
+so_that = "I can defend every number"
+points = 5
+priority = "must"
+rank = 24
+
+[[requirement.criteria]]
+given = "an analysis"
+when = "Results opens"
+then = "it shows the current state and four panels (suitability, business impact, risk, human controls), and none shows a combined score"
+
+[[requirement.criteria]]
+given = "any figure"
+when = "it renders"
+then = "it prints as the API returns it, and a null figure shows Unknown with its reason, never 0"
+
+[[requirement.criteria]]
+given = "a step whose final source is the rules, the AI or a person"
+when = "it renders"
+then = "a text badge says Rules, AI or Override, and no AI badge sits on a number"
+
+[[requirement.criteria]]
+given = "an analysis"
+when = "Results opens"
+then = "the provenance bar shows the rules version, the prompt version and the LLM status"
+
+[[requirement]]
+id = "RS-93"
+ru = "RU-08"
+block = "B12"
+area = "ui"
+kind = "story"
+title = "Analysis history in the new client"
+as_a = "operations lead"
+i_want = "to see the earlier analyses of a process"
+so_that = "I can explain how the recommendation changed over time"
+points = 2
+priority = "should"
+rank = 26
+
+[[requirement.criteria]]
+given = "a process with several analyses"
+when = "History opens"
+then = "they list newest first with date, process version, rules version and LLM status, and each one opens its Results"
+
+[[requirement.criteria]]
+given = "two analyses of different process versions"
+when = "they are listed"
+then = "the version change is visible"
+
+[[requirement]]
+id = "RS-94"
+ru = "RU-07"
+block = "B12"
+area = "ui"
+kind = "story"
+title = "Blueprint with a Markdown download in the new client"
+as_a = "operations lead"
+i_want = "to read the blueprint of an analysis and download it"
+so_that = "I can hand it to the team that builds the automation"
+points = 2
+priority = "must"
+rank = 27
+
+[[requirement.criteria]]
+given = "an analysis"
+when = "Blueprint opens"
+then = "its eight sections render as text built from the API's JSON, without injecting HTML"
+
+[[requirement.criteria]]
+given = "the Blueprint page"
+when = "I download the Markdown"
+then = "the file is identical to the API's blueprint.md"

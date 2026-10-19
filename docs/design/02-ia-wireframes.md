@@ -164,7 +164,7 @@ Mobile decisions:
 
 ## Your turn: Steps editor
 
-Apply the seven steps to the Steps page of a process (RS-74), in Penpot, in greyscale, at 1280 and 375 px. It is the hardest screen of the client: a step has fifteen fields, and the page must show several steps at once.
+Apply the seven steps to the Steps page of a process (RS-74, RS-91), in Penpot, in greyscale, at 1280 and 375 px. It is the hardest screen of the client: a step has fifteen fields, and the page must show several steps at once.
 
 Questions to help you with ranking and alternatives:
 
@@ -176,7 +176,7 @@ Questions to help you with ranking and alternatives:
 
 Write your result as a new section of this document, with the same seven headings as the worked example. I review it before you move on to the next screen.
 
-Then, in order: Analyse (RS-75), Results (RS-75, RS-76), Blueprint and History (RS-76).
+Then, in order: Analyse (RS-75), Results (RS-92, RS-76), Blueprint (RS-94) and History (RS-93).
 
 ## Comparative heuristic evaluation
 
