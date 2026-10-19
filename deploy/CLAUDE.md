@@ -1,6 +1,6 @@
 # Deploy
 
-Production stack of the public demo on the maintainer's VPS: `compose.prod.yaml` (copied to `/opt/apd/compose.yaml`), `deploy.sh` (copied to `/opt/apd/deploy.sh`), `nginx/apd.conf` for the host Nginx, `fail2ban/apd.local` for the host fail2ban, and `.env.example`.
+Production stack of the public demo on the maintainer's VPS: `compose.prod.yaml` (copied to `/opt/apd/compose.yaml`), `deploy.sh` (copied to `/opt/apd/deploy.sh`), `release-deploy.sh` and `smoke-test.sh` (run by the `deploy` job of the release workflow, on the runner), `nginx/apd.conf` for the host Nginx, `fail2ban/apd.local` for the host fail2ban, and `.env.example`.
 
 ## Read
 
@@ -18,14 +18,15 @@ Production stack of the public demo on the maintainer's VPS: `compose.prod.yaml`
 - Nginx zone names and fail2ban zone filters start with `apd_`, so they never match the other sites on the host.
 - The API runs with `CREATE_SCHEMA_ON_STARTUP=false`. Alembic migrations run in a one-off container before a new version starts, never on API startup (RS-59).
 - `deploy.sh` takes only a `vX.Y.Z` tag, from its argument or `SSH_ORIGINAL_COMMAND`, and never runs that value. It updates `APD_VERSION` in `.env` only after `/health` passes; on a failed check it starts the previous version again (RS-66).
+- The `deploy` job runs only in the `production` environment, which alone holds `DEPLOY_HOST`, `DEPLOY_SSH_KEY`, `DEPLOY_KNOWN_HOSTS` and `DEMO_URL`. SSH uses `StrictHostKeyChecking=yes` against `DEPLOY_KNOWN_HOSTS` only, never `accept-new`. The tag reaches the scripts through `env`, never through `${{ }}` inside `run` (RS-67).
 - Streamlit is not deployed.
 
 ## Verify
 
 ```bash
 docker compose -f deploy/compose.prod.yaml config
-uv run pytest tests/unit/test_deploy_script.py
-shellcheck deploy/deploy.sh
+uv run pytest tests/unit/test_deploy_script.py tests/unit/test_release_deploy.py
+shellcheck deploy/*.sh
 ```
 
-CI starts the compose file in the `docker` job and runs `shellcheck` in `quality`; the script tests use fake `docker`, `curl` and `flock` commands. `sudo nginx -t` runs on the host only.
+CI starts the compose file in the `docker` job and runs `shellcheck` in `quality`; the script tests use fake `docker`, `ssh`, `curl` and `flock` commands. `sudo nginx -t` runs on the host only.
