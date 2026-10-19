@@ -1,6 +1,6 @@
 # Production runbook
 
-**Status:** draft until RS-68 (backup and purge timers) lands. Migrations (RS-59), `deploy.sh` (RS-66) and the deploy from the release workflow (RS-67) are in place. Decision record: ADR 0008.
+**Status:** complete for block B11 (RS-59 to RS-68). Open until the first restore rehearsal is recorded under "Backups and restore". Decision record: ADR 0008.
 
 Placeholders: `<domain>` is the maintainer's domain, `<vps>` is the SSH host alias. Real hostnames, IP addresses and secrets never go into this repository.
 
@@ -23,7 +23,7 @@ Keep a second SSH session open during steps 1 and 2, so a mistake in the SSH con
 1. **Harden the host.** Apply pending updates and enable `unattended-upgrades`. Add a 2 GB swap file. Create an admin user with `sudo` and an SSH key, then set `PermitRootLogin no` and `PasswordAuthentication no`. Enable UFW with 22, 80 and 443 only. Install fail2ban.
    The host also runs other projects, so check what is already in place before changing it: `sudo sshd -T`, `sudo ufw status verbose`, `sudo fail2ban-client status`, `swapon --show` and `apt list --upgradable`.
 2. **Deploy user.** Create `apd`, add it to the `docker` group, and install the GitHub deploy key in its `authorized_keys` with `command="/opt/apd/deploy.sh",no-port-forwarding,no-agent-forwarding,no-X11-forwarding,no-pty`. Membership of `docker` is equivalent to root, which is why the key is restricted to one command. The user belongs to the demo only: another project's deploy user on the host keeps its own key, so neither key can deploy the other project.
-3. **Project folder.** `/opt/apd` owned by `apd`, with `compose.yaml` (from `deploy/compose.prod.yaml`), `deploy.sh` (from `deploy/deploy.sh`, mode `755`) and `.env` from `deploy/.env.example`. Create `/var/backups/apd` owned by `apd`, so `deploy.sh` can write its pre-deploy dump.
+3. **Project folder.** `/opt/apd` owned by `apd`, with `compose.yaml` (from `deploy/compose.prod.yaml`), `deploy.sh`, `backup.sh` and `restore-rehearsal.sh` (from `deploy/`, mode `755`) and `.env` from `deploy/.env.example`. Create `/var/backups/apd` owned by `apd`, mode `700`, for the nightly and pre-deploy dumps.
 4. **DNS and TLS.** Add an A record (and AAAA if IPv6 is served) for `apd.<domain>`. Issue the certificate first, because the site refers to it: `sudo certbot certonly --nginx -d apd.<domain> --deploy-hook "systemctl reload nginx"`. Then install `deploy/nginx/apd.conf` with `apd.<domain>` in place of `apd.example.com`, link it into `sites-enabled`, run `sudo nginx -t` and reload Nginx.
    Then install `deploy/fail2ban/apd.local` as `/etc/fail2ban/jail.d/apd.local` and run `sudo fail2ban-client reload`. `sudo fail2ban-client status apd-limit-req` lists the jail; it bans a client that keeps getting 429 from the demo, and leaves the limits of other sites alone.
 5. **Anthropic.** Create a workspace for the demo, set a monthly spend limit, create a key for that workspace only and put it in `.env`.
@@ -32,7 +32,16 @@ Keep a second SSH session open during steps 1 and 2, so a mistake in the SSH con
    - Variable: `DEMO_URL`, the public `https://apd.<domain>` address that the smoke test calls.
 
    When the host is ready, add the repository variable `DEPLOY_ENABLED` with the value `true`. Until then the `deploy` job is skipped and a release only publishes the image.
-7. **Timers.** Install and enable `apd-backup.timer` and `apd-purge.timer`.
+7. **Timers.** Install the units from `deploy/systemd/` and start the timers:
+
+   ```bash
+   sudo cp deploy/systemd/apd-* /etc/systemd/system/
+   sudo systemctl daemon-reload
+   sudo systemctl enable --now apd-purge.timer apd-backup.timer
+   systemctl list-timers 'apd-*'
+   ```
+
+   `apd-purge.timer` runs at 00:05 UTC and `apd-backup.timer` at 00:30 UTC, so a backup holds at most one day of visitor data. Both catch up after a reboot (`Persistent=true`).
 8. **Monitor.** Optional external check on `https://apd.<domain>/health`.
 
 ## Deploy
@@ -87,7 +96,22 @@ Deploy the previous tag the same way. Migrations follow expand and contract: a r
 
 ## Backups and restore
 
-Nightly dumps and pre-deploy dumps live in `/var/backups/apd`. To rehearse a restore, load a dump into a scratch database and run a few reads against it. Record the date of the last rehearsal here.
+Dumps live in `/var/backups/apd`, owner `apd`, and never leave the host:
+
+- `nightly-<UTC time>.dump`, written by `backup.sh` from `apd-backup.timer`.
+- `pre-deploy-<UTC time>-v<old>-to-v<new>.dump`, written by `deploy.sh`.
+
+`backup.sh` deletes every dump older than 7 days, but only after that night's dump is complete. Check the last run with `journalctl -u apd-backup.service -n 20`.
+
+**Rehearse a restore** after go-live and then once a month:
+
+```bash
+sudo -u apd /opt/apd/restore-rehearsal.sh
+```
+
+It loads the newest nightly dump, or the dump given as argument, into a throwaway PostgreSQL container with no volume and no network, counts the rows of each table and prints a row for the table below. Add that row in a pull request.
+
+**Restore for real** when the volume is lost or a migration went wrong: stop the API (`docker compose stop api`), drop and recreate the `apd` database in the `postgres` container, load the dump with `docker compose exec -T postgres pg_restore --username=apd --dbname=apd --no-owner < <dump>`, start the API and check `/health`.
 
 | Date | Dump | Result |
 |---|---|---|
@@ -101,7 +125,7 @@ The banner promises that visitor data is deleted daily. The purge command delete
 cd /opt/apd && sudo docker compose exec -T api python -m app.purge --older-than-hours 24
 ```
 
-It logs one `demo_data_purged` event with the number of processes deleted. `apd-purge.timer` runs it daily just after midnight UTC, when the daily LLM quota resets: the quota counts the day's analyses, so a purge later in the day would delete some of them and free quota early. Until the timer is installed (RS-68), run the command by hand once a day.
+It logs one `demo_data_purged` event with the number of processes deleted. `apd-purge.timer` runs it daily at 00:05 UTC, just after the daily LLM quota resets: the quota counts the day's analyses, so a purge later in the day would delete some of them and free quota early. Check the last run with `journalctl -u apd-purge.service -n 20`.
 
 ## Rotate the Anthropic key
 

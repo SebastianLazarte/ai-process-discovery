@@ -1,0 +1,13 @@
+# Nightly backup of the public demo database (ADR 0008, RS-68).
+# Install: sudo cp deploy/systemd/apd-* /etc/systemd/system/ && sudo systemctl daemon-reload
+[Unit]
+Description=Back up the public demo database
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+User=apd
+Group=apd
+WorkingDirectory=/opt/apd
+ExecStart=/opt/apd/backup.sh

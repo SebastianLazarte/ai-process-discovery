@@ -1,0 +1,12 @@
+# Deletes demo data older than 24 hours, as the banner promises (ADR 0008, RS-63, RS-68).
+[Unit]
+Description=Purge expired public demo data
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+User=apd
+Group=apd
+WorkingDirectory=/opt/apd
+ExecStart=/usr/bin/docker compose exec -T api python -m app.purge --older-than-hours 24

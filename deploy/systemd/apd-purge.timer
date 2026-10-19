@@ -1,0 +1,11 @@
+# Just after midnight UTC, when the daily LLM quota resets: a purge later in the day would
+# delete some of the day's analyses and free quota early.
+[Unit]
+Description=Purge expired public demo data every night
+
+[Timer]
+OnCalendar=*-*-* 00:05:00 UTC
+Persistent=true
+
+[Install]
+WantedBy=timers.target
