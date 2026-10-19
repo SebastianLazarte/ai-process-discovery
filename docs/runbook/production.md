@@ -1,6 +1,6 @@
 # Production runbook
 
-**Status:** draft until RS-67 (deploy from the release workflow) and RS-68 (backup and purge timers) land. Migrations (RS-59) and `deploy.sh` (RS-66) are in place, so the manual deploy below is valid. Decision record: ADR 0008.
+**Status:** draft until RS-68 (backup and purge timers) lands. Migrations (RS-59), `deploy.sh` (RS-66) and the deploy from the release workflow (RS-67) are in place. Decision record: ADR 0008.
 
 Placeholders: `<domain>` is the maintainer's domain, `<vps>` is the SSH host alias. Real hostnames, IP addresses and secrets never go into this repository.
 
@@ -27,13 +27,23 @@ Keep a second SSH session open during steps 1 and 2, so a mistake in the SSH con
 4. **DNS and TLS.** Add an A record (and AAAA if IPv6 is served) for `apd.<domain>`. Issue the certificate first, because the site refers to it: `sudo certbot certonly --nginx -d apd.<domain> --deploy-hook "systemctl reload nginx"`. Then install `deploy/nginx/apd.conf` with `apd.<domain>` in place of `apd.example.com`, link it into `sites-enabled`, run `sudo nginx -t` and reload Nginx.
    Then install `deploy/fail2ban/apd.local` as `/etc/fail2ban/jail.d/apd.local` and run `sudo fail2ban-client reload`. `sudo fail2ban-client status apd-limit-req` lists the jail; it bans a client that keeps getting 429 from the demo, and leaves the limits of other sites alone.
 5. **Anthropic.** Create a workspace for the demo, set a monthly spend limit, create a key for that workspace only and put it in `.env`.
-6. **GitHub.** Create the `production` environment with `DEPLOY_SSH_KEY` and `DEPLOY_KNOWN_HOSTS` (output of `ssh-keyscan` for the host, checked against the fingerprint shown on the server).
+6. **GitHub.** Create the `production` environment and limit its deployment branches to `main`. Give it:
+   - Secrets: `DEPLOY_HOST` (the host name or address the runner connects to), `DEPLOY_SSH_KEY` (the private half of the deploy key from step 2) and `DEPLOY_KNOWN_HOSTS` (output of `ssh-keyscan` for that same name, checked against the fingerprint shown on the server).
+   - Variable: `DEMO_URL`, the public `https://apd.<domain>` address that the smoke test calls.
+
+   When the host is ready, add the repository variable `DEPLOY_ENABLED` with the value `true`. Until then the `deploy` job is skipped and a release only publishes the image.
 7. **Timers.** Install and enable `apd-backup.timer` and `apd-purge.timer`.
 8. **Monitor.** Optional external check on `https://apd.<domain>/health`.
 
 ## Deploy
 
-Once RS-67 lands, merging the release pull request deploys automatically, and the `Release` workflow with `workflow_dispatch` and a tag redeploys by hand. Until then, and for any repair, deploy from the server:
+Merging the release pull request deploys automatically. The `deploy` job of the `Release` workflow runs after `publish-image`, in the `production` environment:
+
+1. `deploy/release-deploy.sh` connects as `apd` over SSH. It accepts only the host key in `DEPLOY_KNOWN_HOSTS`, so a changed key stops the deploy instead of being trusted, and sends the tag as the only command.
+2. `deploy.sh` on the host does the work below.
+3. `deploy/smoke-test.sh` calls `/health` and `/ui/` on `DEMO_URL` over HTTPS. Any error fails the job.
+
+To redeploy or roll back to a tag, run the `Release` workflow by hand (`workflow_dispatch`) with that tag. To repair from the server:
 
 ```bash
 sudo -u apd /opt/apd/deploy.sh v1.2.1
@@ -46,6 +56,10 @@ sudo -u apd /opt/apd/deploy.sh v1.2.1
 - The pre-deploy dump is `/var/backups/apd/pre-deploy-<UTC time>-v<old>-to-v<new>.dump`.
 - If the migration fails, the new version never starts and the old one keeps running. Restore the pre-deploy dump only if the migration left the schema half changed.
 - A lock file, `/opt/apd/.deploy.lock`, stops a second deploy while one is running.
+
+A failed `deploy` job leaves the previous version running when the health check on the host failed (`deploy.sh` rolled back). When only the smoke test failed, the new version passed `/health` on the host but is not reachable from outside: check Nginx, the certificate and the DNS record.
+
+To stop automatic deploys, for example to take the demo offline, set `DEPLOY_ENABLED` to anything but `true`.
 
 ## Schema migrations
 
