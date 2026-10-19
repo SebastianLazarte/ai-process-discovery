@@ -10,7 +10,7 @@ Describe a business process step by step and get a quantified, explainable autom
 
 ## Try it
 
-**Live demo:** coming with the public demo release (block B11). No sign-up, synthetic data, deleted daily.
+**Live demo:** the Website link at the top of this repository's page, once the public demo is online. No sign-up, synthetic data, deleted every night ([data policy](SECURITY.md#public-demo-data)).
 
 **On your machine, one command** (Docker, no API key needed):
 
@@ -205,7 +205,7 @@ node --test web/tests/*.test.js     # web client, Node 22
 | B10 | Web client | Done (1.1) |
 | B11 | Public demo: limits, LLM quota, demo banner, purge, production compose and Nginx | Done (1.2, 1.3) |
 | B11 | Public demo: demos with preset assumptions (RS-89), Alembic migrations (RS-59), deploy script with rollback (RS-66), deploy from the release workflow with an HTTPS smoke test (RS-67) | Done |
-| B11 | Public demo: nightly backups with a rehearsed restore, live demo link (RS-68) | Next |
+| B11 | Public demo: nightly backups and purge on timers, restore rehearsal script, data policy (RS-68) | Done; first rehearsal pending on the host |
 | B12 | Next.js client and API under `/api` (2.0) | In progress: API under `/api`, project, typed client and process list done |
 | B13 | Quality gauntlet and refactors | In progress |
 
