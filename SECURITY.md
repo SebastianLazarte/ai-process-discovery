@@ -12,7 +12,7 @@ What the project does by design:
 
 ## Public demo
 
-A public demo runs without login (ADR 0008). Treat everything entered there as public: other visitors can see it, and it is deleted periodically, as the banner on every page says. Do not enter real business or personal data.
+A public demo runs without login (ADR 0008). Treat everything entered there as public: other visitors can see it, and it is deleted every night, as the banner on every page says. Do not enter real business or personal data.
 
 What protects the demo host and the API key:
 
@@ -20,3 +20,11 @@ What protects the demo host and the API key:
 - The API listens on `127.0.0.1` only and runs as a non-root user with a read-only root filesystem, no capabilities and memory and CPU limits. PostgreSQL has no published port.
 - LLM spending is capped in layers: a dedicated Anthropic workspace with a monthly spend limit, a daily quota of analyses that call the LLM, the rate limit, and schema limits on request size. Past the quota the deterministic analysis still runs, without the AI interpretation.
 - Images are the released, tested artifacts from `ghcr.io`, pinned by version; PostgreSQL is pinned by digest.
+
+## Public demo data
+
+- The demo processes are synthetic: a fictitious manufacturer, invented volumes and costs.
+- Everything visitors create is deleted every night at 00:05 UTC once it is older than 24 hours: processes, steps, analyses and overrides. Editing a process does not extend its life.
+- The database is backed up every night after that purge. Backups are kept for 7 days on the demo host, never leave the host, and are readable only by the demo's own system user. They exist to recover from a failure, never to keep visitor data.
+- Logs never contain prompts or step descriptions.
+- Steps flagged as sensitive reach the LLM provider only after the visitor confirms it, and monetary inputs never do.
