@@ -33,7 +33,7 @@ Areas marked * have their own CLAUDE.md with Read, Rules and Verify. It loads wh
 | Vanilla web client: legacy, pending removal in 2.0.0, no new features | `web/`* | ADR 0007 |
 | Production deploy, Nginx, operations | `deploy/`* | ADR 0008, ADR 0016, `docs/runbook/production.md` |
 | CI/CD, releases, GitHub setup, dependency updates | `.github/`, `scripts/bootstrap_github.py` | ADR 0006, ADR 0010 |
-| Test strategy, mutation testing, complexity limits | `tests/`, `pyproject.toml`, `.github/workflows/mutation.yml` | ADR 0011 |
+| Test strategy, mutation testing, complexity limits | `tests/`, `pyproject.toml`, `.github/workflows/mutation.yml` | ADR 0011, ADR 0012 |
 | Scope, product backlog, stories and acceptance criteria | `docs/requirements.toml` | `docs/pdr/001-mvp-scope.md`, `docs/pdr/002-portfolio-product-goal-and-roles.md` |
 | Write or amend an ADR, PDR or runbook | `docs/`* | decision index in `docs/CLAUDE.md` |
 | Streamlit UI: legacy, pending removal, no new features | `ui/streamlit_app.py` | ADR 0005 |

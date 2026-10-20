@@ -26,8 +26,9 @@ Stable reference for the whole repo. Code changes read from here; this folder ch
 | ADR 0008 | Public demo on the maintainer's VPS (block B11, RS-59 to RS-68) | accepted; layout amended by ADR 0009 |
 | ADR 0009 | Next.js frontend as a separate service, API under `/api` (block B12, RS-69 to RS-80; RS-91 to RS-94 split from RS-74 to RS-76) | accepted; dependencies amended by ADR 0013, migration and rollback by ADR 0016 |
 | ADR 0010 | Dependency updates: grouped minor and patch after a cooldown, majors planned, Python version fixed | accepted |
-| ADR 0011 | Automated quality gauntlet: mutation testing on the domain, property-based tests, complexity limits, coverage 95 % | proposed |
-| ADR 0013 | Design system: tokens in CSS as source of truth, light and dark by system setting with a cookie toggle, WCAG 2.2 AA, Penpot and Claude Design as free tools | proposed; navigation and themes amended by ADR 0014, design process by ADR 0015 |
+| ADR 0011 | Automated quality gauntlet: mutation testing on the domain, property-based tests, complexity limits, coverage 95 % | proposed; completed by ADR 0012 |
+| ADR 0012 | Test quality standard: ISO/IEC/IEEE 29119-4 techniques, ISO/IEC 25010 evidence map, marked requirement traceability, LLM eval dataset with task success rate and cost | accepted |
+| ADR 0013 | Design system: tokens in CSS as source of truth, light and dark by system setting with a cookie toggle, WCAG 2.2 AA, Penpot and Claude Design as free tools | proposed; navigation and themes amended by ADR 0014 |
 | ADR 0014 | Keep the look of the vanilla client: its sidebar and its exact dark palette as tokens, light theme later | accepted |
 | ADR 0015 | The parity screens (RS-74, RS-91, RS-75, RS-92, RS-76, RS-93, RS-94) take `web/` and their criteria as spec, with no wireframes | accepted |
 | ADR 0016 | Next.js at `/` from 2.0.0 with no public `/app/`, `/ui/` answers 301, one version per service on the server, change through working states | accepted |
