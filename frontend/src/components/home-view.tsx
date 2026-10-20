@@ -1,10 +1,12 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { api, unwrap } from "@/lib/api";
 import type { components } from "@/lib/api";
-import { useDemos, useLoadDemo, useProcesses } from "@/lib/api/queries";
+import { keys, useDemos, useLoadDemo, useProcesses } from "@/lib/api/queries";
 import { count, timestamp, version } from "@/lib/format";
 
 import { buttonClass } from "./button";
@@ -45,6 +47,27 @@ function Demos() {
   const demos = useDemos();
   const load = useLoadDemo();
   const router = useRouter();
+  const client = useQueryClient();
+
+  // A demo with preset assumptions comes with its first analysis (RS-89): open its results,
+  // as web/ does. The list lands in the cache the process tabs read.
+  async function open(processId: string) {
+    const first = await client
+      .fetchQuery({
+        queryKey: keys.analyses(processId),
+        queryFn: () =>
+          unwrap(
+            api.GET("/processes/{process_id}/analyses", {
+              params: { path: { process_id: processId } },
+            }),
+          ),
+      })
+      .then(
+        (analyses) => analyses[0],
+        () => undefined,
+      );
+    router.push(first ? `/processes/${processId}/analyses/${first.id}` : `/processes/${processId}`);
+  }
 
   return (
     <Panel id="demos-title" title="Start from a demo">
@@ -66,7 +89,7 @@ function Demos() {
                 disabled={loading}
                 onClick={() =>
                   load.mutate(demo.slug, {
-                    onSuccess: (process) => router.push(`/processes/${process.id}`),
+                    onSuccess: (process) => open(process.id),
                   })
                 }
               >

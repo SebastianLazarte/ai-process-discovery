@@ -4,16 +4,19 @@ import { useEffect, useId, useRef } from "react";
 import type { ReactNode } from "react";
 
 // A modal on the native <dialog>: the browser traps focus, closes it on Escape and returns
-// focus to what opened it. `open` drives it; every way of closing calls onClose.
+// focus to what opened it. `open` drives it; every way of closing calls onClose. `wide`
+// gives a long form the 760 px of the dialog in web/styles.css.
 export function Dialog({
   open,
   onClose,
   title,
+  wide = false,
   children,
 }: {
   open: boolean;
   onClose: () => void;
   title: string;
+  wide?: boolean;
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -37,7 +40,7 @@ export function Dialog({
       ref={ref}
       aria-labelledby={titleId}
       onClose={onClose}
-      className="m-auto w-[min(560px,calc(100vw-32px))] rounded-panel border border-line bg-surface p-6 text-ink backdrop:bg-bg/70"
+      className={`m-auto ${wide ? "w-[min(760px,calc(100vw-32px))]" : "w-[min(560px,calc(100vw-32px))]"} rounded-panel border border-line bg-surface p-6 text-ink backdrop:bg-bg/70`}
     >
       <h2 id={titleId} className="mb-[18px] text-[17px] leading-snug font-semibold tracking-tight">
         {title}
