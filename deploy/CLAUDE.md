@@ -5,6 +5,7 @@ Production stack of the public demo on the maintainer's VPS: `compose.prod.yaml`
 ## Read
 
 - `docs/adr/0008-public-demo-on-own-vps.md`
+- `docs/adr/0016-nextjs-at-the-root-from-2-0-0.md`: the 2.0.0 layout, one version per service, and the change through working states
 - `docs/runbook/production.md`
 
 ## Rules
