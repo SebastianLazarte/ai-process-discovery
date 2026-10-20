@@ -896,6 +896,11 @@ given = "an occurrence rate outside 0 to 1"
 when = "the form is submitted"
 then = "that field shows the API's error and every other value stays"
 
+[[requirement.criteria]]
+given = "the process settings form on the Steps page, as in web/"
+when = "I change the name, owner, executions per month, hourly cost or description and save"
+then = "the page shows the saved values and the new process version, and an empty hourly cost saves as unknown, never 0"
+
 [[requirement]]
 id = "RS-75"
 ru = "RU-03"
@@ -1007,25 +1012,30 @@ ru = "RU-09"
 block = "B12"
 area = "infra"
 kind = "enabler"
-title = "Production serves /app/ from Next.js and /api/ from FastAPI; deploy.sh moves both images to one tag"
+title = "Production serves / from Next.js and /api/ from FastAPI; deploy.sh keeps one version per service (ADR 0016)"
 points = 5
 priority = "must"
 rank = 30
 
 [[requirement.criteria]]
 given = "production Nginx"
-when = "/app/ and /api/ are requested"
-then = "Next.js and FastAPI answer them, and the analysis rate limit applies to /api/processes/{id}/analyses"
+when = "/ and any path outside /api/ are requested"
+then = "Next.js answers them, and every path under /api/ goes to FastAPI"
+
+[[requirement.criteria]]
+given = "production Nginx"
+when = "/api/processes/{id}/analyses is requested"
+then = "the analysis rate limit and the long LLM read timeout apply to it"
 
 [[requirement.criteria]]
 given = "a finished deploy"
 when = "the smoke test runs"
-then = "it checks /api/health and /app/ over HTTPS"
+then = "it checks / and /api/health over HTTPS"
 
 [[requirement.criteria]]
-given = "a new version whose health check fails"
+given = "a new version whose health check fails for the API or the web"
 when = "deploy.sh runs"
-then = "both previous images run again"
+then = "each service runs its previous image again, as recorded in APD_VERSION and APD_WEB_VERSION"
 
 [[requirement]]
 id = "RS-80"
@@ -1033,7 +1043,7 @@ ru = "RU-11"
 block = "B12"
 area = "ui"
 kind = "enabler"
-title = "Retire the vanilla client and the root API routes; Next.js serves / and /ui/ redirects there (2.0.0)"
+title = "Retire the vanilla client and the root API routes; Next.js serves / and /ui/ answers 301 there (2.0.0)"
 points = 3
 priority = "must"
 rank = 31
@@ -1049,9 +1059,9 @@ when = "/processes and /api/processes are requested"
 then = "the first returns 404 and the second 200"
 
 [[requirement.criteria]]
-given = "a request to /ui/"
+given = "a request to /ui/ or any path under it"
 when = "it is served"
-then = "it redirects to /, which Next.js serves"
+then = "it answers 301 with Location /, which Next.js serves"
 
 [[requirement.criteria]]
 given = "README, CLAUDE.md and the required checks"
@@ -1373,6 +1383,11 @@ then = "a text badge says Rules, AI or Override, and no AI badge sits on a numbe
 given = "an analysis"
 when = "Results opens"
 then = "the provenance bar shows the rules version, the prompt version and the LLM status"
+
+[[requirement.criteria]]
+given = "a demo with its first analysis (RS-89)"
+when = "I load it from the home page"
+then = "the Results of that analysis open, as in web/"
 
 [[requirement]]
 id = "RS-93"
