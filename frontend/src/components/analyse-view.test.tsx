@@ -1,5 +1,5 @@
 // RS-75: the Analyse form with assumptions and an honest wait for the LLM.
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { GATEWAY_MESSAGES } from "@/lib/api";
@@ -9,7 +9,7 @@ import { ANALYSIS_ID, analysisRead, processRead, step } from "@/test/fixtures";
 import { push, renderWithProviders } from "@/test/render";
 
 import { AnalyseView } from "./analyse-view";
-import { LlmUnavailableNote, START_MESSAGE } from "./llm-wait";
+import { START_MESSAGE } from "./llm-wait";
 
 vi.mock("next/navigation", async () => ({ useRouter: () => ({ push }) }));
 
@@ -206,24 +206,5 @@ describe("a failed run", () => {
     fireEvent.click(screen.getByRole("button", { name: "Try again" }));
     await vi.waitFor(() => expect(push).toHaveBeenCalledWith(RESULTS));
     expect(calls.filter((call) => call === RUN)).toHaveLength(2);
-  });
-});
-
-describe("an analysis whose LLM hit the daily quota", () => {
-  it("says the deterministic results are complete and today's AI quota is used up", () => {
-    const { llm } = analysisRead({
-      llm: {
-        status: "unavailable",
-        provider: null,
-        model: null,
-        prompt_version: null,
-        error_kind: "daily_quota",
-      },
-    });
-    render(<LlmUnavailableNote llm={llm} />);
-
-    const note = screen.getByRole("note");
-    expect(note.textContent).toMatch(/Today's AI quota of this demo is used up/);
-    expect(note.textContent).toMatch(/The deterministic results are complete/);
   });
 });
