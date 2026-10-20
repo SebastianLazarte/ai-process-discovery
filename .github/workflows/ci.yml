@@ -302,11 +302,13 @@ jobs:
       - name: Walkthroughs
         working-directory: frontend
         run: pnpm e2e
-      # A container that writes outside its tmpfs on the read-only root logs EROFS.
+      # The web container runs on a read-only root: a write outside its tmpfs logs EROFS.
+      # Only the app containers count: the Nginx entrypoint notes its own read-only config
+      # mount on every start, and means no harm.
       - name: Read-only roots hold
         if: success() || failure()
         run: |
-          if docker compose logs 2>&1 | grep -Ei 'EROFS|read-only file system'; then
+          if docker compose logs web api 2>&1 | grep -Ei 'EROFS|read-only file system'; then
             echo "::error::A container wrote outside its tmpfs on a read-only root"
             exit 1
           fi
