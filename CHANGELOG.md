@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.5.0](https://github.com/SebastianLazarte/ai-process-discovery/compare/v1.4.0...v1.5.0) (2026-10-20)
+
+
+### Features
+
+* deploy each release over SSH with an HTTPS smoke test (RS-67) ([#155](https://github.com/SebastianLazarte/ai-process-discovery/issues/155)) ([e7a74bf](https://github.com/SebastianLazarte/ai-process-discovery/commit/e7a74bfe7c01bc93963518f748b5d02f0e8b838e))
+* nightly backup and purge timers with a restore rehearsal (RS-68) ([#157](https://github.com/SebastianLazarte/ai-process-discovery/issues/157)) ([eb5f5dc](https://github.com/SebastianLazarte/ai-process-discovery/commit/eb5f5dcaaba0e993a6a5b36a87aca83f951b2218))
+* **ui:** ship the Next.js client as a read-only image with every release (RS-77) ([#159](https://github.com/SebastianLazarte/ai-process-discovery/issues/159)) ([f8a897c](https://github.com/SebastianLazarte/ai-process-discovery/commit/f8a897c3f0c900d2e232e8f2d0a6aa5e1f01639b))
+
+
+### Documentation
+
+* adopt a test quality standard (ADR 0012) ([#152](https://github.com/SebastianLazarte/ai-process-discovery/issues/152)) ([f8b2b4f](https://github.com/SebastianLazarte/ai-process-discovery/commit/f8b2b4f84ba1875a106ece6502de1523667e11e8))
+* record the parity spec (ADR 0015) and Next.js at the root from 2.0.0 (ADR 0016) ([#168](https://github.com/SebastianLazarte/ai-process-discovery/issues/168)) ([364d844](https://github.com/SebastianLazarte/ai-process-discovery/commit/364d84454e8ce36cfa055e32aa0600e9b24a1aac))
+* refine RS-74 to RS-80 to the Definition of Ready and split out RS-91 to RS-94 ([#158](https://github.com/SebastianLazarte/ai-process-discovery/issues/158)) ([f0b5cbe](https://github.com/SebastianLazarte/ai-process-discovery/commit/f0b5cbef0d0425ef46984c4fbe8b5cd73a2e8dbd))
+
 ## [1.4.0](https://github.com/SebastianLazarte/ai-process-discovery/compare/v1.3.1...v1.4.0) (2026-10-19)
 
 
