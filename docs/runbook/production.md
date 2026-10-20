@@ -1,6 +1,6 @@
 # Production runbook
 
-**Status:** complete for block B11 (RS-59 to RS-68). Open until the first restore rehearsal is recorded under "Backups and restore". Decision record: ADR 0008.
+**Status:** complete for block B11 (RS-59 to RS-68). Open until the first restore rehearsal is recorded under "Backups and restore". The switch to the 2.0.0 layout (RS-79) has its own section. Decision records: ADR 0008, ADR 0016.
 
 Placeholders: `<domain>` is the maintainer's domain, `<vps>` is the SSH host alias. Real hostnames, IP addresses and secrets never go into this repository.
 
@@ -9,7 +9,8 @@ Placeholders: `<domain>` is the maintainer's domain, `<vps>` is the SSH host ali
 | Piece | Where |
 |---|---|
 | Nginx, TLS (certbot) | Host system, ports 80 and 443, site `apd.<domain>` |
-| API | `/opt/apd`, container `api`, `127.0.0.1:8100` |
+| API | `/opt/apd`, container `api`, `127.0.0.1:8100`, version `APD_VERSION` |
+| Web client (Next.js) | `/opt/apd`, container `web`, `127.0.0.1:8101`, version `APD_WEB_VERSION`; public at `/` from 2.0.0 |
 | PostgreSQL | `/opt/apd`, container `postgres`, internal network, volume `apd_pgdata` |
 | Secrets | `/opt/apd/.env`, owner `apd`, mode `600` |
 | Backups | `/var/backups/apd`, 7 days |
@@ -23,8 +24,8 @@ Keep a second SSH session open during steps 1 and 2, so a mistake in the SSH con
 1. **Harden the host.** Apply pending updates and enable `unattended-upgrades`. Add a 2 GB swap file. Create an admin user with `sudo` and an SSH key, then set `PermitRootLogin no` and `PasswordAuthentication no`. Enable UFW with 22, 80 and 443 only. Install fail2ban.
    The host also runs other projects, so check what is already in place before changing it: `sudo sshd -T`, `sudo ufw status verbose`, `sudo fail2ban-client status`, `swapon --show` and `apt list --upgradable`.
 2. **Deploy user.** Create `apd`, add it to the `docker` group, and install the GitHub deploy key in its `authorized_keys` with `command="/opt/apd/deploy.sh",no-port-forwarding,no-agent-forwarding,no-X11-forwarding,no-pty`. Membership of `docker` is equivalent to root, which is why the key is restricted to one command. The user belongs to the demo only: another project's deploy user on the host keeps its own key, so neither key can deploy the other project.
-3. **Project folder.** `/opt/apd` owned by `apd`, with `compose.yaml` (from `deploy/compose.prod.yaml`), `deploy.sh`, `backup.sh` and `restore-rehearsal.sh` (from `deploy/`, mode `755`) and `.env` from `deploy/.env.example`. Create `/var/backups/apd` owned by `apd`, mode `700`, for the nightly and pre-deploy dumps.
-4. **DNS and TLS.** Add an A record (and AAAA if IPv6 is served) for `apd.<domain>`. Issue the certificate first, because the site refers to it: `sudo certbot certonly --nginx -d apd.<domain> --deploy-hook "systemctl reload nginx"`. Then install `deploy/nginx/apd.conf` with `apd.<domain>` in place of `apd.example.com`, link it into `sites-enabled`, run `sudo nginx -t` and reload Nginx.
+3. **Project folder.** `/opt/apd` owned by `apd`, with `compose.yaml` (from `deploy/compose.prod.yaml`), `deploy.sh`, `backup.sh` and `restore-rehearsal.sh` (from `deploy/`, mode `755`) and `.env` from `deploy/.env.example`, with `APD_VERSION` and `APD_WEB_VERSION`. Create `/var/backups/apd` owned by `apd`, mode `700`, for the nightly and pre-deploy dumps.
+4. **DNS and TLS.** Add an A record (and AAAA if IPv6 is served) for `apd.<domain>`. Issue the certificate first, because the site refers to it: `sudo certbot certonly --nginx -d apd.<domain> --deploy-hook "systemctl reload nginx"`. Then install `deploy/nginx/apd-routes.conf` as `/etc/nginx/snippets/apd-routes.conf` and `deploy/nginx/apd.conf` with `apd.<domain>` in place of `apd.example.com`, link the site into `sites-enabled`, run `sudo nginx -t` and reload Nginx. Before 2.0.0 is released, install the 1.x site instead, from `git show v1.5.0:deploy/nginx/apd.conf`: the current files route `/` to the web client, which until 2.0.0 serves its pages under `/app`.
    Then install `deploy/fail2ban/apd.local` as `/etc/fail2ban/jail.d/apd.local` and run `sudo fail2ban-client reload`. `sudo fail2ban-client status apd-limit-req` lists the jail; it bans a client that keeps getting 429 from the demo, and leaves the limits of other sites alone.
 5. **Anthropic.** Create a workspace for the demo, set a monthly spend limit, create a key for that workspace only and put it in `.env`.
 6. **GitHub.** Create the `production` environment and limit its deployment branches to `main`. Give it:
@@ -42,7 +43,7 @@ Keep a second SSH session open during steps 1 and 2, so a mistake in the SSH con
    ```
 
    `apd-purge.timer` runs at 00:05 UTC and `apd-backup.timer` at 00:30 UTC, so a backup holds at most one day of visitor data. Both catch up after a reboot (`Persistent=true`).
-8. **Monitor.** Optional external check on `https://apd.<domain>/health`.
+8. **Monitor.** Optional external check on `https://apd.<domain>/api/health`.
 
 ## Deploy
 
@@ -50,7 +51,7 @@ Merging the release pull request deploys automatically. The `deploy` job of the 
 
 1. `deploy/release-deploy.sh` connects as `apd` over SSH. It accepts only the host key in `DEPLOY_KNOWN_HOSTS`, so a changed key stops the deploy instead of being trusted, and sends the tag as the only command.
 2. `deploy.sh` on the host does the work below.
-3. `deploy/smoke-test.sh` calls `/health` and `/ui/` on `DEMO_URL` over HTTPS. Any error fails the job.
+3. `deploy/smoke-test.sh` calls `/` and `/api/health` on `DEMO_URL` over HTTPS. Any error fails the job.
 
 To redeploy or roll back to a tag, run the `Release` workflow by hand (`workflow_dispatch`) with that tag. To repair from the server:
 
@@ -58,17 +59,39 @@ To redeploy or roll back to a tag, run the `Release` workflow by hand (`workflow
 sudo -u apd /opt/apd/deploy.sh v1.2.1
 ```
 
-`deploy.sh` backs up the database, pulls the image, runs `alembic upgrade head` in a one-off container, starts the new version and checks `/health`. If the check fails, it starts the previous tag again and exits with an error.
+`deploy.sh` backs up the database, pulls the images, runs `alembic upgrade head` in a one-off container, starts the new version and checks its health: `/api/health` on `127.0.0.1:8100` for the API and `/` on `127.0.0.1:8101` for the web client. If a check fails, each service starts again on the version it ran before, and the script exits with an error.
 
 - It accepts one tag, `vX.Y.Z`, as its argument or, over SSH, in `SSH_ORIGINAL_COMMAND`. Anything else exits before a single command runs.
-- The version it runs is `APD_VERSION` in `/opt/apd/.env`. The script updates that line only after the new version passes `/health`, so after a rollback the file still names the version that is running.
+- Each service has its own version in `/opt/apd/.env`: `APD_VERSION` for the API and `APD_WEB_VERSION` for the web client (ADR 0016). A tag from `v2.0.0` on moves both; a 1.x tag moves the API only, because a 1.x web image serves its pages under `/app`.
+- The script updates those lines only after every moved service passes its check, so after a rollback the file still names the versions that are running.
+- When you copy a `deploy.sh` or `compose.prod.yaml` from a release with RS-79 onto a host that has only `APD_VERSION`, add `APD_WEB_VERSION` first, with the same value. Both files refuse to run without it.
 - The pre-deploy dump is `/var/backups/apd/pre-deploy-<UTC time>-v<old>-to-v<new>.dump`.
 - If the migration fails, the new version never starts and the old one keeps running. Restore the pre-deploy dump only if the migration left the schema half changed.
 - A lock file, `/opt/apd/.deploy.lock`, stops a second deploy while one is running.
 
-A failed `deploy` job leaves the previous version running when the health check on the host failed (`deploy.sh` rolled back). When only the smoke test failed, the new version passed `/health` on the host but is not reachable from outside: check Nginx, the certificate and the DNS record.
+A failed `deploy` job leaves the previous version running when the health check on the host failed (`deploy.sh` rolled back). When only the smoke test failed, the new version passed its checks on the host but is not reachable from outside: check Nginx, the certificate and the DNS record.
 
 To stop automatic deploys, for example to take the demo offline, set `DEPLOY_ENABLED` to anything but `true`.
+
+## Switch to 2.0.0 (ADR 0016)
+
+2.0.0 moves the public client from `/ui/` (FastAPI) to `/` (Next.js) and the API under `/api/` only. The change runs by hand, once, through states that always work:
+
+| State | Nginx site | API | Web | Public client |
+|---|---|---|---|---|
+| S0 (before) | 1.x | 1.x | not routed | `/ui/` |
+| S1 | 2.0.0 routes | 1.x, already under `/api/` | 2.0.0 | `/`, with `/ui/` answering 301 |
+| S2 | 2.0.0 routes | 2.0.0 | 2.0.0 | `/` |
+
+Keep `DEPLOY_ENABLED` off for the whole change, so a release cannot deploy halfway through it.
+
+1. **New files.** From the `v2.0.0` tag, copy `deploy/compose.prod.yaml` to `/opt/apd/compose.yaml` and `deploy/deploy.sh` to `/opt/apd/deploy.sh`. Add `APD_WEB_VERSION=2.0.0` to `/opt/apd/.env`. Keep the current site as `/etc/nginx/sites-available/apd.conf.1x`, and copy `deploy/nginx/apd-routes.conf` to `/etc/nginx/snippets/`.
+2. **Start the web client alone.** `cd /opt/apd && docker compose pull web && docker compose up -d web`, then `curl -sf http://127.0.0.1:8101/`. Nothing public changes yet.
+3. **Switch Nginx (S1).** Install the 2.0.0 `apd.conf` with the real host name, run `sudo nginx -t` and `sudo systemctl reload nginx`. Run `deploy/smoke-test.sh https://apd.<domain>` and check that `curl -sI https://apd.<domain>/ui/` answers 301 to `/`.
+4. **Move the API (S2).** `sudo -u apd /opt/apd/deploy.sh v2.0.0`. If a health check fails, the script returns to S1, which also works.
+5. **Verify** the demo in a browser, then set `DEPLOY_ENABLED` back to `true`.
+
+To go back to S0 from S1: restore `apd.conf.1x` as the site, reload Nginx and stop the web container (`docker compose stop web`).
 
 ## Schema migrations
 
