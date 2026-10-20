@@ -4,6 +4,7 @@ import { ApiError } from "@/lib/api";
 import { useAnalysis, useProcess } from "@/lib/api/queries";
 import { hours, money } from "@/lib/format";
 
+import { LlmUnavailableNote } from "./llm-wait";
 import { Metric, Metrics } from "./metric";
 import { Panel } from "./panel";
 import { ControlsPanel, ImpactPanel, Quads, RiskPanel, SuitabilityPanel } from "./results/panels";
@@ -35,6 +36,7 @@ export function ResultsView({ id, analysisId }: { id: string; analysisId: string
   return (
     <>
       <ProvenanceBar analysis={data} />
+      <LlmUnavailableNote llm={data.llm} />
       <section aria-label="Current state">
         <Metrics className="md:grid-cols-2 xl:grid-cols-2">
           <Metric term="Current monthly hours" value={hours(data.current_state.monthly_hours)} />

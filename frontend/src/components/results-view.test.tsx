@@ -202,3 +202,34 @@ describe("Results", () => {
     expect(await screen.findByText("This analysis does not exist.")).toBeDefined();
   });
 });
+
+// RS-75, criterion 4: the deterministic part never depends on the LLM.
+describe("Results without the LLM", () => {
+  const unavailable = (error_kind: string) =>
+    analysisRead({
+      llm: { status: "unavailable", provider: null, model: null, prompt_version: null, error_kind },
+    });
+
+  it("says the deterministic results are complete and today's AI quota is used up", async () => {
+    show(unavailable("daily_quota"));
+
+    const note = await screen.findByRole("note");
+    expect(note.textContent).toMatch(/Today's AI quota of this demo is used up/);
+    expect(note.textContent).toMatch(/The deterministic results are complete/);
+  });
+
+  it("names any other reason the LLM was unavailable", async () => {
+    show(unavailable("timeout"));
+
+    expect((await screen.findByRole("note")).textContent).toBe(
+      "The LLM was unavailable (Timeout). The deterministic results are complete.",
+    );
+  });
+
+  it("shows no note when the LLM was not requested", async () => {
+    show(analysisRead());
+
+    await screen.findByRole("region", { name: "Provenance" });
+    expect(screen.queryByRole("note")).toBeNull();
+  });
+});
