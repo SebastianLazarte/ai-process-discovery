@@ -58,7 +58,7 @@ updates:
         update-types: [minor, patch]
 
   - package-ecosystem: docker
-    directory: /
+    directories: [/, /frontend]
     schedule:
       interval: weekly
     cooldown:
@@ -71,6 +71,9 @@ updates:
       # The 3.12-slim tag still receives Python patch releases on every image build.
       - dependency-name: python
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      # Node 22 is pinned in .nvmrc, engines and the web image (ADR 0009); a new major is planned work.
+      - dependency-name: node
+        update-types: ["version-update:semver-major"]
 
   # PostgreSQL is pinned by tag and digest in both compose files; one pull request moves
   # both, so CI keeps starting the version that production runs.

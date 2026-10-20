@@ -31,7 +31,7 @@ Keep a second SSH session open during steps 1 and 2, so a mistake in the SSH con
    - Secrets: `DEPLOY_HOST` (the host name or address the runner connects to), `DEPLOY_SSH_KEY` (the private half of the deploy key from step 2) and `DEPLOY_KNOWN_HOSTS` (output of `ssh-keyscan` for that same name, checked against the fingerprint shown on the server).
    - Variable: `DEMO_URL`, the public `https://apd.<domain>` address that the smoke test calls.
 
-   When the host is ready, add the repository variable `DEPLOY_ENABLED` with the value `true`. Until then the `deploy` job is skipped and a release only publishes the image.
+   When the host is ready, add the repository variable `DEPLOY_ENABLED` with the value `true`. Until then the `deploy` job is skipped and a release only publishes the images: `ai-process-discovery` and, from RS-77, `ai-process-discovery-web` with the same tag. Production runs only the API image until RS-79.
 7. **Timers.** Install the units from `deploy/systemd/` and start the timers:
 
    ```bash

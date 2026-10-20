@@ -1,6 +1,6 @@
-# Full stack: PostgreSQL + API (web client at :8000/ui/) + Streamlit UI.
+# Full stack: PostgreSQL + API (web client at :8000/ui/) + Next.js client + Streamlit UI.
 #   docker compose up --build
-# CI runs this file in the `docker` job with a freshly built image (APD_IMAGE).
+# CI runs this file in the `docker` job with freshly built images (APD_IMAGE, APD_WEB_IMAGE).
 
 services:
   db:
@@ -29,6 +29,30 @@ services:
       - "8000:8000"
     depends_on:
       db:
+        condition: service_healthy
+
+  # The Next.js client at :3000/app (ADR 0009, RS-77), read-only like the production API:
+  # Next writes only to its two caches, on tmpfs. Server-side reads reach the API at
+  # API_INTERNAL_URL.
+  # Nothing here routes the browser's /api/ calls (Nginx does in production), so screens
+  # that call the API are tried with `pnpm dev`.
+  web:
+    image: ${APD_WEB_IMAGE:-ai-process-discovery-web:local}
+    build: frontend
+    environment:
+      API_INTERNAL_URL: http://api:8000
+    ports:
+      - "3000:3000"
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/.next/cache
+      - /app/.next/server/route-cache
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      api:
         condition: service_healthy
 
   ui:
