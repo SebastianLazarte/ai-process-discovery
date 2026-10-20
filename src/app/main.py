@@ -30,7 +30,8 @@ def create_app(settings: Settings | None = None, provider: LLMProvider | None = 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         engine = build_engine(settings.database_url)
-        init_db(engine)
+        if settings.create_schema_on_startup:
+            init_db(engine)
         app.state.engine = engine
         app.state.session_factory = session_factory(engine)
         app.state.llm_provider = provider or build_provider(settings)

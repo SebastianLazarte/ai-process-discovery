@@ -31,6 +31,9 @@ jobs:
         run: uv run ruff check .
       - name: Types
         run: uv run mypy
+      - name: Shellcheck
+        # Preinstalled on the Ubuntu runner (RS-66, RS-67).
+        run: shellcheck deploy/*.sh
 
   web:
     name: web
@@ -139,6 +142,11 @@ jobs:
         with:
           enable-cache: true
       - run: uv sync --all-extras
+      # RS-59: the migrations build the schema the models describe, on an empty database.
+      - name: Migrations against PostgreSQL
+        run: |
+          uv run alembic upgrade head
+          uv run alembic check
       - name: Integration tests against PostgreSQL
         run: uv run pytest tests/integration
 
@@ -169,15 +177,35 @@ jobs:
           tags: ai-process-discovery:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      # RS-77: the Next.js client image. Its own cache scope, so the two builds do not
+      # overwrite each other's layers.
+      - name: Build web image
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: frontend
+          load: true
+          push: false
+          tags: ai-process-discovery-web:ci
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,scope=web,mode=max
+      # `--wait` fails unless every service with a health check, web included, is healthy.
       - name: Compose smoke test
         env:
           APD_IMAGE: ai-process-discovery:ci
+          APD_WEB_IMAGE: ai-process-discovery-web:ci
         run: |
-          docker compose up -d --wait --wait-timeout 120
+          docker compose up -d --wait --wait-timeout 180
+          test "$(docker inspect --format '{{.State.Health.Status}}' "$(docker compose ps -q api)")" = healthy
+          test "$(docker inspect --format '{{.State.Health.Status}}' "$(docker compose ps -q web)")" = healthy
           curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:8000/health
           curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:8000/api/health
           curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:8000/ui/
           curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:8501/_stcore/health
+          curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:3000/app \
+            | grep -q '<title>AI Process Discovery</title>'
+          # The web container runs as the node user on a read-only root.
+          test "$(docker compose exec -T web id -u)" != 0
+          test "$(docker inspect --format '{{.HostConfig.ReadonlyRootfs}}' "$(docker compose ps -q web)")" = true
       # RS-64: the production stack runs with the same image, a read-only root and no
       # capabilities, and publishes nothing beyond 127.0.0.1.
       - name: Production compose smoke test
@@ -195,6 +223,8 @@ jobs:
             echo "::error::deploy/compose.prod.yaml publishes a port beyond 127.0.0.1"
             exit 1
           fi
+          # The API creates no table here (RS-59): migrate first, as the runbook and deploy.sh (RS-66) do.
+          docker compose -f deploy/compose.prod.yaml run --rm api alembic upgrade head
           docker compose -f deploy/compose.prod.yaml up -d --wait --wait-timeout 120
           curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://127.0.0.1:8100/health
           curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://127.0.0.1:8100/api/health

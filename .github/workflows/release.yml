@@ -3,6 +3,13 @@ name: Release
 on:
   push:
     branches: [main]
+  # Redeploys or rolls back by hand: run the workflow with the tag to deploy (RS-67).
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to deploy, like v1.4.0
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -14,6 +21,7 @@ concurrency:
 jobs:
   release-please:
     name: release-please
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -69,3 +77,54 @@ jobs:
           provenance: mode=max
           sbom: true
           cache-from: type=gha
+      # RS-77: the Next.js client ships with the same version tags as the API (ADR 0009).
+      - id: meta-web
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          images: ghcr.io/${{ github.repository }}-web
+          tags: |
+            type=semver,pattern={{version}},value=${{ needs.release-please.outputs.version }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ needs.release-please.outputs.version }}
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: frontend
+          push: true
+          tags: ${{ steps.meta-web.outputs.tags }}
+          labels: ${{ steps.meta-web.outputs.labels }}
+          provenance: mode=max
+          sbom: true
+          cache-from: type=gha,scope=web
+
+  # Deploys the new release to the public demo (ADR 0008, RS-67). The repository variable
+  # DEPLOY_ENABLED switches it on once the host is ready, and off to take the demo offline.
+  # Secrets and the URL live in the `production` environment only.
+  deploy:
+    name: deploy
+    needs: [release-please, publish-image]
+    if: >-
+      !cancelled() && vars.DEPLOY_ENABLED == 'true' &&
+      (needs.publish-image.result == 'success' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ vars.DEMO_URL }}
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    permissions:
+      contents: read
+    env:
+      # Read from the environment, never interpolated into a script.
+      TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || needs.release-please.outputs.tag_name }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Deploy over SSH
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: deploy/release-deploy.sh "$TAG"
+      - name: Smoke test over HTTPS
+        env:
+          DEMO_URL: ${{ vars.DEMO_URL }}
+        run: deploy/smoke-test.sh "$DEMO_URL"

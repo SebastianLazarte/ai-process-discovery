@@ -10,7 +10,7 @@ Describe a business process step by step and get a quantified, explainable autom
 
 ## Try it
 
-**Live demo:** coming with the public demo release (block B11). No sign-up, synthetic data, deleted daily.
+**Live demo:** the Website link at the top of this repository's page, once the public demo is online. No sign-up, synthetic data, deleted every night ([data policy](SECURITY.md#public-demo-data)).
 
 **On your machine, one command** (Docker, no API key needed):
 
@@ -59,7 +59,7 @@ Teams decide what to automate by intuition, and LLMs make it tempting to let a m
 | Every decision and its trade-offs | [`docs/adr/`](docs/adr/) |
 | The product backlog with Given/When/Then criteria | [`docs/requirements.toml`](docs/requirements.toml) |
 
-Quality bar on every pull request: formatting, lint, strict typing, tests on Python 3.12 and 3.13 with 95 % minimum coverage and complexity limits, the integration suite on PostgreSQL, web client tests on Node 22, a Docker build with a smoke test, CodeQL and dependency review. A weekly job runs mutation testing on the domain ([ADR 0011](docs/adr/0011-automated-quality-gauntlet.md)). Releases are versioned by release-please and the image ships to GHCR with provenance and SBOM ([ADR 0006](docs/adr/0006-github-flow-ci-and-releases.md)).
+Quality bar on every pull request: formatting, lint, strict typing, tests on Python 3.12 and 3.13 with 95 % minimum coverage and complexity limits, the integration suite on PostgreSQL, web client tests on Node 22, a Docker build with a smoke test, CodeQL and dependency review. A weekly job runs mutation testing on the domain ([ADR 0011](docs/adr/0011-automated-quality-gauntlet.md)). Releases are versioned by release-please and the API and Next.js images ship to GHCR with the same tag, provenance and SBOM ([ADR 0006](docs/adr/0006-github-flow-ci-and-releases.md)).
 
 ## Architecture
 
@@ -192,7 +192,7 @@ node --test web/tests/*.test.js     # web client, Node 22
 ## Trade-offs
 
 - **SQLite locally, PostgreSQL in CI.** The demo runs with nothing but `uv`; the `test-postgres` job proves the PostgreSQL path on every pull request ([ADR 0002](docs/adr/0002-sqlite-locally-postgresql-in-ci.md)).
-- **No migrations yet.** `create_all` until the public demo ships; Alembic arrives first in block B11 (RS-59).
+- **Migrations in production, `create_all` locally.** Alembic owns the production schema and runs from the release image before a new version starts (RS-59); local runs and tests still create tables on startup, and a test fails if the models and the migrations disagree.
 - **Web client without a framework.** ES modules served by FastAPI at `/ui/`, no build step and no dependencies; the client prints the API's numbers and never computes one ([ADR 0007](docs/adr/0007-vanilla-web-client-served-by-fastapi.md)). A Next.js client replaces it in 2.0.0 ([ADR 0009](docs/adr/0009-nextjs-frontend-as-separate-service.md)). The legacy Streamlit UI in `ui/` leaves at the same time.
 - **One real LLM provider.** The interface is the deliverable; a second adapter is one module ([ADR 0004](docs/adr/0004-provider-agnostic-llm-anthropic-first.md)).
 - **Synchronous LLM call.** Simple and adequate for one analysis at a time; a queue is the next step if analyses grow.
@@ -204,8 +204,9 @@ node --test web/tests/*.test.js     # web client, Node 22
 | B0 to B9 | Domain, scoring, business case, API, LLM layer, reconciliation, blueprint, 1.0 release | Done |
 | B10 | Web client | Done (1.1) |
 | B11 | Public demo: limits, LLM quota, demo banner, purge, production compose and Nginx | Done (1.2, 1.3) |
-| B11 | Public demo: migrations, deploy with rollback, automatic release deploy, backups | Next |
-| B12 | Next.js client and API under `/api` (2.0) | Planned |
+| B11 | Public demo: demos with preset assumptions (RS-89), Alembic migrations (RS-59), deploy script with rollback (RS-66), deploy from the release workflow with an HTTPS smoke test (RS-67) | Done |
+| B11 | Public demo: nightly backups and purge on timers, restore rehearsal script, data policy (RS-68) | Done; first rehearsal pending on the host |
+| B12 | Next.js client and API under `/api` (2.0) | In progress: API under `/api`, project, typed client and process list done |
 | B13 | Quality gauntlet and refactors | In progress |
 
 Requirements and acceptance criteria: [docs/requirements.toml](docs/requirements.toml). Scope and non-goals: [PDR 001](docs/pdr/001-mvp-scope.md). Product Goal and roles: [PDR 002](docs/pdr/002-portfolio-product-goal-and-roles.md). Contributing: [CONTRIBUTING](CONTRIBUTING.md).

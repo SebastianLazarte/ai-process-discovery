@@ -1,0 +1,10 @@
+# Runs apd-backup.service after the purge, so a backup holds at most one day of visitor data.
+[Unit]
+Description=Back up the public demo database every night
+
+[Timer]
+OnCalendar=*-*-* 00:30:00 UTC
+Persistent=true
+
+[Install]
+WantedBy=timers.target

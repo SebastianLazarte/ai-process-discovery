@@ -38,11 +38,11 @@ What the new client must let people do, taken from the current client. The table
 | Current route | Purpose | Content to show | Actions | Backlog |
 |---|---|---|---|---|
 | `#/processes` | Start here | Hero, demo cards, new process form, process table | Load demo, create process | RS-73 |
-| `#/processes/{id}` (Steps) | Describe the process | Header with tabs, four metrics, step list, process settings | Add, edit (dialog), move up or down, delete step; save or delete process | RS-73, RS-74 |
+| `#/processes/{id}` (Steps) | Describe the process | Header with tabs, four metrics, step list, process settings | Add, edit (dialog), move up or down, delete step; save or delete process | RS-73, RS-74, RS-91 |
 | `#/processes/{id}/analyse` | Set assumptions and run | Implementation and tooling cost, a time reduction slider per step, LLM option, sensitive data gate | Run analysis | RS-75 |
-| `#/analyses/{id}` (Results) | Read the analysis | Provenance, current state, four panels (suitability, impact, risk, controls), expandable step assessments | Override a step | RS-75, RS-76 |
-| `#/analyses/{id}/blueprint` | Take the result away | Eight numbered sections | Download `.md` | RS-76 |
-| `#/processes/{id}/history` | Compare runs | Table of immutable analyses | Open one | RS-76 |
+| `#/analyses/{id}` (Results) | Read the analysis | Provenance, current state, four panels (suitability, impact, risk, controls), expandable step assessments | Override a step | RS-92, RS-76 |
+| `#/analyses/{id}/blueprint` | Take the result away | Eight numbered sections | Download `.md` | RS-94 |
+| `#/processes/{id}/history` | Compare runs | Table of immutable analyses | Open one | RS-93 |
 
 Shared across pages: sidebar with the process list, public demo banner, toast (`role=status`), modal dialog for the step form, skip link, field errors from 422 answers.
 

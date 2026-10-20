@@ -17,14 +17,14 @@ Stable reference for the whole repo. Code changes read from here; this folder ch
 | PDR 001 | MVP scope; "no hosted deployment" amended by ADR 0008 | accepted; target user amended by PDR 002 |
 | PDR 002 | Product Goal (portfolio demo), roles and Scrum backlog | accepted |
 | ADR 0001 | Python computes every number, the LLM only interprets; authority order | accepted |
-| ADR 0002 | SQLite locally, PostgreSQL in CI, `ExactDecimal`, no migrations yet | accepted |
+| ADR 0002 | SQLite locally, PostgreSQL in CI, `ExactDecimal`, no migrations yet | accepted; migrations amended by ADR 0008 (Alembic from RS-59) |
 | ADR 0003 | Domain, contracts and persistence are separate models | accepted |
 | ADR 0004 | `LLMProvider` protocol, fake by default, Anthropic first, versioned prompt | accepted |
 | ADR 0005 | Streamlit as a REST client | replaced by ADR 0007 from 1.2.0; Streamlit pending removal |
 | ADR 0006 | GitHub Flow, required checks, release-please, release authorship | accepted; required checks amended by ADR 0009, supply chain by ADR 0010, coverage minimum by ADR 0011 |
 | ADR 0007 | Vanilla web client served by FastAPI | replaced by ADR 0009 from 2.0.0; `web/` pending removal |
 | ADR 0008 | Public demo on the maintainer's VPS (block B11, RS-59 to RS-68) | accepted; layout amended by ADR 0009 |
-| ADR 0009 | Next.js frontend as a separate service, API under `/api` (block B12, RS-69 to RS-80) | accepted; dependencies amended by ADR 0013 |
+| ADR 0009 | Next.js frontend as a separate service, API under `/api` (block B12, RS-69 to RS-80; RS-91 to RS-94 split from RS-74 to RS-76) | accepted; dependencies amended by ADR 0013 |
 | ADR 0010 | Dependency updates: grouped minor and patch after a cooldown, majors planned, Python version fixed | accepted |
 | ADR 0011 | Automated quality gauntlet: mutation testing on the domain, property-based tests, complexity limits, coverage 95 % | proposed; completed by ADR 0012 |
 | ADR 0012 | Test quality standard: ISO/IEC/IEEE 29119-4 techniques, ISO/IEC 25010 evidence map, marked requirement traceability, LLM eval dataset with task success rate and cost | accepted |
