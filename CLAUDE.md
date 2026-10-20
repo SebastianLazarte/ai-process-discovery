@@ -56,6 +56,7 @@ ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locall
 | Next.js client: install, then lint, format, types, tests, build | `cd frontend && corepack pnpm install && corepack pnpm lint && corepack pnpm format && corepack pnpm typecheck && corepack pnpm test && corepack pnpm build` |
 | Next.js client in development on `:3000/app` | `cd frontend && corepack pnpm dev` |
 | Whole stack on PostgreSQL | `docker compose up --build` |
+| End-to-end walkthroughs with axe, against the stack on `:8080` | `docker compose up --build -d --wait edge && cd frontend && corepack pnpm exec playwright install chromium && corepack pnpm e2e` |
 | Apply migrations / check them against the models | `uv run alembic upgrade head && uv run alembic check` |
 | Purge demo data older than 24 h | `uv run python -m app.purge --older-than-hours 24` |
 | Legacy Streamlit on `:8501` | `uv run streamlit run ui/streamlit_app.py` |
@@ -65,7 +66,7 @@ ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locall
 - **Inputs:** one issue, which is one backlog item `RS-nn` in `docs/requirements.toml` with its acceptance criteria (Ready, when refined: see the Scrum section of `docs/CLAUDE.md`); the ADRs routed above.
 - **Process:** branch from `main` (`feat/rs-12-process-score`, `fix/...`, `docs/...`, `ci/...`). A test proves each acceptance criterion. A new dependency or a reversed decision comes with an ADR.
 - **Outputs:** one pull request with the template and a Conventional Commits title (`feat(scoring): ...`), squash merged. The description answers the verification questions of the checklist comment (`.github/pr-checklist.toml`).
-- **Verify:** pre-commit, `uv run pytest`, the Node tests and the `frontend/` checks pass locally. Required checks: `quality`, `web`, `frontend`, `test (3.12)`, `test (3.13)`, `test-postgres`, `docker`, `pr-title`.
+- **Verify:** pre-commit, `uv run pytest`, the Node tests and the `frontend/` checks pass locally. Required checks: `quality`, `web`, `frontend`, `test (3.12)`, `test (3.13)`, `test-postgres`, `docker`, `e2e`, `pr-title`.
 
 ## Hard rules
 

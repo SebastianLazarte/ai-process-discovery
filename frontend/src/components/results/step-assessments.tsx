@@ -2,6 +2,7 @@ import type { AnalysisRead } from "@/lib/api/queries";
 import { count, detail, enumLabel, hours, percent } from "@/lib/format";
 
 import { Badge } from "../badge";
+import { TableScroll } from "../data-table";
 import { Note } from "./note";
 import { OverrideForm } from "./override-form";
 import { SourceBadge } from "./source-badge";
@@ -21,7 +22,7 @@ function RulesColumn({ step }: { step: Step }) {
       <p className="mb-3">
         <Badge value={step.rules_method} /> {step.rules_method_reason}
       </p>
-      <div className="overflow-x-auto">
+      <TableScroll label={`${step.name} score factors`}>
         <table aria-label={`${step.name} score factors`} className="mb-3 w-full text-[13px]">
           <thead>
             <tr>
@@ -48,7 +49,7 @@ function RulesColumn({ step }: { step: Step }) {
             ))}
           </tbody>
         </table>
-      </div>
+      </TableScroll>
       {step.score_penalties.length > 0 && (
         <p className="mb-3">
           <b>Penalties:</b>{" "}

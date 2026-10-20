@@ -68,6 +68,7 @@ REQUIRED_CHECKS = [
     "test (3.13)",
     "test-postgres",
     "docker",
+    "e2e",
     "pr-title",
 ]
 
