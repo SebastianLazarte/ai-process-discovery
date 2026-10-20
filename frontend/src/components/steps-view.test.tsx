@@ -1,6 +1,7 @@
 // RS-73: the Steps tab shows the facts of the process, an unknown hourly cost as unknown,
 // and deletes the process after a confirmation that names it. RS-74: it lists the steps in
-// order and saves the process settings.
+// order and saves the process settings. RS-91: it moves a step up or down and deletes one,
+// and the list and the version follow the API.
 import { cleanup, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -163,5 +164,189 @@ describe("the process settings", () => {
     expect(field(/^Hourly cost/).value).toBe("");
     expect(screen.getByText("Costs stay unknown")).toBeDefined();
     expect(screen.getByRole("status").textContent).toBe("Process saved.");
+  });
+});
+
+const THREE = ["Read the claim email", "Check the warranty", "Approve the refund"].map(
+  (name, index) =>
+    step({ id: `5555555${index}-5555-4555-8555-555555555555`, position: index + 1, name }),
+);
+const [STEP_A, STEP_B, STEP_C] = THREE as [ReturnType<typeof step>, ...ReturnType<typeof step>[]];
+
+/** The process as the API stores it after a write: positions follow the order, version + 1. */
+function stored(steps: ReturnType<typeof step>[], version = 2) {
+  return processRead({
+    version,
+    steps: steps.map((each, index) => ({ ...each, position: index + 1 })),
+  });
+}
+
+const stepRows = () => within(screen.getByRole("list", { name: "Steps" })).getAllByRole("listitem");
+
+const stepNames = () =>
+  within(screen.getByRole("list", { name: "Steps" }))
+    .getAllByRole("heading", { level: 3 })
+    .map((heading) => heading.textContent);
+
+function renderProcess() {
+  return renderWithProviders(
+    <ProcessView id={PROCESS.id}>
+      <StepsView id={PROCESS.id} />
+    </ProcessView>,
+  );
+}
+
+const frame = {
+  [`GET ${PATH}/analyses`]: { body: [] },
+  "GET /processes": { body: [] },
+};
+
+describe("reordering steps (RS-91)", () => {
+  it("moves the third step up from the keyboard, saves the order and keeps focus on it (criterion 1)", async () => {
+    let sent: unknown;
+    fakeApi({
+      ...frame,
+      [`GET ${PATH}`]: { body: processRead({ steps: THREE }) },
+      [`PUT ${PATH}/steps/order`]: async (request) => {
+        sent = await request.json();
+        return { body: stored([STEP_A, STEP_C!, STEP_B!]) };
+      },
+    });
+    renderProcess();
+
+    const up = await screen.findByRole("button", { name: "Move Approve the refund up" });
+    // A native, enabled button in the tab order: Tab reaches it and Enter or Space presses
+    // it. jsdom does not turn a key press into the click a browser fires, so the test
+    // focuses the button and dispatches that click.
+    expect(up.tagName).toBe("BUTTON");
+    expect(up.tabIndex).toBe(0);
+    expect((up as HTMLButtonElement).disabled).toBe(false);
+    up.focus();
+    fireEvent.click(up);
+
+    expect(await screen.findByText("Process · v2")).toBeDefined();
+    expect(stepNames()).toEqual([
+      "Read the claim email",
+      "Approve the refund",
+      "Check the warranty",
+    ]);
+    expect(sent).toEqual({ step_ids: [STEP_A.id, STEP_C!.id, STEP_B!.id] });
+    expect(document.activeElement).toBe(
+      screen.getByRole("button", { name: "Move Approve the refund up" }),
+    );
+    const moved = stepRows()[1]!;
+    expect(within(moved).getByText("02")).toBeDefined();
+  });
+
+  it("keeps focus on a step that reaches the top, on the button that still works", async () => {
+    fakeApi({
+      ...frame,
+      [`GET ${PATH}`]: { body: processRead({ steps: THREE }) },
+      [`PUT ${PATH}/steps/order`]: { body: stored([STEP_B!, STEP_A, STEP_C!]) },
+    });
+    renderProcess();
+
+    const up = await screen.findByRole("button", { name: "Move Check the warranty up" });
+    up.focus();
+    fireEvent.click(up);
+
+    await screen.findByText("Process · v2");
+    expect(stepNames()[0]).toBe("Check the warranty");
+    expect(
+      (screen.getByRole("button", { name: "Move Check the warranty up" }) as HTMLButtonElement)
+        .disabled,
+    ).toBe(true);
+    expect(document.activeElement).toBe(
+      screen.getByRole("button", { name: "Move Check the warranty down" }),
+    );
+  });
+
+  it("cannot move the first step up or the last one down", async () => {
+    fakeApi({ ...frame, [`GET ${PATH}`]: { body: processRead({ steps: THREE }) } });
+    renderProcess();
+
+    const button = async (name: string) =>
+      (await screen.findByRole("button", { name })) as HTMLButtonElement;
+    expect((await button("Move Read the claim email up")).disabled).toBe(true);
+    expect((await button("Move Read the claim email down")).disabled).toBe(false);
+    expect((await button("Move Approve the refund down")).disabled).toBe(true);
+  });
+
+  it("puts the saved order back and says why when the API rejects the reorder (criterion 3)", async () => {
+    const reason = "step_ids must list every step of the process exactly once";
+    fakeApi({
+      ...frame,
+      [`GET ${PATH}`]: { body: processRead({ steps: THREE }) },
+      [`PUT ${PATH}/steps/order`]: {
+        status: 400,
+        body: { detail: reason, code: "bad_request" },
+        delay: 20,
+      },
+    });
+    renderProcess();
+
+    const down = await screen.findByRole("button", { name: "Move Read the claim email down" });
+    down.focus();
+    fireEvent.click(down);
+
+    await waitFor(() =>
+      expect(stepNames()).toEqual([
+        "Check the warranty",
+        "Read the claim email",
+        "Approve the refund",
+      ]),
+    );
+    await waitFor(() => expect(screen.getByRole("status").textContent).toBe(reason));
+    expect(stepNames()).toEqual([
+      "Read the claim email",
+      "Check the warranty",
+      "Approve the refund",
+    ]);
+    expect(screen.getByText("Process · v1")).toBeDefined();
+    expect(document.activeElement).toBe(
+      screen.getByRole("button", { name: "Move Read the claim email down" }),
+    );
+  });
+});
+
+describe("deleting a step (RS-91)", () => {
+  it("names the step in a confirmation, then updates the list and the version (criterion 2)", async () => {
+    const calls = fakeApi({
+      ...frame,
+      [`GET ${PATH}`]: { body: processRead({ steps: THREE }) },
+      [`DELETE /steps/${STEP_B!.id}`]: { body: stored([STEP_A, STEP_C!]) },
+    });
+    renderProcess();
+
+    fireEvent.click(await screen.findByRole("button", { name: "Delete Check the warranty" }));
+    const question = screen.getByRole("group", {
+      name: "Delete step “Check the warranty”? This cannot be undone.",
+    });
+    expect(calls).not.toContain(`DELETE /steps/${STEP_B!.id}`);
+
+    fireEvent.click(within(question).getByRole("button", { name: "Delete step" }));
+
+    expect(await screen.findByText("Process · v2")).toBeDefined();
+    expect(calls).toContain(`DELETE /steps/${STEP_B!.id}`);
+    expect(stepNames()).toEqual(["Read the claim email", "Approve the refund"]);
+    expect(within(stepRows()[1]!).getByText("02")).toBeDefined();
+    await waitFor(() =>
+      expect(screen.getByRole("status").textContent).toBe("Deleted “Check the warranty”."),
+    );
+  });
+
+  it("keeps the step when the confirmation is withdrawn, with focus back on Delete", async () => {
+    const calls = fakeApi({ ...frame, [`GET ${PATH}`]: { body: processRead({ steps: THREE }) } });
+    renderProcess();
+
+    const remove = await screen.findByRole("button", { name: "Delete Check the warranty" });
+    fireEvent.click(remove);
+    expect(remove.getAttribute("aria-expanded")).toBe("true");
+    fireEvent.click(screen.getByRole("button", { name: "Keep it" }));
+
+    expect(screen.queryByRole("group", { name: /Delete step/ })).toBeNull();
+    expect(document.activeElement).toBe(remove);
+    expect(stepNames()).toHaveLength(3);
+    expect(calls.some((call) => call.startsWith("DELETE"))).toBe(false);
   });
 });
