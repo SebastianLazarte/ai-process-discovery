@@ -1,7 +1,9 @@
 # Production stack for the public demo (ADR 0008). Copied to /opt/apd/compose.yaml on the
 # VPS, next to a .env made from deploy/.env.example:
 #   cd /opt/apd && docker compose up -d
-# The host Nginx is the only way in: the API listens on 127.0.0.1, PostgreSQL on no port.
+# The host Nginx is the only way in: the API and the web client listen on 127.0.0.1,
+# PostgreSQL on no port. Each service runs its own version (ADR 0016): APD_VERSION for the
+# API and APD_WEB_VERSION for the web client, both kept in .env by deploy.sh.
 # CI starts this file in the `docker` job with the freshly built image.
 
 name: apd
@@ -77,6 +79,34 @@ services:
     logging: *logging
     depends_on:
       postgres:
+        condition: service_healthy
+
+  # The Next.js client (ADR 0016, RS-79). Nginx sends every path outside /api/ here once
+  # the 2.0.0 site is in place; until then nothing routes to it.
+  web:
+    image: ${APD_WEB_IMAGE:-ghcr.io/sebastianlazarte/ai-process-discovery-web}:${APD_WEB_VERSION:?set APD_WEB_VERSION in .env}
+    restart: unless-stopped
+    environment:
+      # Server-side reads go straight to the API container.
+      API_INTERNAL_URL: http://api:8000
+    ports:
+      - "127.0.0.1:8101:3000"
+    # `edge` reaches the API container and lets Docker publish the port; the web client
+    # never talks to PostgreSQL.
+    networks: [edge]
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/.next/cache
+      - /app/.next/server/route-cache
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 256m
+    cpus: 0.5
+    logging: *logging
+    depends_on:
+      api:
         condition: service_healthy
 
 networks:
