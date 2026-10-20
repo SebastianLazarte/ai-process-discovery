@@ -1,8 +1,31 @@
 // A fake API for component tests: answers by "METHOD /path" (without /api) and records calls.
 import { vi } from "vitest";
 
-type Reply = { status?: number; body?: unknown };
+import { processSummary } from "./fixtures";
+
+/**
+ * One answer. `body` goes out as JSON; `text` as a plain or HTML page (an Nginx 504, a
+ * Markdown file) with its `contentType`. `delay` holds the answer back for that many
+ * milliseconds, to see a pending state.
+ */
+export type Reply = {
+  status?: number;
+  body?: unknown;
+  text?: string;
+  contentType?: string;
+  delay?: number;
+};
 type Handler = Reply | ((request: Request) => Reply | Promise<Reply>);
+
+function respond({ status = 200, body, text, contentType }: Reply): Response {
+  if (status === 204) return new Response(null, { status });
+  if (text !== undefined)
+    return new Response(text, {
+      status,
+      headers: { "Content-Type": contentType ?? "text/plain; charset=utf-8" },
+    });
+  return Response.json(body, { status });
+}
 
 export function fakeApi(routes: Record<string, Handler>) {
   const calls: string[] = [];
@@ -16,24 +39,14 @@ export function fakeApi(routes: Record<string, Handler>) {
       if (handler === undefined)
         return Response.json({ detail: `No fake for ${key}` }, { status: 500 });
       const reply = typeof handler === "function" ? await handler(request) : handler;
-      const status = reply.status ?? 200;
-      return status === 204
-        ? new Response(null, { status })
-        : Response.json(reply.body, { status });
+      if (reply.delay) await new Promise((resolve) => setTimeout(resolve, reply.delay));
+      return respond(reply);
     }),
   );
   return calls;
 }
 
+/** A process as the list returns it. Kept for the tests written before fixtures.ts. */
 export function summary(overrides: Partial<Record<string, unknown>> = {}) {
-  return {
-    id: "11111111-1111-4111-8111-111111111111",
-    name: "Warranty claims from installers",
-    owner: "After-sales",
-    executions_per_month: 180,
-    step_count: 7,
-    version: 1,
-    updated_at: "2026-10-16T09:30:00Z",
-    ...overrides,
-  };
+  return { ...processSummary(), ...overrides };
 }

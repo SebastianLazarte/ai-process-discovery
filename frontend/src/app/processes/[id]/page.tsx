@@ -1,6 +1,6 @@
-import { ProcessView } from "@/components/process-view";
+import { StepsView } from "@/components/steps-view";
 
-export default async function ProcessPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function StepsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  return <ProcessView id={id} />;
+  return <StepsView id={id} />;
 }

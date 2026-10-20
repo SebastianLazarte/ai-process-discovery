@@ -3,10 +3,13 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import type { components } from "@/lib/api";
 import { useDemos, useLoadDemo, useProcesses } from "@/lib/api/queries";
 import { count, timestamp, version } from "@/lib/format";
 
 import { buttonClass } from "./button";
+import { DataTable, SkeletonRows } from "./data-table";
+import type { Column } from "./data-table";
 import { Eyebrow, Panel } from "./panel";
 import { ProcessForm } from "./process-form";
 
@@ -78,9 +81,29 @@ function Demos() {
   );
 }
 
-const HEAD =
-  "border-b border-line px-2.5 py-2.5 text-[10px] font-medium tracking-[1px] whitespace-nowrap text-table-head uppercase";
-const CELL = "border-b border-line-soft px-2.5 py-3 align-top";
+type Row = components["schemas"]["ProcessSummary"];
+
+const COLUMNS: readonly Column<Row>[] = [
+  {
+    header: "Process",
+    cell: (process) => (
+      <>
+        <Link href={`/processes/${process.id}`} className="font-semibold">
+          {process.name}
+        </Link>
+        <span className="mt-0.5 block text-xs text-muted">{process.owner ?? "No owner"}</span>
+      </>
+    ),
+  },
+  { header: "Runs / month", numeric: true, cell: (process) => count(process.executions_per_month) },
+  { header: "Steps", numeric: true, cell: (process) => count(process.step_count) },
+  { header: "Version", cell: (process) => version(process.version) },
+  {
+    header: "Updated",
+    className: "whitespace-nowrap tabular-nums",
+    cell: (process) => timestamp(process.updated_at),
+  },
+];
 
 function Processes() {
   const processes = useProcesses();
@@ -106,65 +129,13 @@ function Processes() {
         </p>
       )}
       {processes.data && processes.data.length > 0 && (
-        <div className="overflow-x-auto">
-          <table aria-labelledby="processes-title" className="w-full border-collapse text-[13px]">
-            <thead>
-              <tr>
-                <th scope="col" className={`${HEAD} text-left`}>
-                  Process
-                </th>
-                <th scope="col" className={`${HEAD} text-right`}>
-                  Runs / month
-                </th>
-                <th scope="col" className={`${HEAD} text-right`}>
-                  Steps
-                </th>
-                <th scope="col" className={`${HEAD} text-left`}>
-                  Version
-                </th>
-                <th scope="col" className={`${HEAD} text-left`}>
-                  Updated
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {processes.data.map((process) => (
-                <tr key={process.id}>
-                  <td className={CELL}>
-                    <Link href={`/processes/${process.id}`} className="font-semibold">
-                      {process.name}
-                    </Link>
-                    <span className="mt-0.5 block text-xs text-muted">
-                      {process.owner ?? "No owner"}
-                    </span>
-                  </td>
-                  <td className={`${CELL} text-right tabular-nums`}>
-                    {count(process.executions_per_month)}
-                  </td>
-                  <td className={`${CELL} text-right tabular-nums`}>{count(process.step_count)}</td>
-                  <td className={CELL}>{version(process.version)}</td>
-                  <td className={`${CELL} whitespace-nowrap tabular-nums`}>
-                    {timestamp(process.updated_at)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          labelledBy="processes-title"
+          columns={COLUMNS}
+          rows={processes.data}
+          rowKey={(process) => process.id}
+        />
       )}
     </Panel>
-  );
-}
-
-function SkeletonRows() {
-  return (
-    <ul aria-hidden="true" className="space-y-3">
-      {[0, 1, 2].map((row) => (
-        <li
-          key={row}
-          className="h-12 animate-pulse rounded-control bg-surface-raised motion-reduce:animate-none"
-        />
-      ))}
-    </ul>
   );
 }
