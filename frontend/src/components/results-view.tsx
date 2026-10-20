@@ -59,7 +59,7 @@ export function ResultsView({ id, analysisId }: { id: string; analysisId: string
         className="mt-6"
         action={
           <small className="text-xs text-muted">
-            Open a step to see the rules and the AI suggestion.
+            Open a step to see the rules, the AI suggestion and to override it.
           </small>
         }
       >

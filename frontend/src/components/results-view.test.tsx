@@ -155,9 +155,8 @@ describe("Results", () => {
     expect(within(decisions[0]!).getByText("Rules")).toBeDefined();
     expect(within(decisions[1]!).getByText("AI")).toBeDefined();
     expect(within(decisions[2]!).getByText("Override")).toBeDefined();
-    expect(
-      within(steps).getByText(/Overridden from Rule based \/ None: Legal wants a person on it/),
-    ).toBeDefined();
+    const override = within(steps).getByRole("region", { name: "Override" });
+    expect(within(override).getByText(/Legal wants a person on it/)).toBeDefined();
 
     // Every AI badge sits with words, never beside a figure.
     for (const badge of screen.getAllByText("AI", { exact: true }))

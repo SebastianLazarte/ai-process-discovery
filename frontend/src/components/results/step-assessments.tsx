@@ -3,11 +3,12 @@ import { count, detail, enumLabel, hours, percent } from "@/lib/format";
 
 import { Badge } from "../badge";
 import { Note } from "./note";
+import { OverrideForm } from "./override-form";
 import { SourceBadge } from "./source-badge";
 
 // The step-by-step assessments, as stepDetail in web/analysis-views.js: the final decision
-// with who made it, then the rules and the AI suggestion side by side. Badges sit in their
-// own group and never on a figure. The override form arrives with RS-76.
+// with who made it, then the rules and the AI suggestion side by side, then the override
+// form (RS-76). Badges sit in their own group and never on a figure.
 
 type Step = AnalysisRead["step_assessments"][number];
 
@@ -100,17 +101,32 @@ function AiColumn({ step }: { step: Step }) {
           Reconciliation: {text}
         </p>
       ))}
-      {step.override && (
-        <Note tone="info">
-          Overridden from {enumLabel(step.override.original_method)} /{" "}
-          {enumLabel(step.override.original_human_control)}: {step.override.reason}
-        </Note>
-      )}
+      {step.override && <OverrideNote override={step.override} />}
     </div>
   );
 }
 
-function StepDetail({ step }: { step: Step }) {
+/**
+ * A saved override (RS-76): the reason with the Override badge, then the original method and
+ * human control, kept visible in neutral badges so they read as the decision set aside.
+ */
+function OverrideNote({ override }: { override: NonNullable<Step["override"]> }) {
+  return (
+    <section aria-label="Override">
+      <Note tone="info">
+        <SourceBadge source="HUMAN" /> {override.reason}
+      </Note>
+      <p className="mb-3 text-xs">
+        Original recommendation: <Badge value={override.original_method} tone="neutral" />{" "}
+        <Badge value={override.original_human_control} tone="neutral">
+          Control: {enumLabel(override.original_human_control)}
+        </Badge>
+      </p>
+    </section>
+  );
+}
+
+function StepDetail({ analysisId, step }: { analysisId: string; step: Step }) {
   return (
     <details className="group border-t border-line first-of-type:border-t-0">
       <summary className="grid cursor-pointer list-none grid-cols-[28px_minmax(0,1fr)] items-center gap-3 px-1 py-3.5 group-open:border-b group-open:border-dashed group-open:border-line md:grid-cols-[36px_minmax(0,1fr)_auto_auto] [&::-webkit-details-marker]:hidden">
@@ -136,6 +152,7 @@ function StepDetail({ step }: { step: Step }) {
         <RulesColumn step={step} />
         <AiColumn step={step} />
       </div>
+      <OverrideForm analysisId={analysisId} step={step} />
     </details>
   );
 }
@@ -144,7 +161,7 @@ export function StepAssessments({ analysis }: { analysis: AnalysisRead }) {
   return (
     <div>
       {analysis.step_assessments.map((step) => (
-        <StepDetail key={step.step_id} step={step} />
+        <StepDetail key={step.step_id} analysisId={analysis.id} step={step} />
       ))}
     </div>
   );
