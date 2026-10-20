@@ -2,10 +2,13 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 
-// Hard rule 7 and ADR 0009: one module talks to the API, and no component injects raw HTML.
+// Hard rule 7 and ADR 0009: one module talks to the API, and no component injects raw HTML
+// or an inline style.
 const FETCH = "Only src/lib/api/ may call fetch (hard rule 7). Use the typed API client.";
 const RAW_HTML =
   "dangerouslySetInnerHTML is forbidden in frontend/ (hard rule 7). Render text through React.";
+const INLINE_STYLE =
+  "The style prop is forbidden: the CSP blocks inline styles (RS-72). Use token utilities.";
 
 export default defineConfig([
   ...nextVitals,
@@ -25,6 +28,7 @@ export default defineConfig([
         "error",
         { selector: "JSXAttribute[name.name='dangerouslySetInnerHTML']", message: RAW_HTML },
         { selector: "Property[key.name='dangerouslySetInnerHTML']", message: RAW_HTML },
+        { selector: "JSXAttribute[name.name='style']", message: INLINE_STYLE },
       ],
     },
   },

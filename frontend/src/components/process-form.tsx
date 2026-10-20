@@ -3,12 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import type { FieldPath, UseFormRegisterReturn } from "react-hook-form";
+import type { FieldPath } from "react-hook-form";
 
 import { ApiError, applyFieldErrors } from "@/lib/api";
 import { useCreateProcess } from "@/lib/api/queries";
 
 import { buttonClass } from "./button";
+import { NumberField, TextField } from "./field";
 
 // Values travel as typed; the API validates and converts them (hard rule 7). An empty
 // hourly cost is sent as null, meaning unknown, never as zero.
@@ -69,36 +70,39 @@ export function ProcessForm() {
     );
   });
 
-  const field = (name: FieldPath<Values>, label: string, hint?: string) => {
-    const error = errors[name]?.message;
-    const describedBy = [hint && `${name}-hint`, error && `${name}-error`]
-      .filter(Boolean)
-      .join(" ");
-    return { error, describedBy: describedBy || undefined, label, hint };
-  };
+  const error = (name: FieldPath<Values>) => errors[name]?.message;
 
   return (
     <form onSubmit={submit} noValidate className="grid gap-4 sm:grid-cols-2">
-      <TextField {...field("name", "Name")} id="name" required register={register("name")} />
-      <TextField {...field("owner", "Owner")} id="owner" register={register("owner")} />
       <TextField
-        {...field("executions_per_month", "Executions per month")}
-        id="executions_per_month"
-        inputMode="numeric"
+        id="name"
+        label="Name"
         required
+        error={error("name")}
+        register={register("name")}
+      />
+      <TextField id="owner" label="Owner" error={error("owner")} register={register("owner")} />
+      <NumberField
+        id="executions_per_month"
+        label="Executions per month"
+        integer
+        required
+        error={error("executions_per_month")}
         register={register("executions_per_month")}
       />
-      <TextField
-        {...field("hourly_cost", "Hourly cost", "Leave empty if unknown. Unknown is not free.")}
+      <NumberField
         id="hourly_cost"
-        inputMode="decimal"
+        label="Hourly cost"
+        hint="Leave empty if unknown. Unknown is not free."
+        error={error("hourly_cost")}
         register={register("hourly_cost")}
       />
       <TextField
-        {...field("description", "Description")}
         id="description"
+        label="Description"
         multiline
         wide
+        error={error("description")}
         register={register("description")}
       />
       {formError.length > 0 && (
@@ -112,64 +116,5 @@ export function ProcessForm() {
         </button>
       </div>
     </form>
-  );
-}
-
-type TextFieldProps = {
-  id: string;
-  label: string;
-  hint?: string;
-  error?: string;
-  describedBy?: string;
-  required?: boolean;
-  multiline?: boolean;
-  wide?: boolean;
-  inputMode?: "numeric" | "decimal";
-  register: UseFormRegisterReturn;
-};
-
-function TextField({
-  id,
-  label,
-  hint,
-  error,
-  describedBy,
-  required,
-  multiline,
-  wide,
-  inputMode,
-  register,
-}: TextFieldProps) {
-  const control = {
-    id,
-    "aria-invalid": error ? true : undefined,
-    "aria-describedby": describedBy,
-    "aria-required": required || undefined,
-    className:
-      "mt-1.5 block min-h-11 w-full rounded-[7px] border border-input-line bg-input-bg px-3 py-2.5 text-sm text-ink aria-invalid:border-bad",
-    ...register,
-  };
-  return (
-    <div className={wide ? "sm:col-span-2" : undefined}>
-      <label htmlFor={id} className="block text-[13px] font-medium text-label">
-        {label}
-        {required && <span className="font-normal text-muted"> (required)</span>}
-      </label>
-      {multiline ? (
-        <textarea rows={3} {...control} />
-      ) : (
-        <input inputMode={inputMode} {...control} />
-      )}
-      {hint && (
-        <p id={`${id}-hint`} className="mt-1.5 text-xs text-muted">
-          {hint}
-        </p>
-      )}
-      {error && (
-        <p id={`${id}-error`} className="mt-1 text-xs text-bad">
-          {error}
-        </p>
-      )}
-    </div>
   );
 }

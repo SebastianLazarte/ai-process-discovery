@@ -44,11 +44,12 @@ export function Sidebar() {
         )}
         <ul className="flex gap-1.5 overflow-x-auto md:block md:space-y-0.5">
           {processes.data?.map((process) => {
-            const current = pathname === `/processes/${process.id}`;
+            const href = `/processes/${process.id}`;
+            const current = pathname === href || pathname.startsWith(`${href}/`);
             return (
               <li key={process.id} className="flex-none md:flex-auto">
                 <Link
-                  href={`/processes/${process.id}`}
+                  href={href}
                   aria-current={current ? "page" : undefined}
                   className="block max-w-56 rounded-control px-2.5 py-2 text-sm text-ink-soft no-underline hover:bg-surface-raised hover:no-underline aria-[current=page]:bg-accent-soft aria-[current=page]:text-accent md:max-w-none"
                 >

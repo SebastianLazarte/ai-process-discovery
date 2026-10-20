@@ -40,3 +40,33 @@ describe("toApiError", () => {
     expect(toApiError(502, undefined).message).toBe("Request failed (502).");
   });
 });
+
+describe("pages that Nginx answers itself", () => {
+  const page = (title: string) =>
+    `<html>\r\n<head><title>${title}</title></head>\r\n<body><center><h1>${title}</h1></center></body>\r\n</html>`;
+
+  it.each([
+    [
+      429,
+      "429 Too Many Requests",
+      "Too many requests in a short time. Wait a minute and try again.",
+    ],
+    [502, "502 Bad Gateway", "The API is not answering right now. Try again in a moment."],
+    [504, "504 Gateway Time-out", "The API took too long to answer. Try again in a moment."],
+  ])("a %s shows a sentence instead of the HTML", (status, title, message) => {
+    const error = toApiError(status, page(title));
+    expect(error.message).toBe(message);
+    expect(error.status).toBe(status);
+    expect(error.isFieldError).toBe(false);
+  });
+
+  it("falls back to the status for any other HTML page", () => {
+    expect(toApiError(500, page("500 Internal Server Error")).message).toBe(
+      "Request failed (500).",
+    );
+  });
+
+  it("keeps a plain text body as the message", () => {
+    expect(toApiError(500, "Internal Server Error").message).toBe("Internal Server Error");
+  });
+});

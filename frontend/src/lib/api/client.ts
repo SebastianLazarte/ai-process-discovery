@@ -7,9 +7,11 @@ import type { paths } from "./schema";
 // same origin: Nginx in production, the next dev rewrite in development. On the server,
 // reads go straight to the API service at API_INTERNAL_URL (ADR 0009). Request needs an
 // absolute URL outside the browser, so both bases are absolute.
+export const API_PREFIX = "/api";
+
 function baseUrl(): string {
-  if (typeof window !== "undefined") return `${window.location.origin}/api`;
-  return `${process.env.API_INTERNAL_URL ?? "http://localhost:8000"}/api`;
+  if (typeof window !== "undefined") return `${window.location.origin}${API_PREFIX}`;
+  return `${process.env.API_INTERNAL_URL ?? "http://localhost:8000"}${API_PREFIX}`;
 }
 
 export const api = createClient<paths>({

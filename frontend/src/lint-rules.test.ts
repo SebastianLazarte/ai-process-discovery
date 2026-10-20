@@ -63,3 +63,21 @@ describe("dangerouslySetInnerHTML", () => {
     expect(await ruleIds(component, "src/lib/api/note.tsx")).toContain("react/no-danger");
   });
 });
+
+describe("the style prop", () => {
+  it("fails on any element, because the CSP blocks inline styles", async () => {
+    const styled = `export function Bar({ width }: { width: number }) {
+  return <div style={{ width: \`\${width}%\` }} />;
+}
+`;
+    expect(await ruleIds(styled, "src/components/bar.tsx")).toContain("no-restricted-syntax");
+  });
+
+  it("leaves a className alone", async () => {
+    const classed = `export function Bar() {
+  return <div className="w-full" />;
+}
+`;
+    expect(await ruleIds(classed, "src/components/bar.tsx")).toEqual([]);
+  });
+});
