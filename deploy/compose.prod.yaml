@@ -81,8 +81,7 @@ services:
       postgres:
         condition: service_healthy
 
-  # The Next.js client (ADR 0016, RS-79). Nginx sends every path outside /api/ here once
-  # the 2.0.0 site is in place; until then nothing routes to it.
+  # The Next.js client (ADR 0016, RS-79). Nginx sends every path outside /api/ here.
   web:
     image: ${APD_WEB_IMAGE:-ghcr.io/sebastianlazarte/ai-process-discovery-web}:${APD_WEB_VERSION:?set APD_WEB_VERSION in .env}
     restart: unless-stopped

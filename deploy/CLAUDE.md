@@ -22,7 +22,6 @@ Production stack of the public demo on the maintainer's VPS: `compose.prod.yaml`
 - Routes live in `nginx/apd-routes.conf` only: `/api/` to FastAPI, `/ui/` answers 301 to `/`, everything else to Next.js (ADR 0016). The site and `edge.conf` define the upstreams `apd_api` and `apd_web` and the zones. No route sets `add_header`.
 - The `deploy` job runs only in the `production` environment, which alone holds `DEPLOY_HOST`, `DEPLOY_SSH_KEY`, `DEPLOY_KNOWN_HOSTS` and `DEMO_URL`. SSH uses `StrictHostKeyChecking=yes` against `DEPLOY_KNOWN_HOSTS` only, never `accept-new`. The tag reaches the scripts through `env`, never through `${{ }}` inside `run` (RS-67).
 - The purge runs before the backup each night, so a backup holds at most one day of visitor data. `backup.sh` deletes dumps older than 7 days only after the new dump is complete. A restore rehearsal uses a container with no volume and no network (RS-68).
-- Streamlit is not deployed.
 
 ## Verify
 

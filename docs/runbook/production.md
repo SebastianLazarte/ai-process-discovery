@@ -25,14 +25,14 @@ Keep a second SSH session open during steps 1 and 2, so a mistake in the SSH con
    The host also runs other projects, so check what is already in place before changing it: `sudo sshd -T`, `sudo ufw status verbose`, `sudo fail2ban-client status`, `swapon --show` and `apt list --upgradable`.
 2. **Deploy user.** Create `apd`, add it to the `docker` group, and install the GitHub deploy key in its `authorized_keys` with `command="/opt/apd/deploy.sh",no-port-forwarding,no-agent-forwarding,no-X11-forwarding,no-pty`. Membership of `docker` is equivalent to root, which is why the key is restricted to one command. The user belongs to the demo only: another project's deploy user on the host keeps its own key, so neither key can deploy the other project.
 3. **Project folder.** `/opt/apd` owned by `apd`, with `compose.yaml` (from `deploy/compose.prod.yaml`), `deploy.sh`, `backup.sh` and `restore-rehearsal.sh` (from `deploy/`, mode `755`) and `.env` from `deploy/.env.example`, with `APD_VERSION` and `APD_WEB_VERSION`. Create `/var/backups/apd` owned by `apd`, mode `700`, for the nightly and pre-deploy dumps.
-4. **DNS and TLS.** Add an A record (and AAAA if IPv6 is served) for `apd.<domain>`. Issue the certificate first, because the site refers to it: `sudo certbot certonly --nginx -d apd.<domain> --deploy-hook "systemctl reload nginx"`. Then install `deploy/nginx/apd-routes.conf` as `/etc/nginx/snippets/apd-routes.conf` and `deploy/nginx/apd.conf` with `apd.<domain>` in place of `apd.example.com`, link the site into `sites-enabled`, run `sudo nginx -t` and reload Nginx. Before 2.0.0 is released, install the 1.x site instead, from `git show v1.5.0:deploy/nginx/apd.conf`: the current files route `/` to the web client, which until 2.0.0 serves its pages under `/app`.
+4. **DNS and TLS.** Add an A record (and AAAA if IPv6 is served) for `apd.<domain>`. Issue the certificate first, because the site refers to it: `sudo certbot certonly --nginx -d apd.<domain> --deploy-hook "systemctl reload nginx"`. Then install `deploy/nginx/apd-routes.conf` as `/etc/nginx/snippets/apd-routes.conf` and `deploy/nginx/apd.conf` with `apd.<domain>` in place of `apd.example.com`, link the site into `sites-enabled`, run `sudo nginx -t` and reload Nginx.
    Then install `deploy/fail2ban/apd.local` as `/etc/fail2ban/jail.d/apd.local` and run `sudo fail2ban-client reload`. `sudo fail2ban-client status apd-limit-req` lists the jail; it bans a client that keeps getting 429 from the demo, and leaves the limits of other sites alone.
 5. **Anthropic.** Create a workspace for the demo, set a monthly spend limit, create a key for that workspace only and put it in `.env`.
 6. **GitHub.** Create the `production` environment and limit its deployment branches to `main`. Give it:
    - Secrets: `DEPLOY_HOST` (the host name or address the runner connects to), `DEPLOY_SSH_KEY` (the private half of the deploy key from step 2) and `DEPLOY_KNOWN_HOSTS` (output of `ssh-keyscan` for that same name, checked against the fingerprint shown on the server).
    - Variable: `DEMO_URL`, the public `https://apd.<domain>` address that the smoke test calls.
 
-   When the host is ready, add the repository variable `DEPLOY_ENABLED` with the value `true`. Until then the `deploy` job is skipped and a release only publishes the images: `ai-process-discovery` and, from RS-77, `ai-process-discovery-web` with the same tag. Production runs only the API image until RS-79.
+   When the host is ready, add the repository variable `DEPLOY_ENABLED` with the value `true`. Until then the `deploy` job is skipped and a release only publishes the images: `ai-process-discovery` and, from RS-77, `ai-process-discovery-web` with the same tag.
 7. **Timers.** Install the units from `deploy/systemd/` and start the timers:
 
    ```bash
@@ -134,7 +134,7 @@ sudo -u apd /opt/apd/restore-rehearsal.sh
 
 It loads the newest nightly dump, or the dump given as argument, into a throwaway PostgreSQL container with no volume and no network, counts the rows of each table and prints a row for the table below. Add that row in a pull request.
 
-**Restore for real** when the volume is lost or a migration went wrong: stop the API (`docker compose stop api`), drop and recreate the `apd` database in the `postgres` container, load the dump with `docker compose exec -T postgres pg_restore --username=apd --dbname=apd --no-owner < <dump>`, start the API and check `/health`.
+**Restore for real** when the volume is lost or a migration went wrong: stop the API (`docker compose stop api`), drop and recreate the `apd` database in the `postgres` container, load the dump with `docker compose exec -T postgres pg_restore --username=apd --dbname=apd --no-owner < <dump>`, start the API and check `/api/health`.
 
 | Date | Dump | Result |
 |---|---|---|
@@ -161,6 +161,6 @@ Create a new key in the demo workspace, replace it in `/opt/apd/.env`, run `dock
 | Analyses show "LLM unavailable" all day | Log events `llm_unavailable` with `error_kind` | `daily_quota`: expected until midnight UTC. Otherwise check the Anthropic spend limit and the key |
 | Many 429 responses | Nginx access log for `/analyses` | Expected under a burst. Tune `limit_req` only if real visitors are blocked |
 | A visitor cannot connect at all | `sudo fail2ban-client status apd-limit-req` | Banned for an hour after repeated 429. Lift it with `sudo fail2ban-client set apd-limit-req unbanip <ip>` |
-| `/health` returns 503 | `docker compose ps`, `docker compose logs postgres` | Restart `postgres`; restore from backup if the volume is damaged |
+| `/api/health` returns 503 | `docker compose ps`, `docker compose logs postgres` | Restart `postgres`; restore from backup if the volume is damaged |
 | Host slow, n8n affected | `docker stats`, `free -h`, `df -h` | Stop the demo with `docker compose stop api`; n8n and the website keep running |
 | Certificate expiry warning | `sudo certbot renew --dry-run` | Fix renewal, then reload Nginx |

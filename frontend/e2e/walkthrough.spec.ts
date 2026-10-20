@@ -4,9 +4,8 @@ import { expect, expectAccessible, test } from "./fixtures";
 
 // RS-78: the critical path of the demo, through the production routes with the fake LLM
 // provider. Load a demo, run an analysis, save an override and download the blueprint,
-// with axe on every page on the way (ADR 0013). Until 2.0.0 the client lives under /app
-// (ADR 0016).
-const HOME = "/app";
+// with axe on every page on the way (ADR 0013). The client lives at the root (ADR 0016).
+const HOME = "/";
 const DEMO = "Order intake from distributors";
 // The demo name follows a visually hidden ": ", read with a space before the colon.
 const LOAD_DEMO = new RegExp(`^Load and open ?: ${DEMO}$`);

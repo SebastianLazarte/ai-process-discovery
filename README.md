@@ -12,13 +12,13 @@ Describe a business process step by step and get a quantified, explainable autom
 
 **Live demo:** the Website link at the top of this repository's page, once the public demo is online. No sign-up, synthetic data, deleted every night ([data policy](SECURITY.md#public-demo-data)).
 
-**On your machine, one command** (Docker, no API key needed):
+**On your machine** (Docker, no API key needed), from a clone of this repository:
 
 ```bash
-docker run --rm -p 8000:8000 ghcr.io/sebastianlazarte/ai-process-discovery:latest
+docker compose up --build
 ```
 
-Then open <http://localhost:8000/ui/>. The API docs are at `/api/docs`.
+Then open <http://localhost:8080/>. The API docs are at <http://localhost:8080/api/docs>.
 
 ## A two-minute tour
 
@@ -59,13 +59,15 @@ Teams decide what to automate by intuition, and LLMs make it tempting to let a m
 | Every decision and its trade-offs | [`docs/adr/`](docs/adr/) |
 | The product backlog with Given/When/Then criteria | [`docs/requirements.toml`](docs/requirements.toml) |
 
-Quality bar on every pull request: formatting, lint, strict typing, tests on Python 3.12 and 3.13 with 95 % minimum coverage and complexity limits, the integration suite on PostgreSQL, web client tests on Node 22, a Docker build with a smoke test, CodeQL and dependency review. A weekly job runs mutation testing on the domain ([ADR 0011](docs/adr/0011-automated-quality-gauntlet.md)). Releases are versioned by release-please and the API and Next.js images ship to GHCR with the same tag, provenance and SBOM ([ADR 0006](docs/adr/0006-github-flow-ci-and-releases.md)).
+Quality bar on every pull request: formatting, lint, strict typing, tests on Python 3.12 and 3.13 with 95 % minimum coverage and complexity limits, the integration suite on PostgreSQL, the Next.js client's lint, types, tests and build on Node 22, Docker builds with a smoke test, end-to-end walkthroughs with axe through the production routes, CodeQL and dependency review. A weekly job runs mutation testing on the domain ([ADR 0011](docs/adr/0011-automated-quality-gauntlet.md)). Releases are versioned by release-please and the API and Next.js images ship to GHCR with the same tag, provenance and SBOM ([ADR 0006](docs/adr/0006-github-flow-ci-and-releases.md)).
 
 ## Architecture
 
 ```mermaid
 flowchart TB
-    WEB[Web client /ui/] -->|REST JSON| API[FastAPI]
+    NGINX[Nginx] -->|/| WEB[Next.js client]
+    NGINX -->|/api/| API[FastAPI]
+    WEB -->|REST JSON /api/| API
     API --> PS[ProcessService]
     API --> AS[AnalysisService]
     API --> BS[Blueprint]
@@ -78,7 +80,7 @@ flowchart TB
     REPO --> DB[(SQLite / PostgreSQL)]
 ```
 
-`app/domain/` imports no framework, ORM or SDK. A test fails if it does.
+Nginx sends `/api/` to FastAPI and every other path to the Next.js client, and an old `/ui/` link answers 301 to `/` ([ADR 0016](docs/adr/0016-nextjs-at-the-root-from-2-0-0.md)). `app/domain/` imports no framework, ORM or SDK. A test fails if it does.
 
 ```mermaid
 sequenceDiagram
@@ -88,7 +90,7 @@ sequenceDiagram
     participant D as Domain
     participant L as LLMProvider
     participant DB as Database
-    UI->>API: POST /processes/{id}/analyses
+    UI->>API: POST /api/processes/{id}/analyses
     API->>A: run(process_id, assumptions)
     A->>DB: load process snapshot
     A->>D: metrics, scores, method, human control, business case
@@ -155,9 +157,17 @@ cp .env.example .env            # optional: LLM_PROVIDER=anthropic and a key
 uv run uvicorn app.main:app --reload --reload-dir src
 ```
 
-The web client is on `:8000/ui/` and the API docs on `/api/docs`. The default `FakeLLMProvider` is deterministic and needs no key.
+The API docs are on <http://localhost:8000/api/docs>. The default `FakeLLMProvider` is deterministic and needs no key.
 
-The whole stack with PostgreSQL:
+The Next.js client, in a second terminal (Node 22, pnpm through corepack), on <http://localhost:3000/>. In development it sends `/api/` to the API on `:8000`:
+
+```bash
+cd frontend
+corepack pnpm install
+corepack pnpm dev
+```
+
+The whole stack with PostgreSQL, behind the production routes on <http://localhost:8080/>:
 
 ```bash
 docker compose up --build
@@ -170,30 +180,35 @@ uv run pytest                        # unit + integration, SQLite, fake LLM
 DATABASE_URL=postgresql+psycopg://apd:apd@localhost:5432/apd uv run pytest tests/integration
 uv run pytest -m llm -o addopts=""   # real Anthropic call, needs a key
 uv run pre-commit run --all-files    # format, lint, types
-node --test web/tests/*.test.js     # web client, Node 22
+cd frontend && corepack pnpm lint && corepack pnpm typecheck && corepack pnpm test   # Next.js client, Node 22
 ```
+
+The end-to-end walkthroughs run with Playwright and axe against the whole stack: `docker compose up --build -d --wait edge`, then `corepack pnpm exec playwright install chromium && corepack pnpm e2e` in `frontend/`.
 
 ## API
 
+Every path lives under `/api`. The old root paths of 1.x are gone in 2.0.0; `/docs`, `/redoc` and `/openapi.json` answer 301 to their `/api` counterparts.
+
 | Method | Path | Purpose |
 |---|---|---|
-| `POST` `GET` | `/processes` | Create, list |
-| `GET` `PATCH` `DELETE` | `/processes/{id}` | Read, update, delete |
-| `POST` | `/processes/{id}/steps` | Add a step (optionally at a position) |
-| `PUT` | `/processes/{id}/steps/order` | Reorder steps |
-| `PATCH` `DELETE` | `/steps/{id}` | Update, delete a step |
-| `POST` `GET` | `/processes/{id}/analyses` | Run an analysis, history |
-| `GET` | `/analyses/{id}` | Analysis with overrides applied |
-| `POST` | `/analyses/{id}/overrides` | Human override with reason |
-| `GET` | `/analyses/{id}/blueprint`, `/analyses/{id}/blueprint.md` | Blueprint as JSON or Markdown |
-| `GET` `POST` | `/demo-processes`, `/demo-processes/{slug}` | Synthetic demo processes |
-| `GET` | `/health` | Application and database state |
+| `POST` `GET` | `/api/processes` | Create, list |
+| `GET` `PATCH` `DELETE` | `/api/processes/{id}` | Read, update, delete |
+| `POST` | `/api/processes/{id}/steps` | Add a step (optionally at a position) |
+| `PUT` | `/api/processes/{id}/steps/order` | Reorder steps |
+| `PATCH` `DELETE` | `/api/steps/{id}` | Update, delete a step |
+| `POST` `GET` | `/api/processes/{id}/analyses` | Run an analysis, history |
+| `GET` | `/api/analyses/{id}` | Analysis with overrides applied |
+| `POST` | `/api/analyses/{id}/overrides` | Human override with reason |
+| `GET` | `/api/analyses/{id}/blueprint`, `/api/analyses/{id}/blueprint.md` | Blueprint as JSON or Markdown |
+| `GET` `POST` | `/api/demo-processes`, `/api/demo-processes/{slug}` | Synthetic demo processes |
+| `GET` | `/api/meta` | Version and whether this is the public demo |
+| `GET` | `/api/health` | Application and database state |
 
 ## Trade-offs
 
 - **SQLite locally, PostgreSQL in CI.** The demo runs with nothing but `uv`; the `test-postgres` job proves the PostgreSQL path on every pull request ([ADR 0002](docs/adr/0002-sqlite-locally-postgresql-in-ci.md)).
 - **Migrations in production, `create_all` locally.** Alembic owns the production schema and runs from the release image before a new version starts (RS-59); local runs and tests still create tables on startup, and a test fails if the models and the migrations disagree.
-- **Web client without a framework.** ES modules served by FastAPI at `/ui/`, no build step and no dependencies; the client prints the API's numbers and never computes one ([ADR 0007](docs/adr/0007-vanilla-web-client-served-by-fastapi.md)). A Next.js client replaces it in 2.0.0 ([ADR 0009](docs/adr/0009-nextjs-frontend-as-separate-service.md)). The legacy Streamlit UI in `ui/` leaves at the same time.
+- **Next.js client as its own service.** The client prints the API's numbers and never computes one; its types are generated from the committed OpenAPI contract, and every page carries a strict CSP with a nonce ([ADR 0009](docs/adr/0009-nextjs-frontend-as-separate-service.md)). It replaced, in 2.0.0, a framework-free client that FastAPI served at `/ui/` ([ADR 0007](docs/adr/0007-vanilla-web-client-served-by-fastapi.md)), with the same look ([ADR 0014](docs/adr/0014-keep-the-vanilla-client-look.md)) and the same screens ([ADR 0015](docs/adr/0015-parity-screens-take-web-as-spec.md)). The Streamlit UI left at the same time.
 - **One real LLM provider.** The interface is the deliverable; a second adapter is one module ([ADR 0004](docs/adr/0004-provider-agnostic-llm-anthropic-first.md)).
 - **Synchronous LLM call.** Simple and adequate for one analysis at a time; a queue is the next step if analyses grow.
 
@@ -206,7 +221,7 @@ node --test web/tests/*.test.js     # web client, Node 22
 | B11 | Public demo: limits, LLM quota, demo banner, purge, production compose and Nginx | Done (1.2, 1.3) |
 | B11 | Public demo: demos with preset assumptions (RS-89), Alembic migrations (RS-59), deploy script with rollback (RS-66), deploy from the release workflow with an HTTPS smoke test (RS-67) | Done |
 | B11 | Public demo: nightly backups and purge on timers, restore rehearsal script, data policy (RS-68) | Done; first rehearsal pending on the host |
-| B12 | Next.js client and API under `/api` (2.0) | In progress: API under `/api`, project, typed client and process list done |
+| B12 | Next.js client at `/` and API under `/api`; vanilla and Streamlit clients retired | Done (2.0) |
 | B13 | Quality gauntlet and refactors | In progress |
 
 Requirements and acceptance criteria: [docs/requirements.toml](docs/requirements.toml). Scope and non-goals: [PDR 001](docs/pdr/001-mvp-scope.md). Product Goal and roles: [PDR 002](docs/pdr/002-portfolio-product-goal-and-roles.md). Contributing: [CONTRIBUTING](CONTRIBUTING.md).

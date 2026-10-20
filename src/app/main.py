@@ -1,12 +1,14 @@
 import logging
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
+from typing import Any
 
-from fastapi import FastAPI, Request
+from fastapi import APIRouter, FastAPI, Request
+from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse, RedirectResponse
 
 from app import __version__
-from app.api.routes import analyses, processes, system, web
+from app.api.routes import analyses, processes, system
 from app.core.config import Settings, get_settings
 from app.core.db import build_engine, init_db, session_factory
 from app.core.errors import AppError
@@ -17,8 +19,8 @@ from app.llm.providers import build_provider
 
 logger = logging.getLogger(__name__)
 
-# ADR 0009: the API lives under /api. Until 2.0.0 (RS-80) every route also answers at the
-# root, for the vanilla client. The schema documents each path once, relative to /api.
+# ADR 0009, ADR 0016: the API lives under /api and the root belongs to the Next.js client.
+# The schema documents each path relative to /api. Old docs URLs redirect there (RS-80).
 API_PREFIX = "/api"
 LEGACY_DOCS = {"/docs": "/api/docs", "/redoc": "/api/redoc", "/openapi.json": "/api/openapi.json"}
 
@@ -69,20 +71,38 @@ def create_app(settings: Settings | None = None, provider: LLMProvider | None = 
             status_code=422,
         )
 
+    api = APIRouter()
     for router in (system.router, processes.router, analyses.router):
-        app.include_router(router, prefix=API_PREFIX, include_in_schema=False)
-        app.include_router(router)
+        api.include_router(router)
+    app.include_router(api, prefix=API_PREFIX, include_in_schema=False)
+    app.openapi = _schema_relative_to_api(app, api)  # type: ignore[method-assign]
 
     for old, new in LEGACY_DOCS.items():
         app.add_api_route(old, _redirect_to(new), methods=["GET"], include_in_schema=False)
 
-    web.mount_web_client(app, settings.web_dir)
     return app
+
+
+def _schema_relative_to_api(app: FastAPI, api: APIRouter) -> Callable[[], dict[str, Any]]:
+    """Document each path once, relative to the `servers` entry /api."""
+
+    def openapi() -> dict[str, Any]:
+        if app.openapi_schema is None:
+            app.openapi_schema = get_openapi(
+                title=app.title,
+                version=app.version,
+                description=app.description,
+                routes=api.routes,
+                servers=app.servers,
+            )
+        return app.openapi_schema
+
+    return openapi
 
 
 def _redirect_to(target: str) -> Callable[[], RedirectResponse]:
     def redirect() -> RedirectResponse:
-        return RedirectResponse(target, status_code=308)
+        return RedirectResponse(target, status_code=301)
 
     return redirect
 

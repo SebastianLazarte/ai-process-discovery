@@ -1,5 +1,5 @@
-# Full stack: PostgreSQL + API (web client at :8000/ui/) + Next.js client + Streamlit UI,
-# and the edge Nginx on :8080 with the production routes (ADR 0016, RS-79).
+# Full stack: PostgreSQL + API + Next.js client, and the edge Nginx on :8080 with the
+# production routes (ADR 0016, RS-79). Open http://localhost:8080/.
 #   docker compose up --build
 # CI runs this file in the `docker` job with freshly built images (APD_IMAGE, APD_WEB_IMAGE).
 
@@ -32,7 +32,7 @@ services:
       db:
         condition: service_healthy
 
-  # The Next.js client at :3000/app (ADR 0009, RS-77), read-only like the production API:
+  # The Next.js client at :3000 (ADR 0009, RS-77), read-only like the production API:
   # Next writes only to its two caches, on tmpfs. Server-side reads reach the API at
   # API_INTERNAL_URL. Through the edge on :8080, the browser's /api/ calls reach the API too.
   web:
@@ -55,8 +55,7 @@ services:
         condition: service_healthy
 
   # The routes of the public demo (deploy/nginx/apd-routes.conf) in front of api and web:
-  # /api/ to FastAPI, /ui/ answers 301 to /, every other path to Next.js. Until 2.0.0 the
-  # client still lives under /app (ADR 0016), so open :8080/app.
+  # /api/ to FastAPI, /ui/ answers 301 to /, every other path to Next.js (ADR 0016).
   edge:
     image: nginx:1.30.5-alpine@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94
     volumes:
@@ -68,32 +67,6 @@ services:
       api:
         condition: service_healthy
       web:
-        condition: service_healthy
-
-  ui:
-    image: ${APD_IMAGE:-ai-process-discovery:local}
-    command:
-      - streamlit
-      - run
-      - ui/streamlit_app.py
-      - --server.port=8501
-      - --server.address=0.0.0.0
-      - --server.headless=true
-    environment:
-      API_BASE_URL: http://api:8000
-    ports:
-      - "8501:8501"
-    healthcheck:
-      test:
-        - CMD
-        - python
-        - -c
-        - "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health', timeout=2)"
-      interval: 10s
-      timeout: 3s
-      retries: 5
-    depends_on:
-      api:
         condition: service_healthy
 
 volumes:

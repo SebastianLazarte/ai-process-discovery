@@ -35,19 +35,6 @@ jobs:
         # Preinstalled on the Ubuntu runner (RS-66, RS-67).
         run: shellcheck deploy/*.sh
 
-  web:
-    name: web
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: "22"
-      - name: Syntax
-        run: for file in web/*.js web/tests/*.js; do node --check "$file"; done
-      - name: Client tests
-        run: node --test web/tests/*.test.js
-
   # RS-70: the Next.js client (ADR 0009). Runs on every pull request so it can be required.
   frontend:
     name: frontend
@@ -164,7 +151,8 @@ jobs:
           openssl req -x509 -newkey rsa:2048 -nodes -days 1 -subj "/CN=apd.example.com" \
             -keyout "$live/privkey.pem" -out "$live/fullchain.pem"
           docker run --rm \
-            -v "$PWD/deploy/nginx/apd.conf:/etc/nginx/conf.d/apd.conf:ro"             -v "$PWD/deploy/nginx/apd-routes.conf:/etc/nginx/snippets/apd-routes.conf:ro" \
+            -v "$PWD/deploy/nginx/apd.conf:/etc/nginx/conf.d/apd.conf:ro" \
+            -v "$PWD/deploy/nginx/apd-routes.conf:/etc/nginx/snippets/apd-routes.conf:ro" \
             -v "$RUNNER_TEMP/letsencrypt:/etc/letsencrypt:ro" \
             nginx:stable nginx -t
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
@@ -197,15 +185,15 @@ jobs:
           docker compose up -d --wait --wait-timeout 180
           test "$(docker inspect --format '{{.State.Health.Status}}' "$(docker compose ps -q api)")" = healthy
           test "$(docker inspect --format '{{.State.Health.Status}}' "$(docker compose ps -q web)")" = healthy
-          curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:8000/health
           curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:8000/api/health
-          curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:8000/ui/
-          curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:8501/_stcore/health
-          curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:3000/app \
+          curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:3000/ \
             | grep -q '<title>AI Process Discovery</title>'
+          # RS-80: the API answers under /api only; the root belongs to Next.js.
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' http://localhost:8000/health)" = 404
           # RS-79: the edge Nginx serves the production routes (deploy/nginx/apd-routes.conf).
           curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:8080/api/health
-          curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:8080/app             | grep -q '<title>AI Process Discovery</title>'
+          curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:8080/ \
+            | grep -q '<title>AI Process Discovery</title>'
           curl --silent --head http://localhost:8080/ui/app.js | tee /tmp/ui.txt
           grep -q '^HTTP/1.1 301' /tmp/ui.txt
           grep -Eiq '^location: (http://[^/]+)?/\s*$' /tmp/ui.txt
@@ -234,11 +222,9 @@ jobs:
           # The API creates no table here (RS-59): migrate first, as the runbook and deploy.sh (RS-66) do.
           docker compose -f deploy/compose.prod.yaml run --rm api alembic upgrade head
           docker compose -f deploy/compose.prod.yaml up -d --wait --wait-timeout 120
-          curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://127.0.0.1:8100/health
           curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://127.0.0.1:8100/api/health
-          curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://127.0.0.1:8100/ui/
-          # Until 2.0.0 the client still lives under /app (ADR 0016).
-          curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://127.0.0.1:8101/app             | grep -q '<title>AI Process Discovery</title>'
+          curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://127.0.0.1:8101/ \
+            | grep -q '<title>AI Process Discovery</title>'
           test "$(docker inspect --format '{{.HostConfig.ReadonlyRootfs}}' "$(docker compose -f deploy/compose.prod.yaml ps -q web)")" = true
       - name: Logs on failure
         if: failure()
@@ -285,7 +271,7 @@ jobs:
       - name: Start the stack
         run: |
           docker compose up -d --wait --wait-timeout 180 edge
-          curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:8080/app > /dev/null
+          curl --fail --retry 10 --retry-delay 3 --retry-all-errors http://localhost:8080/ > /dev/null
       - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
         with:
           package_json_file: frontend/package.json

@@ -1,13 +1,13 @@
 # Next.js client
 
-The client that replaces `web/` (block B12): Next.js App Router, strict TypeScript, Tailwind, pnpm, Node 22. It runs as its own service under `/app` until 2.0.0 moves it to `/`.
+The client of the demo since 2.0.0, which replaced the vanilla `web/` client (block B12): Next.js App Router, strict TypeScript, Tailwind, pnpm, Node 22. It runs as its own service at the root of the site; Nginx sends `/api/` to FastAPI and every other path here.
 
 ## Read
 
 - `docs/adr/0009-nextjs-frontend-as-separate-service.md`: service, routing, client rules, dependencies
 - `docs/adr/0013-design-system-and-design-to-code.md`: tokens, themes, accessibility, fonts
-- `docs/adr/0015-parity-screens-take-web-as-spec.md`: the screens of RS-74 to RS-76 and RS-91 to RS-94 copy the behaviour and look of the same screen in `web/`, plus the criteria of their item
-- `docs/adr/0016-nextjs-at-the-root-from-2-0-0.md`: `/app` stays private until 2.0.0 moves the client to `/`
+- `docs/adr/0015-parity-screens-take-web-as-spec.md`: the screens of RS-74 to RS-76 and RS-91 to RS-94 copy the behaviour and look of the same screen in `web/`, plus the criteria of their item. `web/` is gone since 2.0.0: comments that cite a `web/` file point at tag `v1.5.0` (`git show v1.5.0:web/views.js`)
+- `docs/adr/0016-nextjs-at-the-root-from-2-0-0.md`: the client at `/`, `/ui/` answers 301 there
 - `docs/design/`: the brief, and the spec of any screen without a counterpart in `web/`
 
 ## Rules
@@ -41,7 +41,7 @@ The image, from the repository root (CI does the same in the `docker` job):
 
 ```bash
 docker compose up --build --wait web
-curl --fail http://localhost:3000/app
+curl --fail http://localhost:3000/
 ```
 
 The end-to-end walkthroughs, against the whole stack (CI does the same in the `e2e` job, and also fails when a container logs `EROFS`):
@@ -53,6 +53,6 @@ pnpm exec playwright install chromium
 pnpm e2e
 ```
 
-`E2E_BASE_URL` points them at another origin that serves `/app` and `/api/` side by side. A failed run leaves a trace in `test-results/`: `pnpm exec playwright show-trace <path>`.
+`E2E_BASE_URL` points them at another origin that serves the client at `/` and the API under `/api/`, as the edge does. A failed run leaves a trace in `test-results/`: `pnpm exec playwright show-trace <path>`.
 
 Without `corepack enable` (it needs admin rights on Windows), prefix each command with `corepack`: `corepack pnpm test`.

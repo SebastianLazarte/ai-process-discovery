@@ -36,7 +36,6 @@ jobs:
             reconciliation
             blueprint
             ui
-            web
             ci
             deps
             deps-dev

@@ -11,7 +11,7 @@ from app.main import create_app
 def _meta(database_url: str, **overrides: object) -> dict[str, object]:
     settings = Settings(database_url=database_url, log_level="WARNING", **overrides)  # type: ignore[arg-type]
     with TestClient(create_app(settings, FakeLLMProvider())) as client:
-        response = client.get("/meta")
+        response = client.get("/api/meta")
     assert response.status_code == 200
     body: dict[str, object] = response.json()
     return body
