@@ -154,8 +154,8 @@ def test_a_tag_outside_vxyz_stops_before_ssh(runner: Runner, tag: str) -> None:
     assert runner.read("ssh_args") == []
 
 
-# Criterion 2: after the deploy, the smoke test checks /health and /ui/ over HTTPS and fails
-# the job on any error.
+# Criterion 2: after the deploy, the smoke test checks the site over HTTPS and fails the job
+# on any error. RS-79 moved the paths to / and /api/health (ADR 0016).
 
 
 def test_the_smoke_test_runs_after_the_deploy_in_the_same_job() -> None:
@@ -163,26 +163,26 @@ def test_the_smoke_test_runs_after_the_deploy_in_the_same_job() -> None:
     assert deploy.index("name: Deploy over SSH") < deploy.index("name: Smoke test over HTTPS")
 
 
-def test_the_smoke_test_checks_health_and_the_client_over_https(runner: Runner) -> None:
+def test_the_smoke_test_checks_the_home_page_and_the_api_over_https(runner: Runner) -> None:
     result = runner.run(SMOKE_TEST, "https://apd.example.com/")
 
     assert result.returncode == 0, result.stderr
     calls = runner.read("curl_calls")
     assert [call.split()[-1] for call in calls] == [
-        "https://apd.example.com/health",
-        "https://apd.example.com/ui/",
+        "https://apd.example.com/",
+        "https://apd.example.com/api/health",
     ]
     for call in calls:
         assert "--fail" in call.split()
         assert "--proto =https" in call
 
 
-@pytest.mark.parametrize("failing", ["/health", "/ui/"])
+@pytest.mark.parametrize("failing", ["/", "/api/health"])
 def test_the_smoke_test_fails_when_a_path_fails(runner: Runner, failing: str) -> None:
     result = runner.run(SMOKE_TEST, "https://apd.example.com", FAKE_FAIL_PATH=failing)
 
     assert result.returncode != 0
-    assert f"https://apd.example.com{failing} did not answer 2xx" in result.stderr
+    assert f"https://apd.example.com{failing} failed over HTTPS" in result.stderr
 
 
 def test_the_smoke_test_refuses_plain_http(runner: Runner) -> None:
