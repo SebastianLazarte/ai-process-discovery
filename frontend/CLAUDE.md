@@ -6,7 +6,9 @@ The client that replaces `web/` (block B12): Next.js App Router, strict TypeScri
 
 - `docs/adr/0009-nextjs-frontend-as-separate-service.md`: service, routing, client rules, dependencies
 - `docs/adr/0013-design-system-and-design-to-code.md`: tokens, themes, accessibility, fonts
-- `docs/design/`: the brief and the spec of the screen you are building
+- `docs/adr/0015-parity-screens-take-web-as-spec.md`: the screens of RS-74 to RS-76 and RS-91 to RS-94 copy the behaviour and look of the same screen in `web/`, plus the criteria of their item
+- `docs/adr/0016-nextjs-at-the-root-from-2-0-0.md`: `/app` stays private until 2.0.0 moves the client to `/`
+- `docs/design/`: the brief, and the spec of any screen without a counterpart in `web/`
 
 ## Rules
 

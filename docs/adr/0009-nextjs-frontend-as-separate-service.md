@@ -1,6 +1,6 @@
 # ADR 0009: Next.js frontend as a separate service
 
-**Status:** accepted · 2026-10-14 · replaces ADR 0007 from 2.0.0; amends the required checks of ADR 0006 and the layout of ADR 0008; dependencies amended by ADR 0013
+**Status:** accepted · 2026-10-14 · replaces ADR 0007 from 2.0.0; amends the required checks of ADR 0006 and the layout of ADR 0008; dependencies amended by ADR 0013; migration and rollback amended by ADR 0016
 
 ## Context
 
