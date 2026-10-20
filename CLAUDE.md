@@ -28,17 +28,17 @@ Areas marked * have their own CLAUDE.md with Read, Rules and Verify. It loads wh
 | HTTP routes, serving the client | `src/app/api/`* | ADR 0003, ADR 0007, ADR 0009 |
 | HTTP contracts, storage, repositories | `src/app/models/`*, `src/app/repositories/` | ADR 0003, ADR 0002 |
 | LLM adapter or prompt | `src/app/llm/`* | ADR 0004 |
-| Next.js frontend (block B12) | `frontend/`* | ADR 0009, ADR 0013, ADR 0014 |
+| Next.js frontend (block B12) | `frontend/`* | ADR 0009, ADR 0013, ADR 0014, ADR 0015, ADR 0016 |
 | UX research, wireframes, tokens, component specs | `docs/design/` | ADR 0013 |
 | Vanilla web client: legacy, pending removal in 2.0.0, no new features | `web/`* | ADR 0007 |
-| Production deploy, Nginx, operations | `deploy/`* | ADR 0008, `docs/runbook/production.md` |
+| Production deploy, Nginx, operations | `deploy/`* | ADR 0008, ADR 0016, `docs/runbook/production.md` |
 | CI/CD, releases, GitHub setup, dependency updates | `.github/`, `scripts/bootstrap_github.py` | ADR 0006, ADR 0010 |
 | Test strategy, mutation testing, complexity limits | `tests/`, `pyproject.toml`, `.github/workflows/mutation.yml` | ADR 0011 |
 | Scope, product backlog, stories and acceptance criteria | `docs/requirements.toml` | `docs/pdr/001-mvp-scope.md`, `docs/pdr/002-portfolio-product-goal-and-roles.md` |
 | Write or amend an ADR, PDR or runbook | `docs/`* | decision index in `docs/CLAUDE.md` |
 | Streamlit UI: legacy, pending removal, no new features | `ui/streamlit_app.py` | ADR 0005 |
 
-ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locally-postgresql-in-ci.md`, `0003-separate-domain-contracts-persistence.md`, `0004-provider-agnostic-llm-anthropic-first.md`, `0005-streamlit-as-rest-client.md`, `0006-github-flow-ci-and-releases.md`, `0007-vanilla-web-client-served-by-fastapi.md`, `0008-public-demo-on-own-vps.md`, `0009-nextjs-frontend-as-separate-service.md`, `0010-dependency-update-policy.md`, `0011-automated-quality-gauntlet.md`, `0013-design-system-and-design-to-code.md`, `0014-keep-the-vanilla-client-look.md`.
+ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locally-postgresql-in-ci.md`, `0003-separate-domain-contracts-persistence.md`, `0004-provider-agnostic-llm-anthropic-first.md`, `0005-streamlit-as-rest-client.md`, `0006-github-flow-ci-and-releases.md`, `0007-vanilla-web-client-served-by-fastapi.md`, `0008-public-demo-on-own-vps.md`, `0009-nextjs-frontend-as-separate-service.md`, `0010-dependency-update-policy.md`, `0011-automated-quality-gauntlet.md`, `0013-design-system-and-design-to-code.md`, `0014-keep-the-vanilla-client-look.md`, `0015-parity-screens-take-web-as-spec.md`, `0016-nextjs-at-the-root-from-2-0-0.md`.
 
 ## Commands
 
