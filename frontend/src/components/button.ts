@@ -7,6 +7,7 @@ const variants = {
   primary: "border-accent bg-accent text-accent-ink",
   secondary: "border-line bg-transparent text-ink",
   danger: "border-line bg-transparent text-bad",
+  quiet: "border-transparent bg-transparent text-muted",
 } as const;
 
 export function buttonClass(variant: keyof typeof variants = "secondary"): string {
