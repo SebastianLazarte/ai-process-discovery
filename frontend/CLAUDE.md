@@ -20,6 +20,7 @@ The client that replaces `web/` (block B12): Next.js App Router, strict TypeScri
 - A package that ADR 0009 or ADR 0013 does not name needs an ADR. Versions are exact in `package.json`, and a new one is at least a week old (ADR 0010).
 - Colours, radii and fonts come from `src/styles/tokens.css` through semantic utilities (`bg-surface`, `text-muted`, `border-line`). The default Tailwind palette is switched off, and `src/styles/tokens.test.ts` fails on a colour literal, a palette class or a text pair below WCAG AA (ADR 0013, ADR 0014).
 - Tests query by accessible role and name (`getByRole`), never by class or test id.
+- End-to-end walkthroughs (RS-78) live in `e2e/` and run with Playwright against the compose stack through its edge Nginx on `:8080`, so they cross the production routes, the CSP and the fake LLM provider. Each runs twice, at 1280 px and at 375 px, and every page on the way runs axe: a serious or critical WCAG violation fails it (ADR 0013), and so do a CSP violation or an uncaught error in the console (`e2e/fixtures.ts`). Steps query by role and name as the component tests do. A new screen on a critical path joins a walkthrough.
 - Component tests render with `renderWithProviders` (`src/test/render.tsx`) and answer requests with `fakeApi` (`src/test/fake-api.ts`), so the real client, query cache and toast run in every test.
 - Option lists live in `src/lib/format/options.ts`, typed with the enums of `schema.d.ts`; `options.test.ts` compares them with `openapi.json`.
 - Shared building blocks: `lib/format`, `lib/api/queries.ts` (one hook per endpoint), the primitives in `components/` (`field`, `badge`, `metric`, `confirm-button`, `data-table`, `dialog`, `meter`), and `src/test/fixtures.ts` for typed payloads. Use them before writing a new one. Each process section owns one view file (`steps-view`, `analyse-view`, `results-view`, `blueprint-view`, `history-view`) under the frame of `app/processes/[id]/layout.tsx`; the shared files change in small PRs, one at a time.
@@ -42,5 +43,16 @@ The image, from the repository root (CI does the same in the `docker` job):
 docker compose up --build --wait web
 curl --fail http://localhost:3000/app
 ```
+
+The end-to-end walkthroughs, against the whole stack (CI does the same in the `e2e` job, and also fails when a container logs `EROFS`):
+
+```bash
+docker compose up --build -d --wait edge
+cd frontend
+pnpm exec playwright install chromium
+pnpm e2e
+```
+
+`E2E_BASE_URL` points them at another origin that serves `/app` and `/api/` side by side. A failed run leaves a trace in `test-results/`: `pnpm exec playwright show-trace <path>`.
 
 Without `corepack enable` (it needs admin rights on Windows), prefix each command with `corepack`: `corepack pnpm test`.
