@@ -72,6 +72,18 @@ def test_paths_under_api_go_to_fastapi(path: str) -> None:
     assert upstream(path) == "http://apd_api"
 
 
+@pytest.mark.parametrize("path", ["/docs", "/redoc", "/openapi.json"])
+def test_the_old_docs_urls_reach_fastapi_for_their_redirect(path: str) -> None:
+    # FastAPI answers them with a 301 to /api/... (LEGACY_DOCS, RS-80). Without this route,
+    # Next.js would answer 404.
+    assert upstream(path) == "http://apd_api"
+
+
+@pytest.mark.parametrize("path", ["/docs/x", "/redocs", "/openapi.json.bak", "/documents"])
+def test_only_the_three_exact_doc_paths_leave_nextjs(path: str) -> None:
+    assert upstream(path) == "http://apd_web"
+
+
 @pytest.mark.parametrize("path", ["/ui", "/ui/", "/ui/index.html", "/ui/app.js"])
 def test_the_retired_client_answers_301_to_the_home_page(path: str) -> None:
     assert upstream(path) == "301 /"

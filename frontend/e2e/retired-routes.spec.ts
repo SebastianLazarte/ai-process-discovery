@@ -29,6 +29,22 @@ test("an old /ui/ bookmark lands on the home page of the new client", async ({ r
   expect(await response.text()).toContain("<title>AI Process Discovery</title>");
 });
 
+// The API docs lived at the root before 2.0.0: FastAPI sends their old URLs on to /api/.
+const OLD_DOCS = [
+  ["/docs", "/api/docs"],
+  ["/redoc", "/api/redoc"],
+  ["/openapi.json", "/api/openapi.json"],
+] as const;
+
+for (const [path, target] of OLD_DOCS) {
+  test(`${path} answers 301 to ${target}`, async ({ request }) => {
+    const response = await request.get(path, { maxRedirects: 0 });
+
+    expect(response.status()).toBe(301);
+    expect(new URL(response.headers()["location"] ?? "", "http://edge").pathname).toBe(target);
+  });
+}
+
 test("the API answers under /api/ only", async ({ request }) => {
   expect((await request.get("/api/processes")).status()).toBe(200);
   expect((await request.get("/api/health")).status()).toBe(200);
