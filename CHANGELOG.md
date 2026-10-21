@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.0.0](https://github.com/SebastianLazarte/ai-process-discovery/compare/v1.5.0...v2.0.0) (2026-10-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* **ui:** retire the vanilla client and the root API routes; Next.js serves / (RS-80) ([#182](https://github.com/SebastianLazarte/ai-process-discovery/issues/182))
+
+### Features
+
+* production routes for 2.0.0 and one version per service (RS-79) ([#172](https://github.com/SebastianLazarte/ai-process-discovery/issues/172)) ([a0e1fa4](https://github.com/SebastianLazarte/ai-process-discovery/commit/a0e1fa44ac187ec57c26906585aa00771ee92b78))
+* **ui:** analyse form with assumptions and an honest LLM wait (RS-75) ([#177](https://github.com/SebastianLazarte/ai-process-discovery/issues/177)) ([495839d](https://github.com/SebastianLazarte/ai-process-discovery/commit/495839db8014ba9fc20970c522d4ed2a35617dbe))
+* **ui:** analysis history in the new client (RS-93) ([#174](https://github.com/SebastianLazarte/ai-process-discovery/issues/174)) ([4260a9b](https://github.com/SebastianLazarte/ai-process-discovery/commit/4260a9baddb167c2027dd9bb7d91ebdf3d272ddd))
+* **ui:** blueprint with a Markdown download in the new client (RS-94) ([#173](https://github.com/SebastianLazarte/ai-process-discovery/issues/173)) ([aac05ae](https://github.com/SebastianLazarte/ai-process-discovery/commit/aac05aef17cdb6f4103c36c2b64232b4d5dabdbd))
+* **ui:** override a recommendation with a required reason in the new client (RS-76) ([#179](https://github.com/SebastianLazarte/ai-process-discovery/issues/179)) ([e1bf4b2](https://github.com/SebastianLazarte/ai-process-discovery/commit/e1bf4b24fd9b4fd82a226b568cc625904629db29))
+* **ui:** reorder and delete steps in the new client (RS-91) ([#178](https://github.com/SebastianLazarte/ai-process-discovery/issues/178)) ([78fb364](https://github.com/SebastianLazarte/ai-process-discovery/commit/78fb36446ef01c314ee038fc5b5cb5e88b6cb76e))
+* **ui:** results in four panels with the language of trust (RS-92) ([#175](https://github.com/SebastianLazarte/ai-process-discovery/issues/175)) ([6f05ae6](https://github.com/SebastianLazarte/ai-process-discovery/commit/6f05ae671d69b42b724e8c5a04b2865bfe52e1ef))
+* **ui:** retire the vanilla client and the root API routes; Next.js serves / (RS-80) ([#182](https://github.com/SebastianLazarte/ai-process-discovery/issues/182)) ([ec3b411](https://github.com/SebastianLazarte/ai-process-discovery/commit/ec3b411271ee07aaef09cac8ea49f2bd3315cb76))
+* **ui:** steps list, step form and process settings in the new client (RS-74) ([#176](https://github.com/SebastianLazarte/ai-process-discovery/issues/176)) ([249f853](https://github.com/SebastianLazarte/ai-process-discovery/commit/249f85392a2353fe68b5378c7cfe87113dd3dda2))
+* **ui:** strict security headers with a per-request CSP nonce (RS-72) ([#169](https://github.com/SebastianLazarte/ai-process-discovery/issues/169)) ([c362e2d](https://github.com/SebastianLazarte/ai-process-discovery/commit/c362e2d54e7c681193381cba9f4e3b4d170adc74))
+
 ## [1.5.0](https://github.com/SebastianLazarte/ai-process-discovery/compare/v1.4.0...v1.5.0) (2026-10-20)
 
 
