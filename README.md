@@ -220,7 +220,7 @@ Every path lives under `/api`. The old root paths of 1.x are gone in 2.0.0; `/do
 | B10 | Web client | Done (1.1) |
 | B11 | Public demo: limits, LLM quota, demo banner, purge, production compose and Nginx | Done (1.2, 1.3) |
 | B11 | Public demo: demos with preset assumptions (RS-89), Alembic migrations (RS-59), deploy script with rollback (RS-66), deploy from the release workflow with an HTTPS smoke test (RS-67) | Done |
-| B11 | Public demo: nightly backups and purge on timers, restore rehearsal script, data policy (RS-68) | Done; first rehearsal pending on the host |
+| B11 | Public demo: nightly backups and purge on timers, restore rehearsal script, data policy (RS-68) | Done; first rehearsal recorded on 2026-10-21 |
 | B12 | Next.js client at `/` and API under `/api`; vanilla and Streamlit clients retired | Done (2.0) |
 | B13 | Quality gauntlet and refactors | In progress |
 

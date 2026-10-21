@@ -1,6 +1,6 @@
 # Production runbook
 
-**Status:** complete for block B11 (RS-59 to RS-68). Open until the first restore rehearsal is recorded under "Backups and restore". The switch to the 2.0.0 layout (RS-79) has its own section. Decision records: ADR 0008, ADR 0016.
+**Status:** in use. Block B11 (RS-59 to RS-68) is complete: the timers run on the host and the first restore rehearsal is recorded under "Backups and restore". The switch to the 2.0.0 layout (RS-79) has its own section. Decision records: ADR 0008, ADR 0016.
 
 Placeholders: `<domain>` is the maintainer's domain, `<vps>` is the SSH host alias. Real hostnames, IP addresses and secrets never go into this repository.
 
@@ -75,7 +75,9 @@ To stop automatic deploys, for example to take the demo offline, set `DEPLOY_ENA
 
 ## Switch to 2.0.0 (ADR 0016)
 
-2.0.0 moves the public client from `/ui/` (FastAPI) to `/` (Next.js) and the API under `/api/` only. The change runs by hand, once, through states that always work:
+2.0.0 moves the public client from `/ui/` (FastAPI) to `/` (Next.js) and the API under `/api/` only. The change runs by hand, once, through states that always work. It ran on 2026-10-21 with no downtime; the 1.x site stays on the host as `sites-available/<site>.1x` and the S0 files and dump in a root-only backup folder.
+
+The states:
 
 | State | Nginx site | API | Web | Public client |
 |---|---|---|---|---|
@@ -138,7 +140,8 @@ It loads the newest nightly dump, or the dump given as argument, into a throwawa
 
 | Date | Dump | Result |
 |---|---|---|
-| | | |
+| 2026-10-21 | nightly-20261021T080055Z.dump | Restored: processes 0, process_steps 0, analyses 0, recommendation_overrides 0. The purge had just deleted the only process, so the schema restored with no rows |
+| 2026-10-21 | pre-deploy-20261021T072028Z-v1.4.0-to-v2.0.0.dump | Restored: processes 1, process_steps 7, analyses 1, recommendation_overrides 0 |
 
 ## Purge demo data
 
