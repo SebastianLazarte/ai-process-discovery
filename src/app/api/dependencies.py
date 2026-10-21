@@ -9,6 +9,7 @@ from app.llm.provider import LLMProvider
 from app.services.analysis_service import AnalysisService
 from app.services.demo_service import DemoService
 from app.services.process_service import ProcessService
+from app.services.template_service import TemplateService
 
 
 def get_session(request: Request) -> Iterator[Session]:
@@ -53,3 +54,10 @@ def get_demo_service(processes: ProcessServiceDep, analyses: AnalysisServiceDep)
 
 
 DemoServiceDep = Annotated[DemoService, Depends(get_demo_service)]
+
+
+def get_template_service() -> TemplateService:
+    return TemplateService()
+
+
+TemplateServiceDep = Annotated[TemplateService, Depends(get_template_service)]
