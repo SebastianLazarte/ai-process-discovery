@@ -56,7 +56,7 @@ The maintainer is the Product Owner and writes and approves the stories. An agen
 | Product Goal | `[product] goal` |
 | Epic | `[user_requirements.RU-nn]`: `name` and a story (`as_a`, `i_want`, `so_that`) |
 | Backlog item | `[[requirement]]` `RS-nn`: a user story or an enabler, one GitHub issue |
-| Release | `block` B0 to B13, one milestone each |
+| Release | `block` B0 to B14, one milestone each |
 | Sprint | One week from `first_sprint`; the Sprint field on the GitHub Project board |
 
 - **Definition of Ready**: a story (`as_a` from `roles`, `i_want`, `so_that`) or an enabler with a clear title; at least one Given/When/Then criterion; `points` in 1, 2, 3, 5 or 8 (split anything larger); `priority` must, should, could or wont; a `rank`; approved by the PO. Only Ready items enter a sprint.

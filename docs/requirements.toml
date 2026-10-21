@@ -1,7 +1,7 @@
 # Product backlog, one GitHub issue per requirement (scripts/bootstrap_github.py).
 #
 # Scrum mapping: each user requirement (RU) is an epic written as a user story, each system
-# requirement (RS) is a backlog item (a user story or an enabler), and each block (B0 to B13)
+# requirement (RS) is a backlog item (a user story or an enabler), and each block (B0 to B14)
 # is a release with its milestone. Refined items carry Given/When/Then criteria, Fibonacci
 # points, a MoSCoW priority and a rank; items delivered before refinement keep their
 # original title and acceptance list. Status and sprint live in GitHub, not here.
@@ -84,6 +84,18 @@ name = "Code that stays trustworthy"
 as_a = "maintainer"
 i_want = "automated quality gates and a clean core around the code agents write"
 so_that = "a change can merge with confidence without reading every line by hand"
+
+[user_requirements.RU-13]
+name = "Guided process capture"
+as_a = "operations lead"
+i_want = "to start from the most common processes of my sector"
+so_that = "I map a process in minutes instead of filling every field by hand"
+
+[user_requirements.RU-14]
+name = "AI-drafted process from a description"
+as_a = "operations lead"
+i_want = "the AI to draft the steps of a process I describe in my own words"
+so_that = "I can map a process the catalog does not cover, while the public demo stays safe and affordable"
 
 [[requirement]]
 id = "RS-01"
@@ -1436,3 +1448,217 @@ then = "its eight sections render as text built from the API's JSON, without inj
 given = "the Blueprint page"
 when = "I download the Markdown"
 then = "the file is identical to the API's blueprint.md"
+
+[[requirement]]
+id = "RS-95"
+ru = "RU-13"
+block = "B14"
+area = "api"
+kind = "enabler"
+title = "Process template catalog served by the API"
+points = 3
+priority = "must"
+rank = 32
+
+[[requirement.criteria]]
+given = "the catalog files"
+when = "the test suite runs"
+then = "every template validates against the step contract and names only values of the domain enums"
+
+[[requirement.criteria]]
+given = "any template"
+when = "it is read"
+then = "it carries no minutes, rates, executions or hourly cost"
+
+[[requirement.criteria]]
+given = "the API"
+when = "GET /api/process-templates is called"
+then = "it returns the templates grouped by sector, with name and description"
+
+[[requirement]]
+id = "RS-96"
+ru = "RU-13"
+block = "B14"
+area = "ui"
+kind = "story"
+title = "Start a process from a sector template"
+as_a = "operations lead"
+i_want = "to pick my sector and one of its common processes and review its steps before creating it"
+so_that = "I only type the numbers that are specific to my company"
+points = 5
+priority = "must"
+rank = 33
+
+[[requirement.criteria]]
+given = "New process"
+when = "I choose a sector and one of its processes"
+then = "a review screen shows its steps with their attributes filled in"
+
+[[requirement.criteria]]
+given = "that review screen"
+when = "I try to create the process without minutes for every step or without executions per month"
+then = "those fields are marked and nothing is sent"
+
+[[requirement.criteria]]
+given = "a completed review"
+when = "I create the process"
+then = "it is saved in one request and opens on its Steps page"
+
+[[requirement.criteria]]
+given = "the sector and process lists"
+when = "I open them"
+then = "each one ends with Other"
+
+[[requirement]]
+id = "RS-97"
+ru = "RU-13"
+block = "B14"
+area = "api"
+kind = "story"
+title = "Catalog content for seven sectors"
+as_a = "operations lead"
+i_want = "the catalog to cover the processes most often automated in my sector"
+so_that = "I find a close starting point without writing it from scratch"
+points = 5
+priority = "must"
+rank = 34
+
+[[requirement.criteria]]
+given = "the catalog"
+when = "it is listed"
+then = "it has seven sectors (manufacturing, retail and e-commerce, logistics, banking and financial services, insurance, healthcare administration, any sector) with three processes each"
+
+[[requirement.criteria]]
+given = "any template"
+when = "it is read"
+then = "it has four to seven steps and no real company name"
+
+[[requirement.criteria]]
+given = "docs/design"
+when = "the catalog is described"
+then = "each sector names the sources its processes come from"
+
+[[requirement]]
+id = "RS-98"
+ru = "RU-14"
+block = "B14"
+area = "llm"
+kind = "story"
+title = "Draft a process from a description with the LLM"
+as_a = "operations lead"
+i_want = "to describe my process in my own words and get a draft of its steps"
+so_that = "I can start from a draft when no template fits"
+points = 5
+priority = "should"
+rank = 35
+
+[[requirement.criteria]]
+given = "a description of a process"
+when = "I ask for a draft"
+then = "the API returns steps with the same qualitative attributes as a template and nothing is stored"
+
+[[requirement.criteria]]
+given = "the draft output schema"
+when = "its fields are checked"
+then = "it has no field for minutes, rates, executions, cost, score, savings, payback or ROI"
+
+[[requirement.criteria]]
+given = "the fake provider"
+when = "a draft is requested"
+then = "the result is deterministic, so CI and e2e need no key"
+
+[[requirement.criteria]]
+given = "process_drafts_enabled false, which is the default"
+when = "the endpoint is called"
+then = "it returns 404 and Other opens the manual form"
+
+[[requirement]]
+id = "RS-99"
+ru = "RU-14"
+block = "B14"
+area = "ui"
+kind = "story"
+title = "Review an AI draft before saving it"
+as_a = "operations lead"
+i_want = "to see which values the AI suggested and confirm or change them before saving"
+so_that = "nothing the AI proposed becomes a fact without my approval"
+points = 3
+priority = "should"
+rank = 36
+
+[[requirement.criteria]]
+given = "an AI draft"
+when = "the review screen shows it"
+then = "each suggested value carries the AI badge until I keep or change it"
+
+[[requirement.criteria]]
+given = "that review"
+when = "I create the process"
+then = "minutes and executions are still mine to fill in, as with a template"
+
+[[requirement.criteria]]
+given = "the LLM unavailable or today's draft quota used up"
+when = "I choose Other"
+then = "the manual form opens with a note that says why"
+
+[[requirement]]
+id = "RS-100"
+ru = "RU-14"
+block = "B14"
+area = "llm"
+kind = "enabler"
+title = "Input guardrails for AI drafts"
+points = 5
+priority = "must"
+rank = 37
+
+[[requirement.criteria]]
+given = "a description that is not a business process"
+when = "a draft is requested"
+then = "the API answers 422 with a plain reason and no steps"
+
+[[requirement.criteria]]
+given = "a description with instructions aimed at the model"
+when = "a draft is requested"
+then = "the output still follows the schema, and a test corpus of injection attempts passes against the fake provider and in the manual contract test"
+
+[[requirement.criteria]]
+given = "a description over the text limit, or an output with more than 20 steps or an unknown enum value"
+when = "it arrives"
+then = "it is rejected"
+
+[[requirement.criteria]]
+given = "any draft request"
+when = "it is logged"
+then = "the log has counts and status, never the description"
+
+[[requirement]]
+id = "RS-101"
+ru = "RU-14"
+block = "B14"
+area = "infra"
+kind = "enabler"
+title = "Cost and abuse guardrails for AI drafts in the public demo"
+points = 3
+priority = "must"
+rank = 38
+
+[[requirement.criteria]]
+given = "today's draft limit reached"
+when = "another draft is requested"
+then = "the provider is not called and the client falls back to the manual form"
+
+[[requirement.criteria]]
+given = "production Nginx"
+when = "one client sends drafts faster than the limit"
+then = "it gets 429"
+
+[[requirement.criteria]]
+given = "the public demo"
+when = "someone opens Other"
+then = "the form warns that the text goes to an AI provider and must not hold real or personal data"
+
+[[requirement.criteria]]
+given = "process_drafts_enabled"
+when = "the public demo turns it on"
+then = "RS-100 and this item are already merged"
