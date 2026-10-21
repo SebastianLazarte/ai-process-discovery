@@ -62,7 +62,6 @@ MANAGED_LABEL_PREFIXES = ("area:", "priority:")
 
 REQUIRED_CHECKS = [
     "quality",
-    "web",
     "frontend",
     "test (3.12)",
     "test (3.13)",

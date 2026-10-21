@@ -22,15 +22,13 @@ def titles(files: list[str]) -> list[str]:
     return [area.title for area in matching_areas(CONFIG, files)]
 
 
-def test_a_web_change_lists_only_the_web_client() -> None:
-    assert titles(["web/app.js"]) == ["Web client"]
+def test_a_frontend_change_lists_only_the_nextjs_client() -> None:
+    assert titles(["frontend/src/app/page.tsx"]) == ["Next.js client"]
 
 
 def test_a_change_in_several_areas_lists_each_once_in_config_order() -> None:
-    assert titles(["web/app.js", "src/app/llm/prompts.py", "web/views.js"]) == [
-        "LLM layer",
-        "Web client",
-    ]
+    files = ["frontend/src/app/page.tsx", "src/app/llm/prompts.py", "frontend/src/proxy.ts"]
+    assert titles(files) == ["LLM layer", "Next.js client"]
 
 
 def test_files_outside_every_area_get_only_the_common_items() -> None:
@@ -43,7 +41,7 @@ def test_files_outside_every_area_get_only_the_common_items() -> None:
 @pytest.mark.parametrize(
     ("title", "expected"),
     [
-        ("feat(web): add x", "feat"),
+        ("feat(ui): add x", "feat"),
         ("fix!: drop y", "fix"),
         ("ci: pin actions", "ci"),
         ("Update readme", None),
@@ -65,19 +63,20 @@ def test_the_comment_starts_with_the_marker() -> None:
 
 
 def test_ticked_items_survive_a_new_render() -> None:
-    first = render(CONFIG, ["web/app.js"], "feat(web): x", REPO, set())
-    item = CONFIG.areas[[a.title for a in CONFIG.areas].index("Web client")].items[0].text
+    first = render(CONFIG, ["frontend/src/proxy.ts"], "feat(ui): x", REPO, set())
+    item = CONFIG.areas[[a.title for a in CONFIG.areas].index("Next.js client")].items[0].text
     ticked = first.replace(f"- [ ] {item}<br>", f"- [x] {item}<br>")
     assert checked_items(ticked) == {item}
 
-    again = render(CONFIG, ["web/app.js", "src/app/llm/prompts.py"], "feat: x", REPO, {item})
+    files = ["frontend/src/proxy.ts", "src/app/llm/prompts.py"]
+    again = render(CONFIG, files, "feat: x", REPO, {item})
     assert f"- [x] {item}<br>" in again
     assert again.count("- [x] ") == 1
 
 
 def test_a_ticked_item_that_no_longer_applies_is_dropped() -> None:
     item = CONFIG.areas[0].items[0].text
-    body = render(CONFIG, ["web/app.js"], "feat: x", REPO, {item})
+    body = render(CONFIG, ["frontend/src/proxy.ts"], "feat: x", REPO, {item})
     assert "- [x] " not in body
 
 

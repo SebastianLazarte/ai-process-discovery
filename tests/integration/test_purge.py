@@ -19,20 +19,20 @@ from tests.payloads import process_payload
 
 
 def _process(client: TestClient) -> dict:  # type: ignore[type-arg]
-    response = client.post("/processes", json=process_payload())
+    response = client.post("/api/processes", json=process_payload())
     assert response.status_code == 201, response.text
     return response.json()
 
 
 def _analyse(client: TestClient, process_id: str) -> dict:  # type: ignore[type-arg]
-    response = client.post(f"/processes/{process_id}/analyses", json={})
+    response = client.post(f"/api/processes/{process_id}/analyses", json={})
     assert response.status_code == 201, response.text
     return response.json()
 
 
 def _override(client: TestClient, analysis: dict) -> None:  # type: ignore[type-arg]
     response = client.post(
-        f"/analyses/{analysis['id']}/overrides",
+        f"/api/analyses/{analysis['id']}/overrides",
         json={
             "step_id": analysis["step_assessments"][0]["step_id"],
             "method": "MANUAL",
@@ -89,12 +89,12 @@ def test_purge_deletes_only_expired_processes_with_their_analyses_and_overrides(
 
     assert purge(["--older-than-hours", "24"], Settings(database_url=database_url)) == 0
 
-    assert client.get(f"/processes/{old['id']}").status_code == 404
-    assert client.get(f"/analyses/{old_analysis['id']}").status_code == 404
+    assert client.get(f"/api/processes/{old['id']}").status_code == 404
+    assert client.get(f"/api/analyses/{old_analysis['id']}").status_code == 404
     for owned in (ProcessStepORM, AnalysisORM, OverrideORM):
         assert _count(database_url, owned, old["id"]) == 0, owned.__name__
-    assert client.get(f"/processes/{new['id']}").status_code == 200
-    assert client.get(f"/analyses/{new_analysis['id']}").status_code == 200
+    assert client.get(f"/api/processes/{new['id']}").status_code == 200
+    assert client.get(f"/api/analyses/{new_analysis['id']}").status_code == 200
 
 
 def test_purge_counts_age_from_creation_not_from_the_last_edit(
@@ -102,12 +102,12 @@ def test_purge_counts_age_from_creation_not_from_the_last_edit(
 ) -> None:
     process = _process(client)
     _age(database_url, process["id"], hours=25)
-    edited = client.patch(f"/processes/{process['id']}", json={"name": "Edited today"})
+    edited = client.patch(f"/api/processes/{process['id']}", json={"name": "Edited today"})
     assert edited.status_code == 200, edited.text
 
     purge(["--older-than-hours", "24"], Settings(database_url=database_url))
 
-    assert client.get(f"/processes/{process['id']}").status_code == 404
+    assert client.get(f"/api/processes/{process['id']}").status_code == 404
 
 
 @pytest.mark.parametrize("hours", ["0", "-3", "a day"])
@@ -140,17 +140,14 @@ def test_no_http_route_triggers_a_purge(
         "name": "index.html",
     }
 
-    # Every documented operation at the root and under /api, plus the routes kept out of
-    # the schema on purpose.
-    documented = [
-        (method.upper(), path)
+    # Every documented operation under /api, plus the routes kept out of the schema on purpose.
+    operations = [
+        (method.upper(), f"/api{path}")
         for path, item in client.get("/api/openapi.json").json()["paths"].items()
         for method in item
     ]
-    operations = documented + [(method, f"/api{path}") for method, path in documented]
     operations += [
-        ("GET", path)
-        for path in ("/", "/ui", "/ui/", "/ui/app.js", "/docs", "/redoc", "/api/docs", "/api/redoc")
+        ("GET", path) for path in ("/docs", "/redoc", "/openapi.json", "/api/docs", "/api/redoc")
     ]
     for method, template in operations:
         path = re.sub(r"\{(\w+)\}", lambda m: values[m.group(1)], template)
@@ -158,4 +155,4 @@ def test_no_http_route_triggers_a_purge(
 
     assert len(operations) >= 20, operations
     assert calls == []
-    assert client.get(f"/processes/{untouched['id']}").status_code == 200
+    assert client.get(f"/api/processes/{untouched['id']}").status_code == 200

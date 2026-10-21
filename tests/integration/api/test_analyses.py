@@ -10,13 +10,13 @@ from tests.payloads import process_payload, step_payload
 
 
 def _process(client: TestClient, **overrides: object) -> dict:  # type: ignore[type-arg]
-    response = client.post("/processes", json=process_payload(**overrides))
+    response = client.post("/api/processes", json=process_payload(**overrides))
     assert response.status_code == 201, response.text
     return response.json()
 
 
 def _analyse(client: TestClient, process_id: str, **body: object) -> dict:  # type: ignore[type-arg]
-    response = client.post(f"/processes/{process_id}/analyses", json=body)
+    response = client.post(f"/api/processes/{process_id}/analyses", json=body)
     assert response.status_code == 201, response.text
     return response.json()
 
@@ -61,7 +61,7 @@ def test_same_input_gives_the_same_analysis(client: TestClient) -> None:
         second.pop(key)
     assert first == second
 
-    history = client.get(f"/processes/{process['id']}/analyses").json()
+    history = client.get(f"/api/processes/{process['id']}/analyses").json()
     assert len(history) == 2
     assert history[0]["created_at"] >= history[1]["created_at"]
 
@@ -69,9 +69,9 @@ def test_same_input_gives_the_same_analysis(client: TestClient) -> None:
 def test_analysis_is_immutable_after_process_changes(client: TestClient) -> None:
     process = _process(client)
     analysis = _analyse(client, process["id"])
-    client.patch(f"/processes/{process['id']}", json={"executions_per_month": 1})
+    client.patch(f"/api/processes/{process['id']}", json={"executions_per_month": 1})
 
-    stored = client.get(f"/analyses/{analysis['id']}").json()
+    stored = client.get(f"/api/analyses/{analysis['id']}").json()
     assert stored["current_state"] == analysis["current_state"]
     assert stored["process_version"] == 1
 
@@ -80,7 +80,7 @@ def test_sensitive_steps_need_confirmation_before_llm(
     client: TestClient, fake_provider: FakeLLMProvider
 ) -> None:
     process = _process(client, steps=[step_payload(handles_sensitive_data=True)])
-    response = client.post(f"/processes/{process['id']}/analyses", json={"use_llm": True})
+    response = client.post(f"/api/processes/{process['id']}/analyses", json={"use_llm": True})
     assert response.status_code == 409
     assert response.json()["code"] == "sensitive_data_confirmation_required"
     assert fake_provider.calls == []
@@ -214,12 +214,12 @@ def test_override_keeps_original_and_reason(client: TestClient) -> None:
     step_id = analysis["step_assessments"][0]["step_id"]
 
     missing_reason = client.post(
-        f"/analyses/{analysis['id']}/overrides", json={"step_id": step_id, "method": "MANUAL"}
+        f"/api/analyses/{analysis['id']}/overrides", json={"step_id": step_id, "method": "MANUAL"}
     )
     assert missing_reason.status_code == 422
 
     response = client.post(
-        f"/analyses/{analysis['id']}/overrides",
+        f"/api/analyses/{analysis['id']}/overrides",
         json={
             "step_id": step_id,
             "method": "HYBRID",
@@ -234,10 +234,10 @@ def test_override_keeps_original_and_reason(client: TestClient) -> None:
     assert step["override"]["original_method"] == "API_INTEGRATION"
     assert step["override"]["reason"].startswith("Supplier")
 
-    stored = client.get(f"/analyses/{analysis['id']}").json()
+    stored = client.get(f"/api/analyses/{analysis['id']}").json()
     assert stored["step_assessments"][0]["final_method"] == "HYBRID"
     assert stored["human_controls"][0]["control"] == "REQUIRED"
-    history = client.get(f"/processes/{process['id']}/analyses").json()
+    history = client.get(f"/api/processes/{process['id']}/analyses").json()
     assert history[0]["override_count"] == 1
 
 
@@ -245,7 +245,7 @@ def test_override_for_unknown_step_is_rejected(client: TestClient) -> None:
     process = _process(client)
     analysis = _analyse(client, process["id"])
     response = client.post(
-        f"/analyses/{analysis['id']}/overrides",
+        f"/api/analyses/{analysis['id']}/overrides",
         json={
             "step_id": "00000000-0000-0000-0000-000000000000",
             "method": "MANUAL",
@@ -258,7 +258,7 @@ def test_override_for_unknown_step_is_rejected(client: TestClient) -> None:
 def test_invalid_assumptions_return_422(client: TestClient) -> None:
     process = _process(client)
     response = client.post(
-        f"/processes/{process['id']}/analyses",
+        f"/api/processes/{process['id']}/analyses",
         json={
             "assumptions": {"expected_time_reduction_by_step": {process["steps"][0]["id"]: "1.5"}}
         },
@@ -267,7 +267,7 @@ def test_invalid_assumptions_return_422(client: TestClient) -> None:
 
 
 def test_blueprint_json_and_markdown(client: TestClient) -> None:
-    demo = client.post("/demo-processes/warranty-claims").json()
+    demo = client.post("/api/demo-processes/warranty-claims").json()
     reductions = {s["id"]: "0.5" for s in demo["steps"]}
     analysis = _analyse(
         client,
@@ -280,7 +280,7 @@ def test_blueprint_json_and_markdown(client: TestClient) -> None:
             "expected_time_reduction_by_step": reductions,
         },
     )
-    blueprint = client.get(f"/analyses/{analysis['id']}/blueprint").json()
+    blueprint = client.get(f"/api/analyses/{analysis['id']}/blueprint").json()
     for section in (
         "process_summary",
         "current_state",
@@ -293,7 +293,7 @@ def test_blueprint_json_and_markdown(client: TestClient) -> None:
     ):
         assert blueprint[section], section
 
-    response = client.get(f"/analyses/{analysis['id']}/blueprint.md")
+    response = client.get(f"/api/analyses/{analysis['id']}/blueprint.md")
     assert response.status_code == 200
     assert response.headers["content-type"].startswith("text/markdown")
     text = response.text
@@ -312,6 +312,6 @@ def test_blueprint_lists_assumed_reductions_in_step_order(client: TestClient) ->
         client, process["id"], assumptions={"expected_time_reduction_by_step": reductions}
     )
 
-    text = client.get(f"/analyses/{analysis['id']}/blueprint.md").text
+    text = client.get(f"/api/analyses/{analysis['id']}/blueprint.md").text
     listed = re.findall(r"Expected time reduction for step (\S+):", text)
     assert listed == ids

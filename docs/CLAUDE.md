@@ -8,7 +8,7 @@ Stable reference for the whole repo. Code changes read from here; this folder ch
 | `pdr/` | Product and scope decisions |
 | `requirements.toml` | Product backlog: Product Goal, epics (`RU-nn`) and backlog items (`RS-nn`), one GitHub issue per RS |
 | `runbook/` | Operating the production demo |
-| `design/` | UX and UI specs for the Next.js client, numbered in the order of ADR 0013: brief, discovery, wireframes, foundations, components, usability. The parity screens take `web/` as spec instead (ADR 0015) |
+| `design/` | UX and UI specs for the Next.js client, numbered in the order of ADR 0013: brief, discovery, wireframes, foundations, components, usability. The parity screens took `web/` as spec instead (ADR 0015); it is in git history at tag `v1.5.0` |
 
 ## Decision index
 
@@ -20,9 +20,9 @@ Stable reference for the whole repo. Code changes read from here; this folder ch
 | ADR 0002 | SQLite locally, PostgreSQL in CI, `ExactDecimal`, no migrations yet | accepted; migrations amended by ADR 0008 (Alembic from RS-59) |
 | ADR 0003 | Domain, contracts and persistence are separate models | accepted |
 | ADR 0004 | `LLMProvider` protocol, fake by default, Anthropic first, versioned prompt | accepted |
-| ADR 0005 | Streamlit as a REST client | replaced by ADR 0007 from 1.2.0; Streamlit pending removal |
+| ADR 0005 | Streamlit as a REST client | replaced by ADR 0007 from 1.2.0; retired in 2.0.0, Streamlit removed (RS-80) |
 | ADR 0006 | GitHub Flow, required checks, release-please, release authorship | accepted; required checks amended by ADR 0009, supply chain by ADR 0010, coverage minimum by ADR 0011 |
-| ADR 0007 | Vanilla web client served by FastAPI | replaced by ADR 0009 from 2.0.0; `web/` pending removal |
+| ADR 0007 | Vanilla web client served by FastAPI | replaced by ADR 0009 from 2.0.0; `web/` removed (RS-80) |
 | ADR 0008 | Public demo on the maintainer's VPS (block B11, RS-59 to RS-68) | accepted; layout amended by ADR 0009 |
 | ADR 0009 | Next.js frontend as a separate service, API under `/api` (block B12, RS-69 to RS-80; RS-91 to RS-94 split from RS-74 to RS-76) | accepted; dependencies amended by ADR 0013, migration and rollback by ADR 0016 |
 | ADR 0010 | Dependency updates: grouped minor and patch after a cooldown, majors planned, Python version fixed | accepted |

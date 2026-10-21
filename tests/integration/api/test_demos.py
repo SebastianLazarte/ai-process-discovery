@@ -14,7 +14,7 @@ SLUGS = ("distributor-orders", "warranty-claims", "zoning-quotes")
 
 
 def _load(client: TestClient, slug: str) -> dict[str, Any]:
-    response = client.post(f"/demo-processes/{slug}")
+    response = client.post(f"/api/demo-processes/{slug}")
     assert response.status_code == 201, response.text
     process: dict[str, Any] = response.json()
     return process
@@ -23,10 +23,10 @@ def _load(client: TestClient, slug: str) -> dict[str, Any]:
 @pytest.mark.parametrize("slug", SLUGS)
 def test_a_demo_comes_with_an_analysis_of_its_assumptions(client: TestClient, slug: str) -> None:
     process = _load(client, slug)
-    history = client.get(f"/processes/{process['id']}/analyses").json()
+    history = client.get(f"/api/processes/{process['id']}/analyses").json()
     assert len(history) == 1
 
-    analysis = client.get(f"/analyses/{history[0]['id']}").json()
+    analysis = client.get(f"/api/analyses/{history[0]['id']}").json()
     impact = analysis["business_impact"]
     assert Decimal(impact["net_monthly_savings"]) > 0
     assert impact["payback_months"] is not None
@@ -42,12 +42,12 @@ def test_the_first_analysis_never_calls_the_llm_nor_uses_the_quota(
     client = make_client(provider, llm_daily_limit=1)
     process = _load(client, "warranty-claims")
 
-    [first] = client.get(f"/processes/{process['id']}/analyses").json()
+    [first] = client.get(f"/api/processes/{process['id']}/analyses").json()
     assert first["llm_status"] == "not_requested"
     assert provider.calls == []
 
     response = client.post(
-        f"/processes/{process['id']}/analyses",
+        f"/api/processes/{process['id']}/analyses",
         json={"use_llm": True, "confirm_sensitive": True},
     )
     assert response.json()["llm"]["status"] == "ok"
@@ -61,4 +61,4 @@ def test_a_demo_without_assumptions_has_no_analysis(
     monkeypatch.setattr(demo_service, "demo_files", lambda: {"plain": demo})
 
     process = _load(client, "plain")
-    assert client.get(f"/processes/{process['id']}/analyses").json() == []
+    assert client.get(f"/api/processes/{process['id']}/analyses").json() == []

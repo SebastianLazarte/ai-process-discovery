@@ -1,4 +1,4 @@
-"""Architecture boundaries, enforced as tests (RS-08, RS-26, RS-42, RS-63)."""
+"""Architecture boundaries, enforced as tests (RS-08, RS-26, RS-42, RS-63, RS-80)."""
 
 import ast
 from pathlib import Path
@@ -40,7 +40,6 @@ def _violations(directory: Path, forbidden: tuple[str, ...]) -> list[str]:
                 "fastapi",
                 "sqlalchemy",
                 "anthropic",
-                "streamlit",
                 "httpx",
                 "pydantic",
                 "app.llm",
@@ -50,10 +49,9 @@ def _violations(directory: Path, forbidden: tuple[str, ...]) -> list[str]:
                 "app.api",
             ),
         ),
-        (SRC / "services", ("anthropic", "streamlit", "fastapi")),
+        (SRC / "services", ("anthropic", "fastapi")),
         # RS-63: deleting demo data is an operator command, never an HTTP route.
         (SRC / "api", ("app.services.retention_service", "app.purge")),
-        (ROOT / "ui", ("app",)),
     ],
 )
 def test_layer_does_not_import_forbidden_modules(

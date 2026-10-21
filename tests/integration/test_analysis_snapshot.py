@@ -44,11 +44,11 @@ def _ok(response: Any, status: int = 200) -> Any:
 
 
 def _observe(client: TestClient, slug: str) -> tuple[dict[str, Any], dict[str, str]]:
-    process = _ok(client.post(f"/demo-processes/{slug}"), 201).json()
+    process = _ok(client.post(f"/api/demo-processes/{slug}"), 201).json()
     steps = process["steps"]
     analysis = _ok(
         client.post(
-            f"/processes/{process['id']}/analyses",
+            f"/api/processes/{process['id']}/analyses",
             json={
                 "use_llm": True,
                 "confirm_sensitive": True,
@@ -63,7 +63,7 @@ def _observe(client: TestClient, slug: str) -> tuple[dict[str, Any], dict[str, s
     ).json()
     reviewed = _ok(
         client.post(
-            f"/analyses/{analysis['id']}/overrides",
+            f"/api/analyses/{analysis['id']}/overrides",
             json={
                 "step_id": steps[0]["id"],
                 "method": "MANUAL",
@@ -81,8 +81,8 @@ def _observe(client: TestClient, slug: str) -> tuple[dict[str, Any], dict[str, s
     observed = {
         "analysis": analysis,
         "reviewed": reviewed,
-        "history": _ok(client.get(f"/processes/{process['id']}/analyses")).json(),
-        "blueprint_md": _ok(client.get(f"/analyses/{analysis['id']}/blueprint.md")).text,
+        "history": _ok(client.get(f"/api/processes/{process['id']}/analyses")).json(),
+        "blueprint_md": _ok(client.get(f"/api/analyses/{analysis['id']}/blueprint.md")).text,
     }
     return observed, names
 

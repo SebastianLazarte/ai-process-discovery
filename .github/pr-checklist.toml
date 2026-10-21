@@ -96,9 +96,9 @@ why = "release-please bumps the major version only when the title says so, and c
 ref = "docs/adr/0006-github-flow-ci-and-releases.md"
 
 [[area.item]]
-text = "`ENDPOINTS` in `web/api.js` still matches the routes"
-why = "The web client breaks first when a route moves; `test_web_client.py` checks it against the OpenAPI schema."
-ref = "tests/unit/test_web_client.py"
+text = "`frontend/openapi.json` and the client types are regenerated"
+why = "The Next.js client is typed from the committed contract; `test_openapi_contract.py` and the `frontend` job fail until both match the routes."
+ref = "tests/unit/test_openapi_contract.py"
 
 [[area.item]]
 text = "Domain, contract and persistence models stay separate"
@@ -119,31 +119,6 @@ ref = "docs/adr/0002-sqlite-locally-postgresql-in-ci.md"
 text = "Money columns use `ExactDecimal`"
 why = "SQLite has no exact decimal type; the decorator stores the exact value."
 ref = "src/app/models/persistence/base.py"
-
-[[area]]
-id = "web"
-title = "Web client"
-paths = ["web/", "src/app/api/routes/web.py"]
-
-[[area.item]]
-text = "Every interpolated value goes through `h()`"
-why = "Escaping output prevents cross-site scripting (OWASP XSS prevention)."
-ref = "web/views.js"
-
-[[area.item]]
-text = "Only `api.js` calls `fetch`"
-why = "One gateway to the API keeps errors, paths and the endpoint list in one place."
-ref = "web/api.js"
-
-[[area.item]]
-text = "The client computes no metric"
-why = "Figures come from the API, so the browser can never disagree with the backend."
-ref = "docs/adr/0007-vanilla-web-client-served-by-fastapi.md"
-
-[[area.item]]
-text = "A new file in `web/` is listed in `WEB_FILES`"
-why = "Files are served by name from an allowlist, never by directory."
-ref = "src/app/api/routes/web.py"
 
 [[area]]
 id = "frontend"

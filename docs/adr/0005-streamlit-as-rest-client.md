@@ -1,6 +1,6 @@
 # ADR 0005: Streamlit as a REST client
 
-**Status:** accepted · 2026-10-07
+**Status:** accepted · 2026-10-07 · replaced by ADR 0007 from 1.2.0 · retired in 2.0.0, Streamlit removed (RS-80)
 
 ## Decision
 

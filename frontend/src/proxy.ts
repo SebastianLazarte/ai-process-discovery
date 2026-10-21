@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 // ADR 0009 and RS-72: every page carries a strict CSP with a fresh nonce, as strict as the
-// one FastAPI sends for /ui/. Next reads the nonce back from the request's CSP header and
+// one the vanilla client had. Next reads the nonce back from the request's CSP header and
 // stamps it on its own scripts, so a page only renders with it when rendered per request
 // (the root layout opts every page into dynamic rendering).
 
@@ -54,20 +54,11 @@ export function proxy(request: NextRequest): NextResponse {
   return response;
 }
 
-// Every page, after the basePath that Next prefixes. Hashed static files and optimised
-// images run no script of their own, and a prefetch only fetches data for a page that
-// already carries the policy. "/" stands for the bare basePath (/app), which the
-// catch-all source alone does not match. Next reads this object at build time, so it
-// stays literal.
+// Every page, the home page included. Hashed static files and optimised images run no
+// script of their own, and a prefetch only fetches data for a page that already carries
+// the policy. Next reads this object at build time, so it stays literal.
 export const config = {
   matcher: [
-    {
-      source: "/",
-      missing: [
-        { type: "header", key: "next-router-prefetch" },
-        { type: "header", key: "purpose", value: "prefetch" },
-      ],
-    },
     {
       source: "/((?!_next/static|_next/image|favicon.ico).*)",
       missing: [

@@ -5,13 +5,13 @@ from tests.payloads import process_payload, step_payload
 
 
 def _create(client: TestClient, **overrides: object) -> dict:  # type: ignore[type-arg]
-    response = client.post("/processes", json=process_payload(**overrides))
+    response = client.post("/api/processes", json=process_payload(**overrides))
     assert response.status_code == 201, response.text
     return response.json()
 
 
 def test_health(client: TestClient) -> None:
-    response = client.get("/health")
+    response = client.get("/api/health")
     assert response.status_code == 200
     assert response.json() == {"status": "ok", "database": "ok"}
 
@@ -23,17 +23,17 @@ def test_create_and_read_process(client: TestClient) -> None:
     assert created["steps"][0]["position"] == 1
     assert created["steps"][0]["minutes_per_execution"] == "4.0"
 
-    fetched = client.get(f"/processes/{created['id']}").json()
+    fetched = client.get(f"/api/processes/{created['id']}").json()
     assert fetched == created
 
-    listing = client.get("/processes").json()
+    listing = client.get("/api/processes").json()
     assert [(p["id"], p["step_count"]) for p in listing] == [(created["id"], 1)]
 
 
 def test_update_process_bumps_version(client: TestClient) -> None:
     created = _create(client)
     response = client.patch(
-        f"/processes/{created['id']}", json={"executions_per_month": 500, "hourly_cost": None}
+        f"/api/processes/{created['id']}", json={"executions_per_month": 500, "hourly_cost": None}
     )
     assert response.status_code == 200
     body = response.json()
@@ -44,14 +44,14 @@ def test_update_process_bumps_version(client: TestClient) -> None:
 
 def test_update_rejects_null_required_field(client: TestClient) -> None:
     created = _create(client)
-    response = client.patch(f"/processes/{created['id']}", json={"name": None})
+    response = client.patch(f"/api/processes/{created['id']}", json={"name": None})
     assert response.status_code == 400
 
 
 def test_delete_process(client: TestClient) -> None:
     created = _create(client)
-    deleted = client.delete(f"/processes/{created['id']}")
-    fetched = client.get(f"/processes/{created['id']}")
+    deleted = client.delete(f"/api/processes/{created['id']}")
+    fetched = client.get(f"/api/processes/{created['id']}")
     assert deleted.status_code == 204
     assert fetched.status_code == 404
 
@@ -61,44 +61,44 @@ def test_steps_crud_and_order(client: TestClient) -> None:
     pid = created["id"]
     first = created["steps"][0]["id"]
 
-    appended = client.post(f"/processes/{pid}/steps", json=step_payload(name="Approve"))
+    appended = client.post(f"/api/processes/{pid}/steps", json=step_payload(name="Approve"))
     assert appended.status_code == 201
     body = client.post(
-        f"/processes/{pid}/steps", json=step_payload(name="Download", position=1)
+        f"/api/processes/{pid}/steps", json=step_payload(name="Download", position=1)
     ).json()
     assert [s["name"] for s in body["steps"]] == ["Download", "Extract invoice fields", "Approve"]
     assert [s["position"] for s in body["steps"]] == [1, 2, 3]
 
     ids = [s["id"] for s in body["steps"]]
-    body = client.put(f"/processes/{pid}/steps/order", json={"step_ids": ids[::-1]}).json()
+    body = client.put(f"/api/processes/{pid}/steps/order", json={"step_ids": ids[::-1]}).json()
     assert [s["name"] for s in body["steps"]] == ["Approve", "Extract invoice fields", "Download"]
 
     body = client.patch(
-        f"/steps/{first}", json={"occurrence_rate": "0.5", "criticality": "HIGH"}
+        f"/api/steps/{first}", json={"occurrence_rate": "0.5", "criticality": "HIGH"}
     ).json()
     updated = next(s for s in body["steps"] if s["id"] == first)
     assert updated["occurrence_rate"] == "0.5"
     assert updated["criticality"] == "HIGH"
 
-    body = client.delete(f"/steps/{first}").json()
+    body = client.delete(f"/api/steps/{first}").json()
     assert [s["position"] for s in body["steps"]] == [1, 2]
     assert first not in [s["id"] for s in body["steps"]]
 
 
 def test_reorder_requires_every_step(client: TestClient) -> None:
     created = _create(client)
-    response = client.put(f"/processes/{created['id']}/steps/order", json={"step_ids": []})
+    response = client.put(f"/api/processes/{created['id']}/steps/order", json={"step_ids": []})
     assert response.status_code == 400
 
 
 def test_validation_errors_are_explicit(client: TestClient) -> None:
     response = client.post(
-        "/processes", json=process_payload(steps=[step_payload(occurrence_rate="1.2")])
+        "/api/processes", json=process_payload(steps=[step_payload(occurrence_rate="1.2")])
     )
     assert response.status_code == 422
     assert "occurrence_rate" in response.text
 
-    negative = client.post("/processes", json=process_payload(executions_per_month=-1))
+    negative = client.post("/api/processes", json=process_payload(executions_per_month=-1))
     assert negative.status_code == 422
 
 
@@ -110,38 +110,38 @@ def test_size_limits_return_422_naming_the_field(client: TestClient) -> None:
         "problems": process_payload(steps=[step_payload(problems=["p" * (MAX_SHORT_TEXT + 1)])]),
     }
     for field, payload in oversized.items():
-        response = client.post("/processes", json=payload)
+        response = client.post("/api/processes", json=payload)
         assert response.status_code == 422, field
         assert field in response.json()["detail"][0]["loc"], field
 
 
 def test_adding_a_step_beyond_the_limit_returns_422(client: TestClient) -> None:
     full = _create(client, steps=[step_payload()] * MAX_STEPS)
-    response = client.post(f"/processes/{full['id']}/steps", json=step_payload())
+    response = client.post(f"/api/processes/{full['id']}/steps", json=step_payload())
     assert response.status_code == 422
     assert response.json()["code"] == "limit_exceeded"
-    assert len(client.get(f"/processes/{full['id']}").json()["steps"]) == MAX_STEPS
+    assert len(client.get(f"/api/processes/{full['id']}").json()["steps"]) == MAX_STEPS
 
 
 def test_unknown_ids_return_404(client: TestClient) -> None:
     missing = "00000000-0000-0000-0000-000000000000"
     responses = [
-        client.get(f"/processes/{missing}"),
-        client.patch(f"/steps/{missing}", json={"name": "x"}),
-        client.post(f"/processes/{missing}/analyses", json={}),
+        client.get(f"/api/processes/{missing}"),
+        client.patch(f"/api/steps/{missing}", json={"name": "x"}),
+        client.post(f"/api/processes/{missing}/analyses", json={}),
     ]
     assert [r.status_code for r in responses] == [404, 404, 404]
 
 
 def test_demo_processes_load(client: TestClient) -> None:
-    demos = client.get("/demo-processes").json()
+    demos = client.get("/api/demo-processes").json()
     assert {d["slug"] for d in demos} == {
         "distributor-orders",
         "warranty-claims",
         "zoning-quotes",
     }
     for demo in demos:
-        response = client.post(f"/demo-processes/{demo['slug']}")
+        response = client.post(f"/api/demo-processes/{demo['slug']}")
         assert response.status_code == 201, response.text
-    unknown = client.post("/demo-processes/nope")
+    unknown = client.post("/api/demo-processes/nope")
     assert unknown.status_code == 404

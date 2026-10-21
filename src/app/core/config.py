@@ -1,12 +1,10 @@
 from functools import lru_cache
-from pathlib import Path
 from typing import Literal
 
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 DEFAULT_ANTHROPIC_MODEL = "claude-opus-5"
-DEFAULT_WEB_DIR = Path(__file__).resolve().parents[3] / "web"
 
 
 class Settings(BaseSettings):
@@ -31,8 +29,6 @@ class Settings(BaseSettings):
 
     # Public deployment (ADR 0008): the web client warns that data is public and short-lived.
     public_demo: bool = False
-
-    web_dir: Path = DEFAULT_WEB_DIR
 
 
 @lru_cache

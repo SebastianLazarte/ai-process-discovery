@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import nextConfig from "../next.config";
 import { config, NONCE_HEADER, proxy } from "./proxy";
 
-function request(path = "/app") {
+function request(path = "/") {
   return new NextRequest(new URL(path, "http://localhost:3000"));
 }
 
@@ -31,7 +31,7 @@ afterEach(() => {
 
 describe("proxy (RS-72)", () => {
   it("answers a page with a nonce CSP, nosniff, no-referrer and frame-ancestors 'none'", () => {
-    const response = proxy(request("/app/processes/abc"));
+    const response = proxy(request("/processes/abc"));
 
     const csp = response.headers.get("Content-Security-Policy")!;
     expect(nonceOf(csp)).toMatch(/^[A-Za-z0-9+/]{22}==$/);
@@ -94,11 +94,11 @@ describe("proxy matcher", () => {
   const matches = (url: string, headers?: Record<string, string>) =>
     unstable_doesMiddlewareMatch({ config, nextConfig, url, headers });
 
-  it.each(["/app", "/app/", "/app/processes/abc"])("runs on the page %s", (url) => {
+  it.each(["/", "/processes/abc", "/processes/abc/analyses/def"])("runs on the page %s", (url) => {
     expect(matches(url)).toBe(true);
   });
 
-  it.each(["/app/_next/static/chunks/main.js", "/app/_next/image", "/app/favicon.ico"])(
+  it.each(["/_next/static/chunks/main.js", "/_next/image", "/favicon.ico"])(
     "skips the static file %s",
     (url) => {
       expect(matches(url)).toBe(false);
@@ -106,6 +106,6 @@ describe("proxy matcher", () => {
   );
 
   it("skips a link prefetch", () => {
-    expect(matches("/app/processes/abc", { "next-router-prefetch": "1" })).toBe(false);
+    expect(matches("/processes/abc", { "next-router-prefetch": "1" })).toBe(false);
   });
 });
