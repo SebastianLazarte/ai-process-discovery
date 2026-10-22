@@ -14,7 +14,7 @@ Types: `feat`, `fix`, `docs`, `test`, `refactor`, `perf`, `ci`, `build`, `chore`
 
 ```bash
 uv sync --all-extras
-uv run pre-commit install        # once
+uv run pre-commit install        # once; installs the pre-commit and commit-msg hooks
 uv run pre-commit run --all-files
 uv run pytest
 cd frontend && corepack pnpm install && corepack pnpm lint && corepack pnpm format && corepack pnpm typecheck && corepack pnpm test && corepack pnpm build && cd ..   # Node 22

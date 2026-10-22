@@ -206,8 +206,8 @@ why = "The history of decisions stays readable: what was decided, when, and what
 ref = "docs/CLAUDE.md"
 
 [[area.item]]
-text = "The writing style holds: no em dash, no \"it's not X, it's Y\""
-why = "One voice across the docs (hard rule 6)."
+text = "The writing style holds: no \"it's not X, it's Y\" construction"
+why = "One voice across the docs (hard rule 6). The em dash is already blocked by the `quality` job."
 ref = "CLAUDE.md"
 
 [[area]]

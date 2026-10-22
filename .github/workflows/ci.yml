@@ -34,6 +34,9 @@ jobs:
       - name: Shellcheck
         # Preinstalled on the Ubuntu runner (RS-66, RS-67).
         run: shellcheck deploy/*.sh
+      - name: Writing style
+        # Hard rule 6 (RS-102): the same pre-commit hook that runs locally.
+        run: uv run pre-commit run no-em-dash --all-files
 
   # RS-70: the Next.js client (ADR 0009). Runs on every pull request so it can be required.
   frontend:
