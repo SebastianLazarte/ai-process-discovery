@@ -219,11 +219,11 @@ Every path lives under `/api`. The old root paths of 1.x are gone in 2.0.0; `/do
 | B0 to B9 | Domain, scoring, business case, API, LLM layer, reconciliation, blueprint, 1.0 release | Done |
 | B10 | Web client | Done (1.1) |
 | B11 | Public demo: limits, LLM quota, demo banner, purge, production compose and Nginx | Done (1.2, 1.3) |
-| B11 | Public demo: demos with preset assumptions (RS-89), Alembic migrations (RS-59), deploy script with rollback (RS-66), deploy from the release workflow with an HTTPS smoke test (RS-67) | Done |
+| B11 | Public demo: demos with preset assumptions (RS-89), Alembic migrations (RS-59), deploy script with rollback (RS-66), deploy from the release workflow with an HTTPS smoke test (RS-67) | Done; the automatic deploy turns on once the `production` environment exists |
 | B11 | Public demo: nightly backups and purge on timers, restore rehearsal script, data policy (RS-68) | Done; first rehearsal recorded on 2026-10-21 |
 | B12 | Next.js client at `/` and API under `/api`; vanilla and Streamlit clients retired | Done (2.0) |
 | B13 | Quality gauntlet and refactors | In progress |
-| B14 | Guided capture: start from the common processes of a sector, or let the AI draft one from a description, with guardrails for the public demo (RS-95 to RS-101) | Planned |
+| B14 | Guided capture: start from the common processes of a sector, or let the AI draft one from a description, with guardrails for the public demo (RS-95 to RS-101) | In progress: the template catalog (RS-95) is done |
 
 Requirements and acceptance criteria: [docs/requirements.toml](docs/requirements.toml). Scope and non-goals: [PDR 001](docs/pdr/001-mvp-scope.md). Product Goal and roles: [PDR 002](docs/pdr/002-portfolio-product-goal-and-roles.md). Contributing: [CONTRIBUTING](CONTRIBUTING.md).
 

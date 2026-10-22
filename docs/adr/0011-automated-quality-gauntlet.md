@@ -1,6 +1,6 @@
 # ADR 0011: Automated quality gauntlet
 
-**Status:** proposed · 2026-10-15 · amends ADR 0006 (coverage minimum)
+**Status:** accepted · 2026-10-22 (proposed 2026-10-15) · amends ADR 0006 (coverage minimum)
 
 ## Context
 
