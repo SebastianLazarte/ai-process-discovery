@@ -1687,3 +1687,34 @@ then = "the form warns that the text goes to an AI provider, must not hold real 
 given = "process_drafts_enabled"
 when = "the public demo turns it on"
 then = "RS-100 and this item are already merged"
+
+[[requirement]]
+id = "RS-102"
+ru = "RU-12"
+block = "B13"
+area = "infra"
+kind = "enabler"
+title = "Writing style and AI-credit rules enforced by checks"
+points = 2
+priority = "should"
+rank = 39
+
+[[requirement.criteria]]
+given = "a commit message that credits Claude (co-author trailer or generated-with footer)"
+when = "it is committed with the hooks installed"
+then = "the commit is rejected and the offending line is named"
+
+[[requirement.criteria]]
+given = "a pull request whose body or any commit credits Claude"
+when = "CI runs"
+then = "the pr-title check fails and names where the credit is"
+
+[[requirement.criteria]]
+given = "a release-please or Dependabot pull request"
+when = "CI runs"
+then = "the pr-title check passes"
+
+[[requirement.criteria]]
+given = "an em dash in a Markdown or TOML file other than frontend/AGENTS.md"
+when = "pre-commit or the quality job runs"
+then = "it fails and names the file and line"
