@@ -12,28 +12,29 @@ Stable reference for the whole repo. Code changes read from here; this folder ch
 
 ## Decision index
 
-| Doc | Decision | Status |
-|---|---|---|
-| PDR 001 | MVP scope; "no hosted deployment" amended by ADR 0008 | accepted; target user amended by PDR 002 |
-| PDR 002 | Product Goal (portfolio demo), roles and Scrum backlog | accepted |
-| ADR 0001 | Python computes every number, the LLM only interprets; authority order | accepted |
-| ADR 0002 | SQLite locally, PostgreSQL in CI, `ExactDecimal`, no migrations yet | accepted; migrations amended by ADR 0008 (Alembic from RS-59) |
-| ADR 0003 | Domain, contracts and persistence are separate models | accepted |
-| ADR 0004 | `LLMProvider` protocol, fake by default, Anthropic first, versioned prompt | accepted |
-| ADR 0005 | Streamlit as a REST client | replaced by ADR 0007 from 1.2.0; retired in 2.0.0, Streamlit removed (RS-80) |
-| ADR 0006 | GitHub Flow, required checks, release-please, release authorship | accepted; required checks amended by ADR 0009, supply chain by ADR 0010, coverage minimum by ADR 0011 |
-| ADR 0007 | Vanilla web client served by FastAPI | replaced by ADR 0009 from 2.0.0; `web/` removed (RS-80) |
-| ADR 0008 | Public demo on the maintainer's VPS (block B11, RS-59 to RS-68) | accepted; layout amended by ADR 0009 |
-| ADR 0009 | Next.js frontend as a separate service, API under `/api` (block B12, RS-69 to RS-80; RS-91 to RS-94 split from RS-74 to RS-76) | accepted; dependencies amended by ADR 0013, migration and rollback by ADR 0016 |
-| ADR 0010 | Dependency updates: grouped minor and patch after a cooldown, majors planned, Python version fixed | accepted |
-| ADR 0011 | Automated quality gauntlet: mutation testing on the domain, property-based tests, complexity limits, coverage 95 % | proposed; completed by ADR 0012 |
-| ADR 0012 | Test quality standard: ISO/IEC/IEEE 29119-4 techniques, ISO/IEC 25010 evidence map, marked requirement traceability, LLM eval dataset with task success rate and cost | accepted |
-| ADR 0013 | Design system: tokens in CSS as source of truth, light and dark by system setting with a cookie toggle, WCAG 2.2 AA, Penpot and Claude Design as free tools | proposed; navigation and themes amended by ADR 0014 |
-| ADR 0014 | Keep the look of the vanilla client: its sidebar and its exact dark palette as tokens, light theme later | accepted |
-| ADR 0015 | The parity screens (RS-74, RS-91, RS-75, RS-92, RS-76, RS-93, RS-94) take `web/` and their criteria as spec, with no wireframes | accepted |
-| ADR 0016 | Next.js at `/` from 2.0.0 with no public `/app/`, `/ui/` answers 301, one version per service on the server, change through working states | accepted |
+| Doc | Decision | Status | In the code |
+|---|---|---|---|
+| PDR 001 | MVP scope; "no hosted deployment" amended by ADR 0008 | accepted; target user amended by PDR 002 | Built: the whole workflow runs with the fake provider and no key |
+| PDR 002 | Product Goal (portfolio demo), roles and Scrum backlog | accepted | Built: the demo is live on 2.0.0; the backlog follows the format |
+| ADR 0001 | Python computes every number, the LLM only interprets; authority order | accepted | Built |
+| ADR 0002 | SQLite locally, PostgreSQL in CI, `ExactDecimal`, no migrations yet | accepted; migrations amended by ADR 0008 (Alembic from RS-59) | Built |
+| ADR 0003 | Domain, contracts and persistence are separate models | accepted | Built; enforced by `tests/unit/test_boundaries.py` |
+| ADR 0004 | `LLMProvider` protocol, fake by default, Anthropic first, versioned prompt | accepted | Built |
+| ADR 0005 | Streamlit as a REST client | replaced by ADR 0007 from 1.2.0; retired in 2.0.0, Streamlit removed (RS-80) | Removed in 2.0.0 |
+| ADR 0006 | GitHub Flow, required checks, release-please, release authorship | accepted; required checks amended by ADR 0009, supply chain by ADR 0010, coverage minimum by ADR 0011 | Built, except the approval of the `production` environment, which does not exist yet (see ADR 0008) |
+| ADR 0007 | Vanilla web client served by FastAPI | replaced by ADR 0009 from 2.0.0; `web/` removed (RS-80) | Removed in 2.0.0; in git history at tag `v1.5.0` |
+| ADR 0008 | Public demo on the maintainer's VPS (block B11, RS-59 to RS-68) | accepted; layout amended by ADR 0009 | Built and live. The `deploy` job of RS-67 is built but inactive until the `production` environment, its secrets and `DEPLOY_ENABLED` exist; releases deploy by hand with `deploy.sh` |
+| ADR 0009 | Next.js frontend as a separate service, API under `/api` (block B12, RS-69 to RS-80; RS-91 to RS-94 split from RS-74 to RS-76) | accepted; dependencies amended by ADR 0013, migration and rollback by ADR 0016 | Built (2.0.0) |
+| ADR 0010 | Dependency updates: grouped minor and patch after a cooldown, majors planned, Python version fixed | accepted | Built (`.github/dependabot.yml`) |
+| ADR 0011 | Automated quality gauntlet: mutation testing on the domain, property-based tests, complexity limits, coverage 95 % | accepted 2026-10-22 (proposed 2026-10-15); completed by ADR 0012 | Built; the refactors guided by surviving mutants (RS-83 to RS-88) are open |
+| ADR 0012 | Test quality standard: ISO/IEC/IEEE 29119-4 techniques, ISO/IEC 25010 evidence map, marked requirement traceability, LLM eval dataset with task success rate and cost | accepted | Not built yet: no `req` marker, traceability matrix or LLM eval dataset |
+| ADR 0013 | Design system: tokens in CSS as source of truth, light and dark by system setting with a cookie toggle, WCAG 2.2 AA, Penpot and Claude Design as free tools | accepted 2026-10-22 (proposed 2026-10-16); navigation and themes amended by ADR 0014, design process by ADR 0015 | Partly built: `tokens.css`, Tailwind v4, Inter, jsx-a11y and axe in e2e. Not yet: the light theme with its cookie toggle, and the per-screen design process, which applies to new screens such as those of B14 |
+| ADR 0014 | Keep the look of the vanilla client: its sidebar and its exact dark palette as tokens, light theme later | accepted | Built; the light theme is later work |
+| ADR 0015 | The parity screens (RS-74, RS-91, RS-75, RS-92, RS-76, RS-93, RS-94) take `web/` and their criteria as spec, with no wireframes | accepted | Built (2.0.0) |
+| ADR 0016 | Next.js at `/` from 2.0.0 with no public `/app/`, `/ui/` answers 301, one version per service on the server, change through working states | accepted | Built; the server switched S0 to S2 on 2026-10-21. Root `/docs`, `/redoc` and `/openapi.json` answer 301 to `/api/...` |
+| ADR 0017 | Accepted risk of AI-drafted processes (B14) | planned: written with RS-100 | Not written yet; drafts stay off (`process_drafts_enabled=false`) until RS-100 and RS-101 merge |
 
-Adding or changing a decision updates this index, and the routing table in the root `CLAUDE.md` when it opens a new area.
+Adding or changing a decision updates this index, and the routing table in the root `CLAUDE.md` when it opens a new area. "In the code" says what is built today, so an accepted decision that is not built never reads as done.
 
 ## When a record is needed
 
