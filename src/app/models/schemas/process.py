@@ -25,25 +25,30 @@ class _Schema(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
-class StepFields(_Schema):
+class StepTraits(_Schema):
+    """What a step is, without a single number. Process templates carry only these (RS-95)."""
+
     name: str = Field(min_length=1, max_length=200)
     description: LongText = ""
     responsible_role: str = Field(default="", max_length=200)
     tools: TextList = Field(default_factory=list)
     input_description: LongText = ""
     output_description: LongText = ""
-    minutes_per_execution: Decimal = Field(ge=0, examples=["4.0"])
-    occurrence_rate: Decimal = Field(default=Decimal(1), ge=0, le=1)
     repetitiveness: Level = Level.UNKNOWN
     rule_clarity: Level = Level.UNKNOWN
     input_type: InputType = InputType.UNKNOWN
-    exception_rate: Decimal | None = Field(default=None, ge=0, le=1)
     integration_readiness: IntegrationReadiness = IntegrationReadiness.UNKNOWN
     requires_human_judgement: bool = False
     requires_human_approval: bool = False
     handles_sensitive_data: bool = False
     criticality: Level = Level.UNKNOWN
     problems: TextList = Field(default_factory=list)
+
+
+class StepFields(StepTraits):
+    minutes_per_execution: Decimal = Field(ge=0, examples=["4.0"])
+    occurrence_rate: Decimal = Field(default=Decimal(1), ge=0, le=1)
+    exception_rate: Decimal | None = Field(default=None, ge=0, le=1)
 
 
 class StepCreate(StepFields):
