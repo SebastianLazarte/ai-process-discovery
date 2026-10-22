@@ -253,6 +253,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/process-templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Process Templates
+         * @description Common processes grouped by sector, with qualitative step traits and no numbers.
+         */
+        get: operations["list_process_templates_process_templates_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -650,6 +670,20 @@ export interface components {
              */
             updated_at: string;
         };
+        /** ProcessTemplate */
+        ProcessTemplate: {
+            /** Slug */
+            slug: string;
+            /** Name */
+            name: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Steps */
+            steps: components["schemas"]["StepTraits"][];
+        };
         /** ProcessUpdate */
         ProcessUpdate: {
             /** Name */
@@ -699,6 +733,15 @@ export interface components {
             name: string;
             /** Points */
             points: number;
+        };
+        /** SectorTemplates */
+        SectorTemplates: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** Templates */
+            templates: components["schemas"]["ProcessTemplate"][];
         };
         /** StepAssessmentOut */
         StepAssessmentOut: {
@@ -761,24 +804,12 @@ export interface components {
              * @default
              */
             output_description: string;
-            /**
-             * Minutes Per Execution
-             * @example 4.0
-             */
-            minutes_per_execution: number | string;
-            /**
-             * Occurrence Rate
-             * @default 1
-             */
-            occurrence_rate: number | string;
             /** @default UNKNOWN */
             repetitiveness: components["schemas"]["Level"];
             /** @default UNKNOWN */
             rule_clarity: components["schemas"]["Level"];
             /** @default UNKNOWN */
             input_type: components["schemas"]["InputType"];
-            /** Exception Rate */
-            exception_rate?: number | string | null;
             /** @default UNKNOWN */
             integration_readiness: components["schemas"]["IntegrationReadiness"];
             /**
@@ -800,6 +831,18 @@ export interface components {
             criticality: components["schemas"]["Level"];
             /** Problems */
             problems?: string[];
+            /**
+             * Minutes Per Execution
+             * @example 4.0
+             */
+            minutes_per_execution: number | string;
+            /**
+             * Occurrence Rate
+             * @default 1
+             */
+            occurrence_rate: number | string;
+            /** Exception Rate */
+            exception_rate?: number | string | null;
             /**
              * Position
              * @description Insert at this position. Appends when omitted.
@@ -832,24 +875,12 @@ export interface components {
              * @default
              */
             output_description: string;
-            /**
-             * Minutes Per Execution
-             * @example 4.0
-             */
-            minutes_per_execution: number | string;
-            /**
-             * Occurrence Rate
-             * @default 1
-             */
-            occurrence_rate: number | string;
             /** @default UNKNOWN */
             repetitiveness: components["schemas"]["Level"];
             /** @default UNKNOWN */
             rule_clarity: components["schemas"]["Level"];
             /** @default UNKNOWN */
             input_type: components["schemas"]["InputType"];
-            /** Exception Rate */
-            exception_rate?: number | string | null;
             /** @default UNKNOWN */
             integration_readiness: components["schemas"]["IntegrationReadiness"];
             /**
@@ -871,6 +902,18 @@ export interface components {
             criticality: components["schemas"]["Level"];
             /** Problems */
             problems?: string[];
+            /**
+             * Minutes Per Execution
+             * @example 4.0
+             */
+            minutes_per_execution: number | string;
+            /**
+             * Occurrence Rate
+             * @default 1
+             */
+            occurrence_rate: number | string;
+            /** Exception Rate */
+            exception_rate?: number | string | null;
         };
         /** StepOrder */
         StepOrder: {
@@ -906,24 +949,12 @@ export interface components {
              * @default
              */
             output_description: string;
-            /**
-             * Minutes Per Execution
-             * @example 4.0
-             */
-            minutes_per_execution: string;
-            /**
-             * Occurrence Rate
-             * @default 1
-             */
-            occurrence_rate: string;
             /** @default UNKNOWN */
             repetitiveness: components["schemas"]["Level"];
             /** @default UNKNOWN */
             rule_clarity: components["schemas"]["Level"];
             /** @default UNKNOWN */
             input_type: components["schemas"]["InputType"];
-            /** Exception Rate */
-            exception_rate?: string | null;
             /** @default UNKNOWN */
             integration_readiness: components["schemas"]["IntegrationReadiness"];
             /**
@@ -946,12 +977,81 @@ export interface components {
             /** Problems */
             problems?: string[];
             /**
+             * Minutes Per Execution
+             * @example 4.0
+             */
+            minutes_per_execution: string;
+            /**
+             * Occurrence Rate
+             * @default 1
+             */
+            occurrence_rate: string;
+            /** Exception Rate */
+            exception_rate?: string | null;
+            /**
              * Id
              * Format: uuid
              */
             id: string;
             /** Position */
             position: number;
+        };
+        /**
+         * StepTraits
+         * @description What a step is, without a single number. Process templates carry only these (RS-95).
+         */
+        StepTraits: {
+            /** Name */
+            name: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /**
+             * Responsible Role
+             * @default
+             */
+            responsible_role: string;
+            /** Tools */
+            tools?: string[];
+            /**
+             * Input Description
+             * @default
+             */
+            input_description: string;
+            /**
+             * Output Description
+             * @default
+             */
+            output_description: string;
+            /** @default UNKNOWN */
+            repetitiveness: components["schemas"]["Level"];
+            /** @default UNKNOWN */
+            rule_clarity: components["schemas"]["Level"];
+            /** @default UNKNOWN */
+            input_type: components["schemas"]["InputType"];
+            /** @default UNKNOWN */
+            integration_readiness: components["schemas"]["IntegrationReadiness"];
+            /**
+             * Requires Human Judgement
+             * @default false
+             */
+            requires_human_judgement: boolean;
+            /**
+             * Requires Human Approval
+             * @default false
+             */
+            requires_human_approval: boolean;
+            /**
+             * Handles Sensitive Data
+             * @default false
+             */
+            handles_sensitive_data: boolean;
+            /** @default UNKNOWN */
+            criticality: components["schemas"]["Level"];
+            /** Problems */
+            problems?: string[];
         };
         /** StepUpdate */
         StepUpdate: {
@@ -1591,6 +1691,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_process_templates_process_templates_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SectorTemplates"][];
                 };
             };
         };

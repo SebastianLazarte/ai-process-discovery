@@ -1572,6 +1572,16 @@ given = "process_drafts_enabled false, which is the default"
 when = "the endpoint is called"
 then = "it returns 404 and Other opens the manual form"
 
+[[requirement.criteria]]
+given = "the draft settings"
+when = "no draft model is set"
+then = "drafts use the same model as the analysis"
+
+[[requirement.criteria]]
+given = "a description written in another language"
+when = "a draft is returned"
+then = "its text follows that language and every enum value stays the same"
+
 [[requirement]]
 id = "RS-99"
 ru = "RU-14"
@@ -1632,6 +1642,21 @@ given = "any draft request"
 when = "it is logged"
 then = "the log has counts and status, never the description"
 
+[[requirement.criteria]]
+given = "a description that names work done by an organisation but is ambiguous"
+when = "a draft is requested"
+then = "a draft is returned"
+
+[[requirement.criteria]]
+given = "a description with an email address"
+when = "it is sent to the provider"
+then = "the address is masked"
+
+[[requirement.criteria]]
+given = "ADR 0017"
+when = "it is read"
+then = "it records that the classification stops honest misuse and not an attacker, and why the public risk is accepted"
+
 [[requirement]]
 id = "RS-101"
 ru = "RU-14"
@@ -1639,24 +1664,24 @@ block = "B14"
 area = "infra"
 kind = "enabler"
 title = "Cost and abuse guardrails for AI drafts in the public demo"
-points = 3
+points = 5
 priority = "must"
 rank = 38
 
 [[requirement.criteria]]
-given = "today's draft limit reached"
-when = "another draft is requested"
+given = "LLM_DAILY_DRAFT_LIMIT, counted apart from the analysis quota without storing any text"
+when = "it is reached"
 then = "the provider is not called and the client falls back to the manual form"
 
 [[requirement.criteria]]
 given = "production Nginx"
-when = "one client sends drafts faster than the limit"
+when = "one client sends more than 3 drafts a minute"
 then = "it gets 429"
 
 [[requirement.criteria]]
 given = "the public demo"
 when = "someone opens Other"
-then = "the form warns that the text goes to an AI provider and must not hold real or personal data"
+then = "the form warns that the text goes to an AI provider, must not hold real or personal data, and that only email addresses are masked"
 
 [[requirement.criteria]]
 given = "process_drafts_enabled"

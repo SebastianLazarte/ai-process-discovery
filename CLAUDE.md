@@ -13,7 +13,7 @@ Analyses a business process and recommends which steps to automate, how, and wit
 ## Architecture
 
 - `api/` routes -> `services/` -> `domain/` (pure rules) + `llm/` (provider) + `repositories/` -> `models/persistence/`
-- `core/`: settings, database, errors, logging. `demo/`: sample processes as JSON.
+- `core/`: settings, database, errors, logging. `demo/`: sample processes as JSON. `catalog/`: process templates by sector as JSON, without numbers.
 - One concept, three models: domain dataclass, Pydantic contract, ORM row. Repositories map rows back with `to_domain`.
 - Authority order: system facts > user-confirmed facts > LLM suggestions.
 

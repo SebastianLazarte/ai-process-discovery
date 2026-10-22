@@ -8,7 +8,7 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse, RedirectResponse
 
 from app import __version__
-from app.api.routes import analyses, processes, system
+from app.api.routes import analyses, processes, system, templates
 from app.core.config import Settings, get_settings
 from app.core.db import build_engine, init_db, session_factory
 from app.core.errors import AppError
@@ -72,7 +72,7 @@ def create_app(settings: Settings | None = None, provider: LLMProvider | None = 
         )
 
     api = APIRouter()
-    for router in (system.router, processes.router, analyses.router):
+    for router in (system.router, processes.router, analyses.router, templates.router):
         api.include_router(router)
     app.include_router(api, prefix=API_PREFIX, include_in_schema=False)
     app.openapi = _schema_relative_to_api(app, api)  # type: ignore[method-assign]

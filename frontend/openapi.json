@@ -794,6 +794,32 @@
           }
         }
       }
+    },
+    "/process-templates": {
+      "get": {
+        "tags": [
+          "templates"
+        ],
+        "summary": "List Process Templates",
+        "description": "Common processes grouped by sector, with qualitative step traits and no numbers.",
+        "operationId": "list_process_templates_process_templates_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SectorTemplates"
+                  },
+                  "type": "array",
+                  "title": "Response List Process Templates Process Templates Get"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1887,6 +1913,46 @@
         ],
         "title": "ProcessSummary"
       },
+      "ProcessTemplate": {
+        "properties": {
+          "slug": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+            "title": "Slug"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Description",
+            "default": ""
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/StepTraits"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Steps"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "slug",
+          "name",
+          "steps"
+        ],
+        "title": "ProcessTemplate"
+      },
       "ProcessUpdate": {
         "properties": {
           "name": {
@@ -2056,6 +2122,39 @@
         ],
         "title": "ScorePenaltyOut"
       },
+      "SectorTemplates": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "templates": {
+            "items": {
+              "$ref": "#/components/schemas/ProcessTemplate"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Templates"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "templates"
+        ],
+        "title": "SectorTemplates"
+      },
       "StepAssessmentOut": {
         "properties": {
           "step_id": {
@@ -2219,37 +2318,6 @@
             "title": "Output Description",
             "default": ""
           },
-          "minutes_per_execution": {
-            "anyOf": [
-              {
-                "type": "number",
-                "minimum": 0.0
-              },
-              {
-                "type": "string",
-                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
-              }
-            ],
-            "title": "Minutes Per Execution",
-            "examples": [
-              "4.0"
-            ]
-          },
-          "occurrence_rate": {
-            "anyOf": [
-              {
-                "type": "number",
-                "maximum": 1.0,
-                "minimum": 0.0
-              },
-              {
-                "type": "string",
-                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
-              }
-            ],
-            "title": "Occurrence Rate",
-            "default": "1"
-          },
           "repetitiveness": {
             "$ref": "#/components/schemas/Level",
             "default": "UNKNOWN"
@@ -2261,23 +2329,6 @@
           "input_type": {
             "$ref": "#/components/schemas/InputType",
             "default": "UNKNOWN"
-          },
-          "exception_rate": {
-            "anyOf": [
-              {
-                "type": "number",
-                "maximum": 1.0,
-                "minimum": 0.0
-              },
-              {
-                "type": "string",
-                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Exception Rate"
           },
           "integration_readiness": {
             "$ref": "#/components/schemas/IntegrationReadiness",
@@ -2310,6 +2361,54 @@
             "type": "array",
             "maxItems": 20,
             "title": "Problems"
+          },
+          "minutes_per_execution": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              }
+            ],
+            "title": "Minutes Per Execution",
+            "examples": [
+              "4.0"
+            ]
+          },
+          "occurrence_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              }
+            ],
+            "title": "Occurrence Rate",
+            "default": "1"
+          },
+          "exception_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exception Rate"
           },
           "position": {
             "anyOf": [
@@ -2374,37 +2473,6 @@
             "title": "Output Description",
             "default": ""
           },
-          "minutes_per_execution": {
-            "anyOf": [
-              {
-                "type": "number",
-                "minimum": 0.0
-              },
-              {
-                "type": "string",
-                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
-              }
-            ],
-            "title": "Minutes Per Execution",
-            "examples": [
-              "4.0"
-            ]
-          },
-          "occurrence_rate": {
-            "anyOf": [
-              {
-                "type": "number",
-                "maximum": 1.0,
-                "minimum": 0.0
-              },
-              {
-                "type": "string",
-                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
-              }
-            ],
-            "title": "Occurrence Rate",
-            "default": "1"
-          },
           "repetitiveness": {
             "$ref": "#/components/schemas/Level",
             "default": "UNKNOWN"
@@ -2416,23 +2484,6 @@
           "input_type": {
             "$ref": "#/components/schemas/InputType",
             "default": "UNKNOWN"
-          },
-          "exception_rate": {
-            "anyOf": [
-              {
-                "type": "number",
-                "maximum": 1.0,
-                "minimum": 0.0
-              },
-              {
-                "type": "string",
-                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Exception Rate"
           },
           "integration_readiness": {
             "$ref": "#/components/schemas/IntegrationReadiness",
@@ -2465,6 +2516,54 @@
             "type": "array",
             "maxItems": 20,
             "title": "Problems"
+          },
+          "minutes_per_execution": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              }
+            ],
+            "title": "Minutes Per Execution",
+            "examples": [
+              "4.0"
+            ]
+          },
+          "occurrence_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              }
+            ],
+            "title": "Occurrence Rate",
+            "default": "1"
+          },
+          "exception_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exception Rate"
           }
         },
         "additionalProperties": false,
@@ -2536,20 +2635,6 @@
             "title": "Output Description",
             "default": ""
           },
-          "minutes_per_execution": {
-            "type": "string",
-            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-            "title": "Minutes Per Execution",
-            "examples": [
-              "4.0"
-            ]
-          },
-          "occurrence_rate": {
-            "type": "string",
-            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-            "title": "Occurrence Rate",
-            "default": "1"
-          },
           "repetitiveness": {
             "$ref": "#/components/schemas/Level",
             "default": "UNKNOWN"
@@ -2561,18 +2646,6 @@
           "input_type": {
             "$ref": "#/components/schemas/InputType",
             "default": "UNKNOWN"
-          },
-          "exception_rate": {
-            "anyOf": [
-              {
-                "type": "string",
-                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Exception Rate"
           },
           "integration_readiness": {
             "$ref": "#/components/schemas/IntegrationReadiness",
@@ -2606,6 +2679,32 @@
             "maxItems": 20,
             "title": "Problems"
           },
+          "minutes_per_execution": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Minutes Per Execution",
+            "examples": [
+              "4.0"
+            ]
+          },
+          "occurrence_rate": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Occurrence Rate",
+            "default": "1"
+          },
+          "exception_rate": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exception Rate"
+          },
           "id": {
             "type": "string",
             "format": "uuid",
@@ -2625,6 +2724,100 @@
           "position"
         ],
         "title": "StepRead"
+      },
+      "StepTraits": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Description",
+            "default": ""
+          },
+          "responsible_role": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Responsible Role",
+            "default": ""
+          },
+          "tools": {
+            "items": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Tools"
+          },
+          "input_description": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Input Description",
+            "default": ""
+          },
+          "output_description": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Output Description",
+            "default": ""
+          },
+          "repetitiveness": {
+            "$ref": "#/components/schemas/Level",
+            "default": "UNKNOWN"
+          },
+          "rule_clarity": {
+            "$ref": "#/components/schemas/Level",
+            "default": "UNKNOWN"
+          },
+          "input_type": {
+            "$ref": "#/components/schemas/InputType",
+            "default": "UNKNOWN"
+          },
+          "integration_readiness": {
+            "$ref": "#/components/schemas/IntegrationReadiness",
+            "default": "UNKNOWN"
+          },
+          "requires_human_judgement": {
+            "type": "boolean",
+            "title": "Requires Human Judgement",
+            "default": false
+          },
+          "requires_human_approval": {
+            "type": "boolean",
+            "title": "Requires Human Approval",
+            "default": false
+          },
+          "handles_sensitive_data": {
+            "type": "boolean",
+            "title": "Handles Sensitive Data",
+            "default": false
+          },
+          "criticality": {
+            "$ref": "#/components/schemas/Level",
+            "default": "UNKNOWN"
+          },
+          "problems": {
+            "items": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Problems"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "StepTraits",
+        "description": "What a step is, without a single number. Process templates carry only these (RS-95)."
       },
       "StepUpdate": {
         "properties": {
