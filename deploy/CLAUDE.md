@@ -10,7 +10,7 @@ Production stack of the public demo on the maintainer's VPS: `compose.prod.yaml`
 
 ## Rules
 
-- Placeholders only (`<domain>`, `<vps>`, `apd.example.com`). Real hostnames, IP addresses and secrets never enter the repo.
+- Placeholders only (`<domain>`, `<vps>`, `apd.example.com`). Real hostnames, IP addresses and secrets never enter the repo. The one exception is the public URL of the live demo, which `README.md` links; nothing under `deploy/` names it (`tests/unit/test_backups.py` checks both).
 - The API (`127.0.0.1:8100`) and the web client (`127.0.0.1:8101`) publish on `127.0.0.1` only. Docker writes its own iptables rules, so a port on `0.0.0.0` would bypass UFW.
 - PostgreSQL has no published port and lives on the internal network.
 - The n8n and website projects on the same host are never touched. The demo runs as its own system user, `apd`; the website's `deploy` user is never reused.

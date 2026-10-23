@@ -214,12 +214,35 @@ def test_a_failed_dump_deletes_nothing(host: Host) -> None:
 # Criterion 3: the README points to the live demo and SECURITY.md describes its data policy.
 
 
-def test_the_readme_points_to_the_live_demo() -> None:
+def _demo_host() -> str:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     try_it = readme.split("## Try it", 1)[1].split("\n## ", 1)[0]
-    assert "**Live demo:**" in try_it
-    assert "Website" in try_it
-    assert "coming with" not in try_it
+    match = re.search(r"\]\(https://([a-z0-9.-]+)/?\)", try_it)
+    assert match, "the Try it section links the live demo at its public URL"
+    return match.group(1)
+
+
+def test_the_readme_links_the_live_demo() -> None:
+    host = _demo_host()
+    assert "." in host and "example" not in host
+
+
+@pytest.mark.skipif(shutil.which("git") is None, reason="lists the tracked files with git")
+def test_the_demo_host_appears_only_in_the_readme() -> None:
+    # The one exception to "no real host names in the repo" (CLAUDE.md): the public URL of
+    # the demo, in README.md only. Server addresses and other hosts stay out entirely.
+    host = _demo_host()
+    tracked = subprocess.run(
+        ["git", "ls-files"], cwd=ROOT, capture_output=True, text=True, check=True
+    ).stdout.splitlines()
+    named = [
+        name
+        for name in tracked
+        if name != "README.md"
+        and (ROOT / name).is_file()
+        and host in (ROOT / name).read_text(encoding="utf-8", errors="ignore")
+    ]
+    assert named == []
 
 
 def test_security_describes_the_demo_data_policy() -> None:

@@ -82,4 +82,4 @@ ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locall
 - Adding a dependency or reversing a decision without an ADR.
 - Importing `anthropic` or `fastapi` from `services/`.
 - `float` for money or hours.
-- Real hostnames, IP addresses or secrets anywhere in the repo.
+- Real hostnames, IP addresses or secrets anywhere in the repo. The one exception is the public URL of the live demo, linked from `README.md` only.

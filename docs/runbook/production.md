@@ -2,7 +2,7 @@
 
 **Status:** in use. Block B11 (RS-59 to RS-68) is complete: the timers run on the host and the first restore rehearsal is recorded under "Backups and restore". The switch to the 2.0.0 layout (RS-79) has its own section. Decision records: ADR 0008, ADR 0016.
 
-Placeholders: `<domain>` is the maintainer's domain, `<vps>` is the SSH host alias. Real hostnames, IP addresses and secrets never go into this repository.
+Placeholders: `<domain>` is the maintainer's domain, `<vps>` is the SSH host alias. Real hostnames, IP addresses and secrets never go into this repository; the one exception is the public URL of the live demo, linked from `README.md`.
 
 ## What runs where
 
