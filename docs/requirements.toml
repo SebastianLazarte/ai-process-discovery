@@ -739,7 +739,7 @@ then = "a new backup exists, backups older than 7 days are gone and expired proc
 [[requirement.criteria]]
 given = "a reader of the repository"
 when = "they open README and SECURITY.md"
-then = "README points to the live demo through the Website link of the repository page, without its domain, and SECURITY.md describes its data policy"
+then = "README links the live demo at its public URL, the only real host name allowed in the repository, and SECURITY.md describes its data policy"
 
 [[requirement]]
 id = "RS-69"

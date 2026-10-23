@@ -6,19 +6,67 @@
 
 Describe a business process step by step and get a quantified, explainable automation plan: which steps to automate, how, what it saves, and where a person must stay in control.
 
+**[Open the live demo](https://app.solempia.tech)** · [Two-minute tour](#a-two-minute-tour) · [Run locally](#run-from-source)
+
 **Code computes every number. The AI only interprets, and it can never remove a human control.**
+
+Maintained by [Sebastian Lazarte](https://github.com/SebastianLazarte). Python / FastAPI backend, Next.js / TypeScript frontend, PostgreSQL, Anthropic API, Docker and GitHub Actions.
+
+[Project development](#project-development) · [Try the product](#try-it) · [Engineering evidence](#for-engineers-where-to-look) · [Architecture](#architecture)
+
+## Project development
+
+I define the features I want this product to provide and develop it with substantial AI assistance, including proposals for architecture and implementation. My goal is to turn a process description into an assessment someone can inspect: the assumptions, calculations, recommendations and human controls should all be visible.
+
+### My approach to the architecture
+
+These are the design choices I adopt for this project. The linked records explain their implementation and trade-offs, including proposals developed with AI assistance.
+
+| Choice | Why I adopt it | Cost or limitation | Evidence |
+|---|---|---|---|
+| Keep business logic in one layered Python backend, with a separate Next.js client | I want calculations, rules and persistence to stay together, while the frontend has a clear HTTP contract | API and web still require separate builds, containers and health checks | [Layer boundaries](docs/adr/0003-separate-domain-contracts-persistence.md), [frontend service](docs/adr/0009-nextjs-frontend-as-separate-service.md) |
+| Calculate business metrics in Python and use the LLM for interpretation | I want every saving and score to be traceable to inputs and rules | Results depend on the quality of the assumptions and rules; repeatable calculations do not establish real customer savings | [Deterministic analysis](docs/adr/0001-deterministic-first-analysis.md) |
+| Keep the minimum human control outside the model's authority | I want a required approval to survive an AI recommendation | Some steps remain manual or require review, reducing the scope for automation | [Rules and reconciliation](src/app/domain/reconciliation.py) |
+| Put the LLM behind a provider interface and retain a deterministic fallback | I want the core assessment to remain available when the provider fails, and local development to work without API credentials | The fake provider checks application behaviour; it cannot establish the quality of real model recommendations | [Provider boundary](docs/adr/0004-provider-agnostic-llm-anthropic-first.md) |
+| Separate business objects, API contracts and database models | I want changes to storage or HTTP contracts to have a limited effect on the business rules | Some fields and mappings are repeated across layers | [Model separation](docs/adr/0003-separate-domain-contracts-persistence.md) |
+
+### How the design evolved
+
+| Situation | Adopted approach | Engineering consequence | Evidence |
+|---|---|---|---|
+| A proposed frontend migration would expose the old client alongside an incomplete new one | Keep one complete public experience and require the demo to remain usable during the transition | The revised plan introduced working intermediate states, separate deployed version tracking for API and web, and rollback to the previous working state | [Migration decision and alternatives](docs/adr/0016-nextjs-at-the-root-from-2-0-0.md) |
+| The first Next.js screens changed the established navigation and visual identity | Keep the familiar sidebar, direct access to processes and the existing visual style | The revised design retained the navigation, centralised colours in semantic tokens and deferred the light theme | [Design correction and trade-offs](docs/adr/0014-keep-the-vanilla-client-look.md) |
+
+These decisions have costs. Completing the new client before exposing it delays the migration. Keeping the sidebar reduces horizontal space. Deferring the light theme leaves a usability improvement for later. The records make those trade-offs explicit.
+
+<details>
+<summary><strong>Follow one decision from requirement to verification</strong></summary>
+
+**Requirement:** changing the frontend must preserve a usable public demo.
+
+**Rejected approach:** publish two clients at different URLs while one is still incomplete.
+
+**Revised design:** bring up the new web service first, change routing through a working intermediate state, then upgrade the API. A failed health check returns each service to its previous version. The sequence and its limits are documented in [ADR 0016](docs/adr/0016-nextjs-at-the-root-from-2-0-0.md).
+
+**Implementation to inspect:** [deployment script](deploy/deploy.sh), [shared routing configuration](deploy/nginx/apd-routes.conf) and [operations runbook](docs/runbook/production.md).
+
+**Checks to inspect:** [end-to-end route tests](frontend/e2e/retired-routes.spec.ts) check the legacy redirect and API route boundaries; the [HTTPS smoke test](deploy/smoke-test.sh) checks the public deployment. These checks cover specific behaviours. Their presence alone does not establish zero downtime under every failure scenario.
+
+</details>
+
+### Engineering evidence beyond the feature list
+
+- **Provider failure:** a simulated timeout must leave the deterministic assessment available. See `test_provider_failure_keeps_the_deterministic_analysis` in the [analysis API tests](tests/integration/api/test_analyses.py).
+- **Incorrect model output:** a simulated provider invents a saving, removes an approval and adds an unknown step. `test_llm_cannot_change_facts_or_remove_controls` checks that the metrics and required control stay unchanged and the unknown step is discarded.
+- **Architectural boundaries:** [import checks](tests/unit/test_boundaries.py) keep the business domain independent of FastAPI, SQLAlchemy and the LLM SDK.
+
+This is a personal engineering project with synthetic demo data. The repository provides implementation and verification evidence; it does not establish customer savings or enterprise-scale operating experience. [Workflow runs](https://github.com/SebastianLazarte/ai-process-discovery/actions) provide execution results separately from the test definitions.
 
 ## Try it
 
-**Live demo:** the Website link at the top of this repository's page, once the public demo is online. No sign-up, synthetic data, deleted every night ([data policy](SECURITY.md#public-demo-data)).
+**[Try AI Process Discovery in your browser](https://app.solempia.tech)**. No installation or sign-up required. Load a demo process and follow the [two-minute tour](#a-two-minute-tour) below.
 
-**On your machine** (Docker, no API key needed), from a clone of this repository:
-
-```bash
-docker compose up --build
-```
-
-Then open <http://localhost:8080/>. The API docs are at <http://localhost:8080/api/docs>.
+Use synthetic data only. Visitor-created data older than 24 hours is removed by a nightly purge ([data policy](SECURITY.md#public-demo-data)). To explore the code on your own machine, see [Run from source](#run-from-source).
 
 ## A two-minute tour
 
