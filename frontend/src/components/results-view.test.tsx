@@ -41,7 +41,7 @@ const KNOWN_IMPACT: AnalysisRead["business_impact"] = {
   roi_12_months: "1.5",
 };
 
-describe("Results", () => {
+describe("RS-92: Results", () => {
   it("shows the current state and four separate panels, and no combined score", async () => {
     show(analysisRead());
 

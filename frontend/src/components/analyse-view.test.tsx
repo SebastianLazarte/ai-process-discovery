@@ -55,7 +55,7 @@ const runButton = () => screen.getByRole("button", { name: "Run analysis" });
 const llmToggle = () =>
   screen.getByRole("checkbox", { name: /Enrich with the LLM/ }) as HTMLInputElement;
 
-describe("the sensitive-data confirmation", () => {
+describe("RS-75: the sensitive-data confirmation", () => {
   it("keeps Run analysis disabled with the LLM on until the notice is confirmed", async () => {
     api({ status: 201, body: analysisRead() });
     renderWithProviders(<AnalyseView id={PROCESS.id} />);

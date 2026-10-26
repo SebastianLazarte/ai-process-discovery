@@ -15,7 +15,7 @@ async function ruleIds(code: string, filePath: string): Promise<string[]> {
   return (result?.messages ?? []).filter((m) => m.severity === 2).map((m) => m.ruleId ?? "parse");
 }
 
-describe("fetch outside src/lib/api/", () => {
+describe("RS-70: fetch outside src/lib/api/", () => {
   const call = `export async function load() {
   return fetch("/api/processes");
 }

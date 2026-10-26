@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 
 from app.models.schemas.process import MAX_LIST_ITEMS, MAX_LONG_TEXT, MAX_SHORT_TEXT, MAX_STEPS
@@ -102,6 +103,7 @@ def test_validation_errors_are_explicit(client: TestClient) -> None:
     assert negative.status_code == 422
 
 
+@pytest.mark.req("RS-60", criterion=2)
 def test_size_limits_return_422_naming_the_field(client: TestClient) -> None:
     oversized = {
         "steps": process_payload(steps=[step_payload()] * (MAX_STEPS + 1)),
@@ -115,6 +117,7 @@ def test_size_limits_return_422_naming_the_field(client: TestClient) -> None:
         assert field in response.json()["detail"][0]["loc"], field
 
 
+@pytest.mark.req("RS-60", criterion=1)
 def test_adding_a_step_beyond_the_limit_returns_422(client: TestClient) -> None:
     full = _create(client, steps=[step_payload()] * MAX_STEPS)
     response = client.post(f"/api/processes/{full['id']}/steps", json=step_payload())

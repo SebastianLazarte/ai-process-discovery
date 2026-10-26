@@ -70,7 +70,7 @@ describe("the Steps tab", () => {
 });
 
 describe("the step list", () => {
-  it("shows each step's position, name, minutes and occurrence rate, in order (RS-74, criterion 1)", async () => {
+  it("RS-74.1: shows each step's position, name, minutes and occurrence rate, in order", async () => {
     const steps = [
       step(),
       step({
@@ -201,7 +201,7 @@ const frame = {
   "GET /processes": { body: [] },
 };
 
-describe("reordering steps (RS-91)", () => {
+describe("RS-91: reordering steps", () => {
   it("moves the third step up from the keyboard, saves the order and keeps focus on it (criterion 1)", async () => {
     let sent: unknown;
     fakeApi({
@@ -309,7 +309,7 @@ describe("reordering steps (RS-91)", () => {
   });
 });
 
-describe("deleting a step (RS-91)", () => {
+describe("RS-91: deleting a step", () => {
   it("names the step in a confirmation, then updates the list and the version (criterion 2)", async () => {
     const calls = fakeApi({
       ...frame,

@@ -1,5 +1,6 @@
 """Deployment metadata for the client (RS-62)."""
 
+import pytest
 from fastapi.testclient import TestClient
 
 from app import __version__
@@ -17,9 +18,11 @@ def _meta(database_url: str, **overrides: object) -> dict[str, object]:
     return body
 
 
+@pytest.mark.req("RS-62", criterion=1)
 def test_meta_reports_version_and_a_private_deployment_by_default(database_url: str) -> None:
     assert _meta(database_url) == {"version": __version__, "public_demo": False}
 
 
+@pytest.mark.req("RS-62", criterion=1)
 def test_meta_reports_a_public_demo(database_url: str) -> None:
     assert _meta(database_url, public_demo=True)["public_demo"] is True

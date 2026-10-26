@@ -44,6 +44,7 @@ pythonpath = ["src", "."]
 addopts = "-ra --strict-markers -m 'not llm'"
 markers = [
     "llm: calls a real LLM provider; run manually with `pytest -m llm`",
+    "req(id, criterion=None): the backlog item, and criterion, that the test proves (ADR 0012, RS-103)",
 ]
 
 [tool.coverage.run]

@@ -18,7 +18,7 @@ const openapi = JSON.parse(
   readFileSync(join(import.meta.dirname, "..", "..", "..", "openapi.json"), "utf-8"),
 ) as { components: { schemas: Record<string, { enum?: string[] }> } };
 
-describe("option lists", () => {
+describe("RS-74.2: option lists", () => {
   it.each([
     ["Level", LEVELS],
     ["InputType", INPUT_TYPES],
