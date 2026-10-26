@@ -13,11 +13,14 @@ def _operations(client: TestClient) -> list[tuple[str, str]]:
     return [(method.upper(), path) for path, item in paths.items() for method in item]
 
 
+@pytest.mark.req("RS-69")
+@pytest.mark.req("RS-80", criterion=2)
 def test_processes_answer_under_api_and_not_at_the_root(client: TestClient) -> None:
     assert client.get("/api/processes").status_code == 200
     assert client.get("/processes").status_code == 404
 
 
+@pytest.mark.req("RS-80", criterion=2)
 def test_no_documented_operation_answers_at_the_root(client: TestClient) -> None:
     # Unknown ids and empty bodies, so each call fails the same safe way and changes nothing.
     operations = _operations(client)
@@ -28,21 +31,25 @@ def test_no_documented_operation_answers_at_the_root(client: TestClient) -> None
         assert client.request(method, path, json=body).status_code in (404, 405), (method, path)
 
 
+@pytest.mark.req("RS-80", criterion=2)
 def test_health_answers_only_under_api(client: TestClient) -> None:
     assert client.get("/api/health").status_code == 200
     assert client.get("/health").status_code == 404
 
 
+@pytest.mark.req("RS-80", criterion=1)
 @pytest.mark.parametrize("path", ["/", "/ui", "/ui/", "/ui/app.js"])
 def test_the_api_no_longer_serves_a_client(client: TestClient, path: str) -> None:
     assert client.get(path, follow_redirects=False).status_code == 404
 
 
+@pytest.mark.req("RS-69")
 @pytest.mark.parametrize("path", ["/api/docs", "/api/redoc", "/api/openapi.json"])
 def test_docs_and_contract_are_served_under_api(client: TestClient, path: str) -> None:
     assert client.get(path).status_code == 200
 
 
+@pytest.mark.req("RS-80")
 @pytest.mark.parametrize(
     ("old", "new"),
     [("/docs", "/api/docs"), ("/redoc", "/api/redoc"), ("/openapi.json", "/api/openapi.json")],
@@ -53,6 +60,7 @@ def test_old_docs_urls_redirect_permanently(client: TestClient, old: str, new: s
     assert response.headers["location"] == new
 
 
+@pytest.mark.req("RS-69")
 def test_api_docs_keep_their_own_headers(client: TestClient) -> None:
     response = client.get("/api/docs")
     assert response.status_code == 200

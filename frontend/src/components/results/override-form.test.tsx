@@ -71,7 +71,7 @@ async function openStep(analysis: AnalysisRead, routes: Parameters<typeof fakeAp
 
 const reason = (form: HTMLElement) => within(form).getByRole("textbox", { name: /^Reason/ });
 
-describe("Override a recommendation", () => {
+describe("RS-76: override a recommendation", () => {
   it("marks the reason and sends nothing when it is empty (criterion 1)", async () => {
     const { calls, form } = await openStep(analysisRead());
 

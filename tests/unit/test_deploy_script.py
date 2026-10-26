@@ -108,6 +108,7 @@ def server(tmp_path: Path) -> Server:
 # RS-66: one validated tag, a backup and the migrations before the start.
 
 
+@pytest.mark.req("RS-66", criterion=1)
 @pytest.mark.parametrize(
     "tag", ["1.7.0", "v1.7", "v1.7.0-rc.1", "latest", "v1.7.0; rm -rf /", "v1.7.0\nv1.8.0", ""]
 )
@@ -123,6 +124,7 @@ def test_a_tag_outside_vxyz_changes_nothing(server: Server, tag: str) -> None:
     assert not server.backups.exists()
 
 
+@pytest.mark.req("RS-66", criterion=2)
 @pytest.mark.parametrize("over_ssh", [False, True], ids=["argument", "ssh"])
 def test_a_1x_tag_backs_up_migrates_and_moves_the_api_only(server: Server, over_ssh: bool) -> None:
     result = server.deploy(SSH_ORIGINAL_COMMAND="v1.7.0") if over_ssh else server.deploy("v1.7.0")
@@ -142,6 +144,7 @@ def test_a_1x_tag_backs_up_migrates_and_moves_the_api_only(server: Server, over_
     assert (server.running("api"), server.running("web")) == ("1.7.0", WEB)
 
 
+@pytest.mark.req("RS-66")
 def test_a_failing_migration_never_starts_the_new_version(server: Server) -> None:
     result = server.deploy("v2.0.0", FAKE_FAIL_MIGRATION="1")
 
@@ -151,6 +154,7 @@ def test_a_failing_migration_never_starts_the_new_version(server: Server) -> Non
     assert (server.env("APD_VERSION"), server.env("APD_WEB_VERSION")) == (API, WEB)
 
 
+@pytest.mark.req("RS-79", criterion=4)
 def test_a_missing_web_version_stops_before_any_docker_call(tmp_path: Path) -> None:
     server = Server(tmp_path, web=None)
 
@@ -165,6 +169,7 @@ def test_a_missing_web_version_stops_before_any_docker_call(tmp_path: Path) -> N
 # that .env recorded for it.
 
 
+@pytest.mark.req("RS-79", criterion=4)
 def test_a_2x_tag_moves_both_services_and_checks_both(server: Server) -> None:
     result = server.deploy("v2.0.0")
 
@@ -178,6 +183,7 @@ def test_a_2x_tag_moves_both_services_and_checks_both(server: Server) -> None:
     assert (server.running("api"), server.running("web")) == ("2.0.0", "2.0.0")
 
 
+@pytest.mark.req("RS-79", criterion=4)
 @pytest.mark.parametrize(
     ("api", "web", "broken"),
     [
@@ -203,6 +209,7 @@ def test_a_failing_health_check_puts_each_service_back_on_its_version(
     assert len(list(server.backups.iterdir())) == 1
 
 
+@pytest.mark.req("RS-66", criterion=3)
 def test_a_1x_tag_with_a_failing_api_check_restores_the_api_only(server: Server) -> None:
     result = server.deploy("v1.7.0", FAKE_BROKEN_API="1.7.0")
 
@@ -211,6 +218,7 @@ def test_a_1x_tag_with_a_failing_api_check_restores_the_api_only(server: Server)
     assert (server.running("api"), server.env("APD_VERSION")) == (API, API)
 
 
+@pytest.mark.req("RS-66", criterion=4)
 @pytest.mark.skipif(shutil.which("shellcheck") is None, reason="shellcheck runs in CI")
 def test_shellcheck_passes() -> None:
     subprocess.run(["shellcheck", SCRIPT.as_posix()], check=True)

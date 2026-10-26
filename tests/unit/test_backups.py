@@ -105,6 +105,7 @@ needs_bash = pytest.mark.skipif(BASH is None, reason="the scripts need bash")
 # runbook with its date.
 
 
+@pytest.mark.req("RS-68", criterion=1)
 @needs_bash
 def test_the_rehearsal_restores_the_newest_dump_and_prints_a_runbook_row(host: Host) -> None:
     host.dump("nightly-20261017T003000Z.dump", 2, "older")
@@ -122,6 +123,7 @@ def test_the_rehearsal_restores_the_newest_dump_and_prints_a_runbook_row(host: H
     )
 
 
+@pytest.mark.req("RS-68", criterion=1)
 @needs_bash
 def test_the_rehearsal_never_touches_the_live_database(host: Host) -> None:
     host.dump("nightly-20261018T003000Z.dump", 1)
@@ -136,6 +138,7 @@ def test_the_rehearsal_never_touches_the_live_database(host: Host) -> None:
     assert host.calls[-1] == "docker rm --force apd-restore-rehearsal"
 
 
+@pytest.mark.req("RS-68", criterion=1)
 @needs_bash
 def test_the_rehearsal_fails_without_a_dump(host: Host) -> None:
     result = host.run(REHEARSAL)
@@ -145,6 +148,7 @@ def test_the_rehearsal_fails_without_a_dump(host: Host) -> None:
     assert host.calls == []
 
 
+@pytest.mark.req("RS-68", criterion=1)
 def test_the_runbook_has_a_dated_table_for_rehearsals() -> None:
     section = RUNBOOK.split("## Backups and restore", 1)[1].split("\n## ", 1)[0]
     assert "/opt/apd/restore-rehearsal.sh" in section
@@ -159,6 +163,7 @@ def test_the_runbook_has_a_dated_table_for_rehearsals() -> None:
 # are gone and expired processes are purged.
 
 
+@pytest.mark.req("RS-68", criterion=2)
 def test_the_purge_runs_before_the_backup_every_night() -> None:
     purge = _unit("apd-purge.timer")["Timer"]
     backup = _unit("apd-backup.timer")["Timer"]
@@ -170,6 +175,7 @@ def test_the_purge_runs_before_the_backup_every_night() -> None:
         assert _unit(name)["Install"]["WantedBy"] == "timers.target"
 
 
+@pytest.mark.req("RS-68", criterion=2)
 def test_the_services_run_as_apd_and_call_the_purge_and_the_backup() -> None:
     purge = _unit("apd-purge.service")["Service"]
     backup = _unit("apd-backup.service")["Service"]
@@ -183,6 +189,7 @@ def test_the_services_run_as_apd_and_call_the_purge_and_the_backup() -> None:
     assert backup["ExecStart"] == "/opt/apd/backup.sh"
 
 
+@pytest.mark.req("RS-68", criterion=2)
 @needs_bash
 def test_a_night_writes_a_new_backup_and_deletes_those_older_than_7_days(host: Host) -> None:
     host.dump("nightly-old.dump", 8)
@@ -201,6 +208,7 @@ def test_a_night_writes_a_new_backup_and_deletes_those_older_than_7_days(host: H
     ]
 
 
+@pytest.mark.req("RS-68", criterion=2)
 @needs_bash
 def test_a_failed_dump_deletes_nothing(host: Host) -> None:
     host.dump("nightly-old.dump", 8)
@@ -222,11 +230,13 @@ def _demo_host() -> str:
     return match.group(1)
 
 
+@pytest.mark.req("RS-68", criterion=3)
 def test_the_readme_links_the_live_demo() -> None:
     host = _demo_host()
     assert "." in host and "example" not in host
 
 
+@pytest.mark.req("RS-68", criterion=3)
 @pytest.mark.skipif(shutil.which("git") is None, reason="lists the tracked files with git")
 def test_the_demo_host_appears_only_in_the_readme() -> None:
     # The one exception to "no real host names in the repo" (CLAUDE.md): the public URL of
@@ -245,6 +255,7 @@ def test_the_demo_host_appears_only_in_the_readme() -> None:
     assert named == []
 
 
+@pytest.mark.req("RS-68", criterion=3)
 def test_security_describes_the_demo_data_policy() -> None:
     security = (ROOT / "SECURITY.md").read_text(encoding="utf-8")
     policy = security.split("## Public demo data", 1)[1].split("\n## ", 1)[0]
@@ -252,6 +263,7 @@ def test_security_describes_the_demo_data_policy() -> None:
         assert promise in policy, promise
 
 
+@pytest.mark.req("RS-68")
 @pytest.mark.skipif(shutil.which("shellcheck") is None, reason="shellcheck runs in CI")
 @pytest.mark.parametrize("script", [BACKUP, REHEARSAL], ids=lambda p: p.name)
 def test_shellcheck_passes(script: Path) -> None:

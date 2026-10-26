@@ -12,7 +12,7 @@ const LOAD_DEMO = new RegExp(`^Load and open ?: ${DEMO}$`);
 const ANALYSIS_URL = /\/processes\/([^/]+)\/analyses\/([^/]+)$/;
 const REASON = "The order desk keeps the final check.";
 
-test("load a demo, analyse, override and download the blueprint", async ({ page }) => {
+test("RS-78: load a demo, analyse, override and download the blueprint", async ({ page }) => {
   await test.step("home", async () => {
     await page.goto(HOME);
     await expect(page.getByRole("heading", { name: "Start from a demo" })).toBeVisible();

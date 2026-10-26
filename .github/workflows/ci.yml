@@ -100,6 +100,10 @@ jobs:
             echo
             uv run coverage report --format=markdown || true
           } >> "$GITHUB_STEP_SUMMARY"
+      # RS-103: which test proves which backlog item and criterion (ADR 0012). Once per run.
+      - name: Traceability matrix
+        if: always() && matrix.python-version == '3.12'
+        run: uv run python scripts/traceability.py >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:

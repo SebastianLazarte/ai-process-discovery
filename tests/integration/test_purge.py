@@ -77,6 +77,7 @@ def _count(database_url: str, column: object, process_id: str) -> int:
     return count
 
 
+@pytest.mark.req("RS-63", criterion=1)
 def test_purge_deletes_only_expired_processes_with_their_analyses_and_overrides(
     client: TestClient, database_url: str
 ) -> None:
@@ -97,6 +98,7 @@ def test_purge_deletes_only_expired_processes_with_their_analyses_and_overrides(
     assert client.get(f"/api/analyses/{new_analysis['id']}").status_code == 200
 
 
+@pytest.mark.req("RS-63", criterion=1)
 def test_purge_counts_age_from_creation_not_from_the_last_edit(
     client: TestClient, database_url: str
 ) -> None:
@@ -110,12 +112,14 @@ def test_purge_counts_age_from_creation_not_from_the_last_edit(
     assert client.get(f"/api/processes/{process['id']}").status_code == 404
 
 
+@pytest.mark.req("RS-63")
 @pytest.mark.parametrize("hours", ["0", "-3", "a day"])
 def test_purge_rejects_a_window_that_is_not_a_positive_number_of_hours(hours: str) -> None:
     with pytest.raises(SystemExit):
         purge(["--older-than-hours", hours], Settings(database_url="sqlite://"))
 
 
+@pytest.mark.req("RS-63", criterion=2)
 def test_no_http_route_triggers_a_purge(
     make_client: Callable[..., TestClient],
     fake_provider: object,

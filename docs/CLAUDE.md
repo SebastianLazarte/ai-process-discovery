@@ -27,7 +27,7 @@ Stable reference for the whole repo. Code changes read from here; this folder ch
 | ADR 0009 | Next.js frontend as a separate service, API under `/api` (block B12, RS-69 to RS-80; RS-91 to RS-94 split from RS-74 to RS-76) | accepted; dependencies amended by ADR 0013, migration and rollback by ADR 0016 | Built (2.0.0) |
 | ADR 0010 | Dependency updates: grouped minor and patch after a cooldown, majors planned, Python version fixed | accepted | Built (`.github/dependabot.yml`) |
 | ADR 0011 | Automated quality gauntlet: mutation testing on the domain, property-based tests, complexity limits, coverage 95 % | accepted 2026-10-22 (proposed 2026-10-15); completed by ADR 0012 | Built; the refactors guided by surviving mutants (RS-83 to RS-88) are open |
-| ADR 0012 | Test quality standard: ISO/IEC/IEEE 29119-4 techniques, ISO/IEC 25010 evidence map, marked requirement traceability, LLM eval dataset with task success rate and cost | accepted | Not built yet: no `req` marker, traceability matrix or LLM eval dataset |
+| ADR 0012 | Test quality standard: ISO/IEC/IEEE 29119-4 techniques, ISO/IEC 25010 evidence map, marked requirement traceability, LLM eval dataset with task success rate and cost | accepted | Partly built: the `req` marker, `tests/unit/test_traceability.py` and the CI matrix (RS-103), enforced for B11 and B12; the other blocks and the LLM eval dataset are open |
 | ADR 0013 | Design system: tokens in CSS as source of truth, light and dark by system setting with a cookie toggle, WCAG 2.2 AA, Penpot and Claude Design as free tools | accepted 2026-10-22 (proposed 2026-10-16); navigation and themes amended by ADR 0014, design process by ADR 0015 | Partly built: `tokens.css`, Tailwind v4, Inter, jsx-a11y and axe in e2e. Not yet: the light theme with its cookie toggle, and the per-screen design process, which applies to new screens such as those of B14 |
 | ADR 0014 | Keep the look of the vanilla client: its sidebar and its exact dark palette as tokens, light theme later | accepted | Built; the light theme is later work |
 | ADR 0015 | The parity screens (RS-74, RS-91, RS-75, RS-92, RS-76, RS-93, RS-94) take `web/` and their criteria as spec, with no wireframes | accepted | Built (2.0.0) |
@@ -61,7 +61,7 @@ The maintainer is the Product Owner and writes and approves the stories. An agen
 | Sprint | One week from `first_sprint`; the Sprint field on the GitHub Project board |
 
 - **Definition of Ready**: a story (`as_a` from `roles`, `i_want`, `so_that`) or an enabler with a clear title; at least one Given/When/Then criterion; `points` in 1, 2, 3, 5 or 8 (split anything larger); `priority` must, should, could or wont; a `rank`; approved by the PO. Only Ready items enter a sprint.
-- **Definition of Done**: a pull request with a Conventional Commits title that closes the issue, one test per criterion, required checks green, docs and the area's `CLAUDE.md` up to date, squash merged into `main`.
+- **Definition of Done**: a pull request with a Conventional Commits title that closes the issue, one marked test per criterion (`@pytest.mark.req("RS-nn", criterion=n)`, or a frontend test title that starts with `RS-nn.n:`; ADR 0012, RS-103), required checks green, docs and the area's `CLAUDE.md` up to date, squash merged into `main`.
 - Status and sprint live in GitHub (issue state and the Project board), never in the file.
 
 ## requirements.toml

@@ -1,6 +1,7 @@
 import re
 from collections.abc import Callable
 
+import pytest
 from fastapi.testclient import TestClient
 
 from app.llm.provider import LLMProvider, LLMTimeoutError
@@ -164,6 +165,8 @@ def test_provider_failure_keeps_the_deterministic_analysis(
     assert analysis["step_assessments"][0]["suitability_score"] > 0
 
 
+@pytest.mark.req("RS-61", criterion=1)
+@pytest.mark.req("RS-61", criterion=2)
 def test_daily_quota_skips_the_llm_and_keeps_the_facts(
     make_client: Callable[..., TestClient],
 ) -> None:
@@ -188,6 +191,7 @@ def test_daily_quota_skips_the_llm_and_keeps_the_facts(
         assert second[section] == first[section], section
 
 
+@pytest.mark.req("RS-61", criterion=1)
 def test_a_zero_quota_never_calls_the_llm(make_client: Callable[..., TestClient]) -> None:
     provider = FakeLLMProvider()
     client = make_client(provider, llm_daily_limit=0)

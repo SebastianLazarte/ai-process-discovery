@@ -65,7 +65,7 @@ function renderBlueprint() {
   return calls;
 }
 
-describe("the Blueprint tab", () => {
+describe("RS-94: the Blueprint tab", () => {
   it("renders the eight sections as text built from the API's JSON, injecting no HTML", async () => {
     renderBlueprint();
 
