@@ -82,7 +82,7 @@ def test_markers_reach_tests_from_the_module_class_and_function(tmp_path: Path) 
         encoding="utf-8",
     )
 
-    refs = sorted(python_refs([test_file], tmp_path))
+    refs = sorted(python_refs([test_file], tmp_path), key=Ref.key)
 
     assert refs == [
         Ref("RS-1", None, "test_sample.py::TestGroup::test_inside"),

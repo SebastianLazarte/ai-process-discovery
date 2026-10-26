@@ -35,13 +35,9 @@ class Ref:
     criterion: int | None
     test: str
 
-    def __lt__(self, other: "Ref") -> bool:
-        # An item-level reference (no criterion) sorts before the item's criteria.
-        return (self.item, self.criterion or 0, self.test) < (
-            other.item,
-            other.criterion or 0,
-            other.test,
-        )
+    def key(self) -> tuple[str, int, str]:
+        """Sort key: an item-level reference (no criterion) comes before the item's criteria."""
+        return (self.item, self.criterion or 0, self.test)
 
 
 def load_requirements(path: Path = REQUIREMENTS) -> dict[str, dict[str, Any]]:
@@ -116,7 +112,7 @@ def collect(root: Path = ROOT) -> list[Ref]:
     frontend = sorted((root / "frontend" / "src").rglob("*.test.ts*")) + sorted(
         (root / "frontend" / "e2e").rglob("*.spec.ts")
     )
-    return sorted(python_refs(python, root) + frontend_refs(frontend, root))
+    return sorted(python_refs(python, root) + frontend_refs(frontend, root), key=Ref.key)
 
 
 def _criteria_count(requirement: dict[str, Any]) -> int:
