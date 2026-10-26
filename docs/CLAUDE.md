@@ -8,7 +8,7 @@ Stable reference for the whole repo. Code changes read from here; this folder ch
 | `pdr/` | Product and scope decisions |
 | `requirements.toml` | Product backlog: Product Goal, epics (`RU-nn`) and backlog items (`RS-nn`), one GitHub issue per RS |
 | `runbook/` | Operating the production demo |
-| `design/` | UX and UI specs for the Next.js client, numbered in the order of ADR 0013: brief, discovery, wireframes, foundations, components, usability. The parity screens took `web/` as spec instead (ADR 0015); it is in git history at tag `v1.5.0` |
+| `design/` | UX and UI specs for the Next.js client, numbered in the order of ADR 0013: brief, discovery, wireframes, foundations, components, usability. The parity screens took `web/` as spec instead (ADR 0015); it is in git history at tag `v1.5.0`. `catalog.md` describes the process template catalog and the sources of each sector (RS-97) |
 
 ## Decision index
 
