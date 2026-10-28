@@ -22,7 +22,7 @@ const LITERAL = /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|oklch|oklab|lab|lch)\(/gi;
 const PALETTE =
   /\b(?:bg|text|border|outline|ring|divide|fill|stroke|from|to|via|accent|caret|decoration|shadow)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|black|white)(?:-\d{2,3})?\b/g;
 
-describe("design tokens", () => {
+describe("RS-90.1: design tokens", () => {
   const files = sources(SRC);
 
   it("scans the components and pages", () => {
@@ -72,7 +72,7 @@ function contrast(fg: string, bg: string): number {
   return (x! + 0.05) / (y! + 0.05);
 }
 
-describe("dark theme contrast", () => {
+describe("RS-90.2: dark theme contrast", () => {
   it.each([
     ["ink", "bg", 4.5],
     ["ink", "surface", 4.5],

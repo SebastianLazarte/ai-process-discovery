@@ -20,6 +20,7 @@ def _load(client: TestClient, slug: str) -> dict[str, Any]:
     return process
 
 
+@pytest.mark.req("RS-89", criterion=1)
 @pytest.mark.parametrize("slug", SLUGS)
 def test_a_demo_comes_with_an_analysis_of_its_assumptions(client: TestClient, slug: str) -> None:
     process = _load(client, slug)
@@ -35,6 +36,7 @@ def test_a_demo_comes_with_an_analysis_of_its_assumptions(client: TestClient, sl
     }
 
 
+@pytest.mark.req("RS-89", criterion=2)
 def test_the_first_analysis_never_calls_the_llm_nor_uses_the_quota(
     make_client: Callable[..., TestClient],
 ) -> None:
@@ -53,6 +55,7 @@ def test_the_first_analysis_never_calls_the_llm_nor_uses_the_quota(
     assert response.json()["llm"]["status"] == "ok"
 
 
+@pytest.mark.req("RS-89", criterion=1)
 def test_a_demo_without_assumptions_has_no_analysis(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:

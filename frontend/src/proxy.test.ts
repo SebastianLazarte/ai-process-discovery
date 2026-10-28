@@ -29,7 +29,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe("proxy (RS-72)", () => {
+describe("RS-72: proxy", () => {
   it("answers a page with a nonce CSP, nosniff, no-referrer and frame-ancestors 'none'", () => {
     const response = proxy(request("/processes/abc"));
 

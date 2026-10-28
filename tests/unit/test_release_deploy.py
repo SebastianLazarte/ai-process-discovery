@@ -104,6 +104,7 @@ SECRETS = {
 # pinned host key.
 
 
+@pytest.mark.req("RS-67", criterion=1)
 def test_the_deploy_job_runs_only_in_the_production_environment() -> None:
     deploy = JOBS["deploy"]
     assert re.search(r"environment:\n\s+name: production\n", deploy)
@@ -117,6 +118,7 @@ def test_the_deploy_job_runs_only_in_the_production_environment() -> None:
     assert len(re.findall(r"secrets\.DEPLOY_", WORKFLOW)) == 3
 
 
+@pytest.mark.req("RS-67", criterion=1)
 def test_the_tag_reaches_the_scripts_through_the_environment_only() -> None:
     deploy = JOBS["deploy"]
     runs = re.findall(r"run: (.+)", deploy)
@@ -124,6 +126,7 @@ def test_the_tag_reaches_the_scripts_through_the_environment_only() -> None:
     assert "${{" not in "".join(runs)
 
 
+@pytest.mark.req("RS-67", criterion=1)
 def test_ssh_checks_the_pinned_host_key_and_sends_only_the_tag(runner: Runner) -> None:
     result = runner.run(RELEASE_DEPLOY, "v1.4.0", **SECRETS)
 
@@ -137,6 +140,7 @@ def test_ssh_checks_the_pinned_host_key_and_sends_only_the_tag(runner: Runner) -
     assert args[-2:] == ["apd@demo-host", "v1.4.0"]
 
 
+@pytest.mark.req("RS-67", criterion=1)
 @pytest.mark.parametrize("missing", ["DEPLOY_HOST", "DEPLOY_SSH_KEY", "DEPLOY_KNOWN_HOSTS"])
 def test_a_missing_secret_stops_before_ssh(runner: Runner, missing: str) -> None:
     result = runner.run(RELEASE_DEPLOY, "v1.4.0", **{**SECRETS, missing: ""})
@@ -146,6 +150,7 @@ def test_a_missing_secret_stops_before_ssh(runner: Runner, missing: str) -> None
     assert runner.read("ssh_args") == []
 
 
+@pytest.mark.req("RS-67", criterion=1)
 @pytest.mark.parametrize("tag", ["1.4.0", "v1.4", "latest", "v1.4.0; reboot"])
 def test_a_tag_outside_vxyz_stops_before_ssh(runner: Runner, tag: str) -> None:
     result = runner.run(RELEASE_DEPLOY, tag, **SECRETS)
@@ -158,11 +163,14 @@ def test_a_tag_outside_vxyz_stops_before_ssh(runner: Runner, tag: str) -> None:
 # on any error. RS-79 moved the paths to / and /api/health (ADR 0016).
 
 
+@pytest.mark.req("RS-67", criterion=2)
 def test_the_smoke_test_runs_after_the_deploy_in_the_same_job() -> None:
     deploy = JOBS["deploy"]
     assert deploy.index("name: Deploy over SSH") < deploy.index("name: Smoke test over HTTPS")
 
 
+@pytest.mark.req("RS-67", criterion=2)
+@pytest.mark.req("RS-79", criterion=3)
 def test_the_smoke_test_checks_the_home_page_and_the_api_over_https(runner: Runner) -> None:
     result = runner.run(SMOKE_TEST, "https://apd.example.com/")
 
@@ -177,6 +185,8 @@ def test_the_smoke_test_checks_the_home_page_and_the_api_over_https(runner: Runn
         assert "--proto =https" in call
 
 
+@pytest.mark.req("RS-67", criterion=2)
+@pytest.mark.req("RS-79", criterion=3)
 @pytest.mark.parametrize("failing", ["/", "/api/health"])
 def test_the_smoke_test_fails_when_a_path_fails(runner: Runner, failing: str) -> None:
     result = runner.run(SMOKE_TEST, "https://apd.example.com", FAKE_FAIL_PATH=failing)
@@ -185,6 +195,7 @@ def test_the_smoke_test_fails_when_a_path_fails(runner: Runner, failing: str) ->
     assert f"https://apd.example.com{failing} failed over HTTPS" in result.stderr
 
 
+@pytest.mark.req("RS-67", criterion=2)
 def test_the_smoke_test_refuses_plain_http(runner: Runner) -> None:
     result = runner.run(SMOKE_TEST, "http://apd.example.com")
 
@@ -192,6 +203,7 @@ def test_the_smoke_test_refuses_plain_http(runner: Runner) -> None:
     assert runner.read("curl_calls") == []
 
 
+@pytest.mark.req("RS-67")
 @pytest.mark.skipif(shutil.which("shellcheck") is None, reason="shellcheck runs in CI")
 @pytest.mark.parametrize("script", [RELEASE_DEPLOY, SMOKE_TEST], ids=lambda p: p.name)
 def test_shellcheck_passes(script: Path) -> None:

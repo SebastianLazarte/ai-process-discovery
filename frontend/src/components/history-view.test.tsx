@@ -29,7 +29,7 @@ async function bodyRows() {
   );
 }
 
-describe("the History tab", () => {
+describe("RS-93: the History tab", () => {
   it("lists the analyses newest first with date, versions and LLM status, each opening its Results", async () => {
     fakeApi({
       [PATH]: {

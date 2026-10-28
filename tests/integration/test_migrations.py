@@ -54,6 +54,7 @@ def _head(config: Config) -> str | None:
     return ScriptDirectory.from_config(config).get_current_head()
 
 
+@pytest.mark.req("RS-59", criterion=1)
 def test_upgrade_head_then_check_finds_no_pending_changes(
     engine: Engine, alembic_config: Config
 ) -> None:
@@ -65,6 +66,7 @@ def test_upgrade_head_then_check_finds_no_pending_changes(
     assert _current_revision(engine) == _head(alembic_config)
 
 
+@pytest.mark.req("RS-59", criterion=2)
 def test_api_creates_no_table_when_schema_on_startup_is_off(
     engine: Engine,
     make_client: Callable[..., TestClient],
@@ -74,6 +76,7 @@ def test_api_creates_no_table_when_schema_on_startup_is_off(
     assert set(inspect(engine).get_table_names()) & TABLES == set()
 
 
+@pytest.mark.req("RS-59")
 def test_api_still_creates_tables_by_default(
     engine: Engine, make_client: Callable[[LLMProvider], TestClient]
 ) -> None:
@@ -82,6 +85,7 @@ def test_api_still_creates_tables_by_default(
     assert set(inspect(engine).get_table_names()) >= TABLES
 
 
+@pytest.mark.req("RS-59", criterion=3)
 def test_database_from_create_all_is_stamped_and_upgrade_applies_nothing(
     engine: Engine, alembic_config: Config
 ) -> None:
@@ -95,6 +99,7 @@ def test_database_from_create_all_is_stamped_and_upgrade_applies_nothing(
     assert _current_revision(engine) == _head(alembic_config)
 
 
+@pytest.mark.req("RS-59")
 def test_downgrade_to_base_removes_every_table(engine: Engine, alembic_config: Config) -> None:
     command.upgrade(alembic_config, "head")
     command.downgrade(alembic_config, "base")

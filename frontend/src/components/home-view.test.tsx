@@ -23,7 +23,7 @@ afterEach(() => {
   push.mockReset();
 });
 
-describe("loading a demo", () => {
+describe("RS-73.1: loading a demo", () => {
   it("adds it to the list and opens it", async () => {
     const loaded = summary({ id: "22222222-2222-4222-8222-222222222222", name: DEMO.name });
     let stored: unknown[] = [];
@@ -48,7 +48,7 @@ describe("loading a demo", () => {
   });
 });
 
-describe("loading a demo with its first analysis", () => {
+describe("RS-92.5: loading a demo with its first analysis", () => {
   it("opens the Results of that analysis", async () => {
     const loaded = summary({ id: "22222222-2222-4222-8222-222222222222", name: DEMO.name });
     fakeApi({

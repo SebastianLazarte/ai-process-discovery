@@ -12,10 +12,12 @@ from app.services.demo_service import demo_files
 DEMOS = demo_files()
 
 
+@pytest.mark.req("RS-89")
 def test_there_are_demos() -> None:
     assert DEMOS
 
 
+@pytest.mark.req("RS-89", criterion=3)
 @pytest.mark.parametrize("slug", sorted(DEMOS))
 def test_assumptions_only_name_steps_of_the_demo(slug: str) -> None:
     demo: dict[str, Any] = dict(DEMOS[slug])

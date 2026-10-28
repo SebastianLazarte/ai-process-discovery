@@ -62,7 +62,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe("a 422 for one field", () => {
+describe("RS-71: a 422 for one field", () => {
   it("shows the error on that field, and no toast", async () => {
     const fetch = respond(422, { detail: [{ loc: ["body", "name"], msg: "Name is required" }] });
     submit();
@@ -79,7 +79,7 @@ describe("a 422 for one field", () => {
   });
 });
 
-describe("any other error", () => {
+describe("RS-71: any other error", () => {
   it("shows the API message in a toast", async () => {
     respond(409, { detail: "This process changed meanwhile. Reload it.", code: "conflict" });
     submit();

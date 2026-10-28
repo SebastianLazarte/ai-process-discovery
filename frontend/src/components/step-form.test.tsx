@@ -46,7 +46,7 @@ const optionValues = (select: HTMLElement) =>
     .getAllByRole("option")
     .map((option) => (option as HTMLOptionElement).value);
 
-describe("the step form", () => {
+describe("RS-74: the step form", () => {
   it("offers every member of each domain enum (criterion 2)", async () => {
     const { form } = await editStep(step());
 

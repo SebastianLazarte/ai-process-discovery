@@ -1718,3 +1718,34 @@ then = "the pr-title check passes"
 given = "an em dash in a Markdown or TOML file other than frontend/AGENTS.md"
 when = "pre-commit or the quality job runs"
 then = "it fails and names the file and line"
+
+[[requirement]]
+id = "RS-103"
+ru = "RU-12"
+block = "B13"
+area = "infra"
+kind = "enabler"
+title = "Requirement traceability: req marker, traceability test and matrix (ADR 0012)"
+points = 3
+priority = "must"
+rank = 40
+
+[[requirement.criteria]]
+given = "a test marked @pytest.mark.req with an id or a criterion number that is not in docs/requirements.toml"
+when = "the suite runs"
+then = "test_traceability fails and names it"
+
+[[requirement.criteria]]
+given = "a block in the released-blocks list"
+when = "one of its items has no marked Python test and no frontend test whose name starts with its id"
+then = "test_traceability fails and names the item"
+
+[[requirement.criteria]]
+given = "the CI test job"
+when = "it runs"
+then = "scripts/traceability.py writes the matrix (item, criterion, tests) to the job summary"
+
+[[requirement.criteria]]
+given = "docs/CLAUDE.md"
+when = "it is read"
+then = "the Definition of Done asks for one marked test per criterion"
