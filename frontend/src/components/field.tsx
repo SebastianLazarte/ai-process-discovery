@@ -129,3 +129,42 @@ export function CheckboxField(props: Omit<FieldProps, "required">) {
     </div>
   );
 }
+
+/**
+ * A select over named choices outside a form, where the value and the label differ (a
+ * sector id and its name). The empty value is the placeholder.
+ */
+export function ChoiceField({
+  id,
+  label,
+  placeholder,
+  choices,
+  value,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  placeholder: string;
+  choices: readonly { value: string; label: string }[];
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div>
+      <Label id={id} label={label} />
+      <select
+        id={id}
+        className={CONTROL}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+      >
+        <option value="">{placeholder}</option>
+        {choices.map((choice) => (
+          <option key={choice.value} value={choice.value}>
+            {choice.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}

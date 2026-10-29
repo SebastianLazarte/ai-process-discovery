@@ -13,6 +13,7 @@ export type AnalysisSummary = Schemas["AnalysisSummary"];
 export type AnalysisRead = Schemas["AnalysisRead"];
 export type StepAssessment = Schemas["StepAssessmentOut"];
 export type Blueprint = Schemas["Blueprint"];
+export type SectorTemplates = Schemas["SectorTemplates"];
 
 export const PROCESS_ID = "11111111-1111-4111-8111-111111111111";
 export const STEP_ID = "55555555-5555-4555-8555-555555555555";
@@ -206,6 +207,64 @@ export function blueprint(overrides: Partial<Blueprint> = {}): Blueprint {
     risks: [],
     human_controls: analysis.human_controls,
     workflow_specification: [],
+    ...overrides,
+  };
+}
+
+/** A sector of the template catalog: qualitative traits only, never a number (RS-95). */
+export function sectorTemplates(overrides: Partial<SectorTemplates> = {}): SectorTemplates {
+  return {
+    id: "manufacturing",
+    name: "Manufacturing",
+    templates: [
+      {
+        slug: "supplier-invoice-processing",
+        name: "Supplier invoice processing",
+        description: "Supplier invoices are received, matched and posted for payment.",
+        steps: [
+          {
+            name: "Receive the invoice",
+            description: "Invoices arrive by email and on paper.",
+            responsible_role: "Accounts payable clerk",
+            tools: ["Shared mailbox"],
+            input_description: "Supplier invoice",
+            output_description: "Invoice in the queue",
+            repetitiveness: "HIGH",
+            rule_clarity: "MEDIUM",
+            input_type: "MIXED",
+            integration_readiness: "PARTIAL",
+            requires_human_judgement: false,
+            requires_human_approval: false,
+            handles_sensitive_data: false,
+            criticality: "MEDIUM",
+            problems: ["Invoices get lost in the mailbox"],
+          },
+          {
+            name: "Approve the payment",
+            description: "",
+            responsible_role: "Finance manager",
+            tools: [],
+            input_description: "",
+            output_description: "",
+            repetitiveness: "MEDIUM",
+            rule_clarity: "LOW",
+            input_type: "DIGITAL_STRUCTURED",
+            integration_readiness: "GOOD",
+            requires_human_judgement: true,
+            requires_human_approval: true,
+            handles_sensitive_data: true,
+            criticality: "HIGH",
+            problems: [],
+          },
+        ],
+      },
+      {
+        slug: "customer-order-entry",
+        name: "Customer order entry",
+        description: "",
+        steps: [],
+      },
+    ],
     ...overrides,
   };
 }
