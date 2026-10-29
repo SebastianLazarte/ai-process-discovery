@@ -16,7 +16,7 @@ Thin FastAPI routes: validate the contract, call a service, return a schema. Bus
 - `frontend/openapi.json` is the contract the Next.js client generates its types from. After changing a route or a schema, run `uv run python scripts/export_openapi.py`, then `corepack pnpm api:types` in `frontend/`. `tests/unit/test_openapi_contract.py` fails until the contract is regenerated, and the `frontend` job fails until the types are. The committed contract carries a fixed `info.version`, so release-please never rewrites it; the live `/api/openapi.json` reports the release.
 - `/api/meta` tells the client the version and whether this is the public demo (banner).
 - Loading a demo goes through `DemoService`: demos in `app/demo/` with `assumptions` also get a first analysis, never with the LLM (RS-89). Reductions there are keyed by step name.
-- `/api/process-templates` serves `app/catalog/` through `TemplateService`, one JSON file per sector named by its id (RS-95). Templates hold only `StepTraits`: never minutes, rates, executions or an hourly cost, because the person types every number. `tests/unit/test_catalog_files.py` fails if one appears.
+- `/api/process-templates` serves `app/catalog/` through `TemplateService`, one JSON file per sector named by its id (RS-95). Templates hold only `StepTraits`: never minutes, rates, executions or an hourly cost, because the person types every number. `tests/unit/test_catalog_files.py` fails if one appears. The seven sectors and the sources of their processes are described in `docs/design/catalog.md` (RS-97).
 
 ## Verify
 
