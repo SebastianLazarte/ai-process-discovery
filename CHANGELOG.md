@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.1.0](https://github.com/SebastianLazarte/ai-process-discovery/compare/v2.0.0...v2.1.0) (2026-10-30)
+
+
+### Features
+
+* **api:** catalog content for seven sectors (RS-97) ([#206](https://github.com/SebastianLazarte/ai-process-discovery/issues/206)) ([ceb4a25](https://github.com/SebastianLazarte/ai-process-discovery/commit/ceb4a257ae2cad8713176eb1b9639865e72a5dd8))
+* **api:** process template catalog served by the API (RS-95) ([#198](https://github.com/SebastianLazarte/ai-process-discovery/issues/198)) ([dc3250e](https://github.com/SebastianLazarte/ai-process-discovery/commit/dc3250e95bed4cd582299a5a623515c480154486))
+* **ui:** start a process from a sector template (RS-96) ([#212](https://github.com/SebastianLazarte/ai-process-discovery/issues/212)) ([a7cff6f](https://github.com/SebastianLazarte/ai-process-discovery/commit/a7cff6fb0cfaa4dba65490c92f9c10be587fe37d))
+
+
+### Bug Fixes
+
+* route the old /docs, /redoc and /openapi.json to the API ([#185](https://github.com/SebastianLazarte/ai-process-discovery/issues/185)) ([4ab0419](https://github.com/SebastianLazarte/ai-process-discovery/commit/4ab0419527a36dc655a494a10090c3f00ad89789))
+
+
+### Documentation
+
+* align the decision records with what is built ([#203](https://github.com/SebastianLazarte/ai-process-discovery/issues/203)) ([b1a65de](https://github.com/SebastianLazarte/ai-process-discovery/commit/b1a65deae3ca219f659e226233baae8d259b0174))
+* guardrail decisions for AI drafts (RS-98, RS-100, RS-101) ([#199](https://github.com/SebastianLazarte/ai-process-discovery/issues/199)) ([44f5d6f](https://github.com/SebastianLazarte/ai-process-discovery/commit/44f5d6f217527c9bd6c8cc5b53c1766b54faf796))
+* guided process capture backlog (B14, RS-95 to RS-101) ([#188](https://github.com/SebastianLazarte/ai-process-discovery/issues/188)) ([2ce0ee6](https://github.com/SebastianLazarte/ai-process-discovery/commit/2ce0ee6b171c24faf955d048e1cf9eec99beee32))
+* link the live demo from the README ([#204](https://github.com/SebastianLazarte/ai-process-discovery/issues/204)) ([4992cc6](https://github.com/SebastianLazarte/ai-process-discovery/commit/4992cc68f17c55e5e4238770115cf39265c1df2b))
+* record the first restore rehearsal and the 2.0.0 switch (RS-68) ([#187](https://github.com/SebastianLazarte/ai-process-discovery/issues/187)) ([4e5d711](https://github.com/SebastianLazarte/ai-process-discovery/commit/4e5d71110c09a03a676c5af65a735717cbb168a5))
+
 ## [2.0.0](https://github.com/SebastianLazarte/ai-process-discovery/compare/v1.5.0...v2.0.0) (2026-10-21)
 
 
