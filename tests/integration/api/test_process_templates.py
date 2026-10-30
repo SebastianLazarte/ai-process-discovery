@@ -2,6 +2,7 @@
 
 from typing import Any
 
+import pytest
 from fastapi.testclient import TestClient
 
 from app.services.template_service import catalog_files
@@ -50,3 +51,28 @@ def test_a_template_step_is_served_with_its_traits_and_no_numbers(client: TestCl
 
 def test_the_catalog_answers_only_under_api(client: TestClient) -> None:
     assert client.get("/process-templates").status_code == 404
+
+
+@pytest.mark.req("RS-96", criterion=3)
+def test_every_template_creates_a_process_in_one_request(client: TestClient) -> None:
+    # What the review screen sends: the template's traits as they are, plus the figures
+    # the person typed. Each template must pass the process contract unchanged.
+    for sector in _sectors(client):
+        for template in sector["templates"]:
+            body = {
+                "name": template["name"],
+                "description": template["description"],
+                "executions_per_month": 200,
+                "steps": [
+                    {**traits, "minutes_per_execution": "5", "occurrence_rate": "1"}
+                    for traits in template["steps"]
+                ],
+            }
+
+            response = client.post("/api/processes", json=body)
+
+            assert response.status_code == 201, (sector["id"], template["slug"], response.text)
+            steps = response.json()["steps"]
+            assert [step["name"] for step in steps] == [t["name"] for t in template["steps"]]
+            for step, traits in zip(steps, template["steps"], strict=True):
+                assert {key: step[key] for key in traits} == traits

@@ -14,6 +14,10 @@ The traits are chosen so the rules give a realistic mix rather than one answer f
 - Steps in systems that already integrate well become API integration, and physical work without integration (counting stock, inspecting a return, scanning cards) stays manual.
 - Approvals, credit and claims decisions, fraud referrals and clinical priorities keep a person in control. KYC, loans, claims, health records and payment details are flagged as sensitive data.
 
+## The screen (RS-96)
+
+New process (`/processes/new`) asks for a sector, then one of its processes. Each list ends with Other, which opens the blank process form instead. A chosen template opens a review: the process name and description come from the template, and every step shows its traits read only. The person types the executions per month and, for each step, the minutes per execution, plus the hourly cost, occurrence and exception rates when they know them. The screen sends nothing until the minutes of every step and the executions per month are there, then creates the process with its steps in one request and opens its Steps page, where any trait can be changed.
+
 ## How to read the sources
 
 The processes come from public lists of the use cases most often automated in each sector. Most of these lists are published by automation vendors and consultancies, so they are a guide to what is common and say nothing about how often each process is automated in practice. They are not a measured ranking. The Product Owner chose three processes per sector from them.

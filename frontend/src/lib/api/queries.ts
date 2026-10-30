@@ -15,12 +15,15 @@ export type StepUpdate = Schemas["StepUpdate"];
 export type AnalysisCreate = Schemas["AnalysisCreate"];
 export type AnalysisRead = Schemas["AnalysisRead"];
 export type OverrideCreate = Schemas["OverrideCreate"];
+export type SectorTemplates = Schemas["SectorTemplates"];
+export type ProcessTemplate = Schemas["ProcessTemplate"];
 
 // A process owns its analysis list; an analysis owns its blueprint. Invalidations that must
 // not reach the children pass exact: true.
 export const keys = {
   meta: ["meta"] as const,
   demos: ["demos"] as const,
+  templates: ["process-templates"] as const,
   processes: ["processes"] as const,
   process: (id: string) => ["processes", id] as const,
   analyses: (processId: string) => ["processes", processId, "analyses"] as const,
@@ -38,6 +41,15 @@ export function useMeta() {
 
 export function useDemos() {
   return useQuery({ queryKey: keys.demos, queryFn: () => unwrap(api.GET("/demo-processes")) });
+}
+
+// RS-96: the catalog is static between releases, so one read per session is enough.
+export function useProcessTemplates() {
+  return useQuery({
+    queryKey: keys.templates,
+    queryFn: () => unwrap(api.GET("/process-templates")),
+    staleTime: Infinity,
+  });
 }
 
 export function useProcesses() {
