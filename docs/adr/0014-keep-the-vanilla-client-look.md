@@ -1,6 +1,6 @@
 # ADR 0014: Keep the look of the vanilla client
 
-**Status:** accepted · 2026-10-16 · amends the navigation and themes of ADR 0013
+**Status:** accepted · 2026-10-16 · amends the navigation and themes of ADR 0013; navigation and surfaces amended by ADR 0018
 
 ## Context
 

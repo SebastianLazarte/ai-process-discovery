@@ -1,7 +1,7 @@
 # Product backlog, one GitHub issue per requirement (scripts/bootstrap_github.py).
 #
 # Scrum mapping: each user requirement (RU) is an epic written as a user story, each system
-# requirement (RS) is a backlog item (a user story or an enabler), and each block (B0 to B16)
+# requirement (RS) is a backlog item (a user story or an enabler), and each block (B0 to B17)
 # is a release with its milestone. Refined items carry Given/When/Then criteria, Fibonacci
 # points, a MoSCoW priority and a rank; items delivered before refinement keep their
 # original title and acceptance list. Status and sprint live in GitHub, not here.
@@ -96,6 +96,12 @@ name = "AI-drafted process from a description"
 as_a = "operations lead"
 i_want = "the AI to draft the steps of a process I describe in my own words"
 so_that = "I can map a process the catalog does not cover, while the public demo stays safe and affordable"
+
+[user_requirements.RU-15]
+name = "Modern interface"
+as_a = "demo visitor"
+i_want = "a clear, modern interface that shows the answer first"
+so_that = "I trust the product within seconds"
 
 [[requirement]]
 id = "RS-01"
@@ -1749,3 +1755,176 @@ then = "scripts/traceability.py writes the matrix (item, criterion, tests) to th
 given = "docs/CLAUDE.md"
 when = "it is read"
 then = "the Definition of Done asks for one marked test per criterion"
+
+[[requirement]]
+id = "RS-104"
+ru = "RU-15"
+block = "B17"
+area = "ui"
+kind = "enabler"
+title = "Graphite tokens and primitives: elevation, type scale, buttons, segmented tabs, chips, badges and SVG icons (ADR 0018)"
+points = 5
+priority = "must"
+rank = 41
+
+[[requirement.criteria]]
+given = "the Graphite tokens"
+when = "text, controls and focus are checked against their surfaces"
+then = "text reaches 4.5:1 and control borders and focus reach 3:1 on the ground and on each raised surface"
+
+[[requirement.criteria]]
+given = "a component under frontend/src"
+when = "it writes a colour literal or a default Tailwind palette class"
+then = "the frontend job still fails"
+
+[[requirement.criteria]]
+given = "the primary, secondary and tertiary buttons"
+when = "they render"
+then = "each has default, hover, focus-visible, disabled and pending states, and only the primary is filled with the accent"
+
+[[requirement.criteria]]
+given = "the icon set"
+when = "frontend/package.json is read"
+then = "it has no icon package, and every icon is an inline SVG component that is hidden from screen readers or carries a name"
+
+[[requirement]]
+id = "RS-105"
+ru = "RU-15"
+block = "B17"
+area = "ui"
+kind = "story"
+title = "Full sidebar on Home, icon rail inside a process"
+as_a = "demo visitor"
+i_want = "the navigation to step aside once I open a process"
+so_that = "the results get the width and the process list stays one click away"
+points = 3
+priority = "must"
+rank = 42
+
+[[requirement.criteria]]
+given = "Home"
+when = "it renders"
+then = "the full sidebar shows the brand, New process and every process, with the current one marked"
+
+[[requirement.criteria]]
+given = "any page of a process"
+when = "it renders"
+then = "a rail of icons replaces the sidebar, each icon has an accessible name, and the process list opens from the rail"
+
+[[requirement.criteria]]
+given = "a 375 px screen"
+when = "any page renders"
+then = "the navigation folds above the page with no horizontal scroll"
+
+[[requirement]]
+id = "RS-106"
+ru = "RU-15"
+block = "B17"
+area = "ui"
+kind = "story"
+title = "Home with three ways to start"
+as_a = "demo visitor"
+i_want = "Home to offer three clear ways to start: my sector, my own words, or a finished demo"
+so_that = "I reach a result without reading instructions"
+points = 3
+priority = "must"
+rank = 43
+
+[[requirement.criteria]]
+given = "Home"
+when = "it renders"
+then = "it shows start from your sector, describe it in your words and open a demo, and only one primary action"
+
+[[requirement.criteria]]
+given = "process_drafts_enabled false"
+when = "Home renders"
+then = "the describe-it option is hidden"
+
+[[requirement.criteria]]
+given = "a demo card"
+when = "it renders"
+then = "every figure on it comes from the API, and a card without figures shows none"
+
+[[requirement]]
+id = "RS-107"
+ru = "RU-15"
+block = "B17"
+area = "ui"
+kind = "story"
+title = "Results with the answer first"
+as_a = "demo visitor"
+i_want = "Results to open on how much the process saves and when it pays back"
+so_that = "I get the answer before the details"
+points = 3
+priority = "must"
+rank = 44
+
+[[requirement.criteria]]
+given = "an analysis with known figures"
+when = "Results opens"
+then = "the first band shows the net saving per month and the payback as the API returns them"
+
+[[requirement.criteria]]
+given = "an unknown net saving or payback"
+when = "the band renders"
+then = "it reads Unknown with its reason, never 0"
+
+[[requirement.criteria]]
+given = "the band"
+when = "it renders"
+then = "the rules version, LLM status, prompt version and process version show as chips beside it"
+
+[[requirement.criteria]]
+given = "the band and the four panels"
+when = "they render"
+then = "no figure combines suitability, impact, risk and controls into one score"
+
+[[requirement]]
+id = "RS-108"
+ru = "RU-15"
+block = "B17"
+area = "ui"
+kind = "story"
+title = "Steps, Analyse, Blueprint and History on Graphite"
+as_a = "demo visitor"
+i_want = "every screen of a process to share the Graphite look"
+so_that = "the product feels like one piece"
+points = 5
+priority = "must"
+rank = 45
+
+[[requirement.criteria]]
+given = "Steps, Analyse, Blueprint and History"
+when = "they render"
+then = "they use the Graphite primitives of RS-104 and the process tabs are a segmented control"
+
+[[requirement.criteria]]
+given = "the e2e job"
+when = "it walks the critical path at 1280 and 375 px"
+then = "axe finds no serious or critical violation"
+
+[[requirement]]
+id = "RS-109"
+ru = "RU-15"
+block = "B17"
+area = "ui"
+kind = "enabler"
+title = "Slim demo banner, empty states and skeletons"
+points = 2
+priority = "should"
+rank = 46
+
+[[requirement.criteria]]
+given = "the public demo"
+when = "any page renders"
+then = "the banner is one line with a status dot and keeps the full text of RS-62"
+
+[[requirement.criteria]]
+given = "no processes yet"
+when = "the sidebar and Home render"
+then = "each shows an empty state with a way to start, never a bare heading"
+
+[[requirement.criteria]]
+given = "a page waiting for data"
+when = "it loads"
+then = "a skeleton the size of the real content shows, so the layout does not jump"

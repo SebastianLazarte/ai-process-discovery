@@ -8,6 +8,7 @@ The client of the demo since 2.0.0, which replaced the vanilla `web/` client (bl
 - `docs/adr/0013-design-system-and-design-to-code.md`: tokens, themes, accessibility, fonts
 - `docs/adr/0015-parity-screens-take-web-as-spec.md`: the screens of RS-74 to RS-76 and RS-91 to RS-94 copy the behaviour and look of the same screen in `web/`, plus the criteria of their item. `web/` is gone since 2.0.0: comments that cite a `web/` file point at tag `v1.5.0` (`git show v1.5.0:web/views.js`)
 - `docs/adr/0016-nextjs-at-the-root-from-2-0-0.md`: the client at `/`, `/ui/` answers 301 there
+- `docs/adr/0018-graphite-modern-take-on-the-vanilla-look.md`: Graphite, the look from block B17 on: elevation instead of borders, one filled primary action, the answer first on Results, an icon rail inside a process, own SVG icons
 - `docs/design/`: the brief, and the spec of any screen without a counterpart in `web/`
 
 ## Rules
