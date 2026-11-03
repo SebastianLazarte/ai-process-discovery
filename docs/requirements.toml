@@ -1,7 +1,7 @@
 # Product backlog, one GitHub issue per requirement (scripts/bootstrap_github.py).
 #
 # Scrum mapping: each user requirement (RU) is an epic written as a user story, each system
-# requirement (RS) is a backlog item (a user story or an enabler), and each block (B0 to B14)
+# requirement (RS) is a backlog item (a user story or an enabler), and each block (B0 to B16)
 # is a release with its milestone. Refined items carry Given/When/Then criteria, Fibonacci
 # points, a MoSCoW priority and a rank; items delivered before refinement keep their
 # original title and acceptance list. Status and sprint live in GitHub, not here.

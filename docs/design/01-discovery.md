@@ -102,3 +102,55 @@ These come from ADRs and hard rules, so no layout may break them.
 
 - Should History stay a tab, or move to a panel on Results?
 - Is mobile (375 px) a full-use target for every page, or read-only for Results and Blueprint?
+
+## Analysis dashboard (B15, B16)
+
+Added with PDR 003, for the first new screen area after the parity screens. It follows the same method as the rest of this document.
+
+### Job
+
+| Role | Main job | What success looks like |
+|---|---|---|
+| Operations lead | When I take an automation case to whoever approves the budget, I want to see how much we save and when the investment comes back, so I can defend it in one sentence | Answers both questions from Results in 30 seconds, and can say which inputs the answer depends on |
+
+**Design hypotheses** (to check in the usability session):
+
+- Someone who opens a demo analysis for the first time says the monthly saving and the payback month within 30 seconds.
+- Nobody reads a patterned, unknown segment of a chart as zero.
+- In B16, people understand that moving a control changes nothing stored until they save the scenario.
+
+### Objects
+
+| Object | Key content | Changed by the user |
+|---|---|---|
+| Analysis (B15) | Gains the cost after automation, the waterfall segments and the 12 points of the payback curve, all from the API | Created, never edited |
+| Scenario (B16) | A business case recomputed from another expected reduction per step and another hourly cost, held only in the page | Yes, until saved as a new analysis |
+
+### Critical paths
+
+#### D. Defend the investment (operations lead, B15)
+
+```mermaid
+flowchart LR
+  A[Results] -->|Read the band| B{Figures known?}
+  B -->|Yes| C[Saving and payback month]
+  B -->|No| D[Note names the missing input]
+  D -->|Link| E[Process settings or Analyse]
+  E -->|Run analysis| A
+  C -->|Print| F((PDF))
+```
+
+#### E. Try another assumption (operations lead, B16)
+
+```mermaid
+flowchart LR
+  A[Results] -->|Change a reduction or the hourly cost| B[Band redraws from the API]
+  B -->|Reset| A
+  B -->|Save as new analysis| C[New analysis in History]
+```
+
+### Constraints the dashboard adds
+
+9. **Series come from the API.** Every bar, segment and point is an API field. The client only scales a value to a length in pixels, as it does on a `<meter>`.
+10. **Each chart has a data table** with the same figures, and no chart relies on colour alone: labels sit on the bars and lines, and unknown segments carry a pattern and the word "Unknown".
+11. **Print has its own light palette.** Only the dark theme exists today (ADR 0014), and a dark page wastes toner and prints poorly.

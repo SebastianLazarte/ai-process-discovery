@@ -26,7 +26,7 @@ When the two conflict, the home page and the demo path favour the visitor, and t
 | Navigation | The sidebar of `web/`: brand, "+ New process" and every process one click away, the current one marked (ADR 0014) |
 | Type | Inter from a versioned package, tabular figures for numbers |
 | Density | Medium, rows of about 44 px |
-| Figures | Numbers, meters and horizontal CSS bars from API values, no chart library |
+| Figures | Numbers, meters, horizontal bars and SVG charts drawn from API values and series, no chart library (SVG charts from PDR 003) |
 | Tools | Penpot for wireframes and high fidelity, Claude Design for alternatives and the design system catalogue |
 
 ## Quality bar

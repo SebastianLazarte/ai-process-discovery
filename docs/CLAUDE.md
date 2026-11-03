@@ -16,6 +16,7 @@ Stable reference for the whole repo. Code changes read from here; this folder ch
 |---|---|---|---|
 | PDR 001 | MVP scope; "no hosted deployment" amended by ADR 0008 | accepted; target user amended by PDR 002 | Built: the whole workflow runs with the fake provider and no key |
 | PDR 002 | Product Goal (portfolio demo), roles and Scrum backlog | accepted | Built: the demo is live on 2.0.0; the backlog follows the format |
+| PDR 003 | Analysis dashboard on Results (B15) and what-if scenarios (B16), after B14; SVG charts from API series, no chart library | proposed 2026-10-26; amends the design brief (figures) | Not built; designed in `design/01-discovery.md` and `design/02-ia-wireframes.md`, milestones B15 and B16 in `scripts/bootstrap_github.py`; epic RU-15 approved and written in the PDR, it enters `requirements.toml` with the first B15 items |
 | ADR 0001 | Python computes every number, the LLM only interprets; authority order | accepted | Built |
 | ADR 0002 | SQLite locally, PostgreSQL in CI, `ExactDecimal`, no migrations yet | accepted; migrations amended by ADR 0008 (Alembic from RS-59) | Built |
 | ADR 0003 | Domain, contracts and persistence are separate models | accepted | Built; enforced by `tests/unit/test_boundaries.py` |
@@ -57,7 +58,7 @@ The maintainer is the Product Owner and writes and approves the stories. An agen
 | Product Goal | `[product] goal` |
 | Epic | `[user_requirements.RU-nn]`: `name` and a story (`as_a`, `i_want`, `so_that`) |
 | Backlog item | `[[requirement]]` `RS-nn`: a user story or an enabler, one GitHub issue |
-| Release | `block` B0 to B14, one milestone each |
+| Release | `block` B0 to B16, one milestone each |
 | Sprint | One week from `first_sprint`; the Sprint field on the GitHub Project board |
 
 - **Definition of Ready**: a story (`as_a` from `roles`, `i_want`, `so_that`) or an enabler with a clear title; at least one Given/When/Then criterion; `points` in 1, 2, 3, 5 or 8 (split anything larger); `priority` must, should, could or wont; a `rank`; approved by the PO. Only Ready items enter a sprint.

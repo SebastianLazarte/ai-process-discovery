@@ -178,6 +178,153 @@ Write your result as a new section of this document, with the same seven heading
 
 Then, in order: Analyse (RS-75), Results (RS-92, RS-76), Blueprint (RS-94) and History (RS-93).
 
+## Analysis dashboard on Results (B15)
+
+Scope in PDR 003, discovery in the "Analysis dashboard" section of `01-discovery.md`. Results itself is a parity screen (ADR 0015); this section designs only the new band at its top. The what-if controls of B16 are sketched once B15 is refined, one screen ahead of code. The figures in the sketches are an example: a current cost of 6800.00 a month, gross savings of 4570.00, tooling of 150.00 and an implementation cost of 18000.00, so a net saving of 4420.00 a month and payback in month 4.1.
+
+### 1. Who arrives
+
+| Role | From | Wants |
+|---|---|---|
+| Operations lead | Analyse after a run, or History | The monthly saving and the payback month, in a form they can take to a meeting |
+| Demo visitor | "Load and open" on a demo with preset assumptions (RS-89), which lands on Results | See in seconds what the product produces |
+
+### 2. Content priority
+
+1. The two answers: the net monthly saving and the payback month, with their units.
+2. The payback curve: when the money comes back.
+3. The cost waterfall: where the saving comes from.
+4. What the answers depend on: the user's assumptions, and any missing input with a link to set it.
+5. The same figures as tables, on demand.
+
+The provenance bar stays above the band. It says which analysis this is, so it comes first.
+
+### 3. States
+
+| State | What shows |
+|---|---|
+| Normal | Both charts, with titles that state the answer ("Saves 4420.00 a month", "Pays back in month 4.1") |
+| Hourly cost unknown | Current cost, savings and cost after automation are unknown: patterned bars with "Unknown". Tooling still shows. The curve draws only the investment line. Note: "Hourly cost not set", with a link to the process settings |
+| Implementation cost unknown | The waterfall is complete. The curve draws only the savings line, with the title "Payback unknown". Note: "Implementation cost not set", with a link to Analyse |
+| Never pays back | Net saving zero or negative: the curve stays flat or falls, with the title "Does not pay back: tooling costs as much as it saves or more". A warning note, never red bars |
+| Pays back after month 12 | The crossing is off the chart: an arrow at the right edge, with the title "Pays back after month 12 (month 18.4)" |
+| No implementation cost | An implementation cost of zero: the title "Pays back at once" |
+| Steps without a reduction | The assumptions line repeats the existing note: they count as zero, because that is the user's input and the figure is known |
+| Loading | A skeleton the size of the band, so the panels below do not jump |
+| Print | Light palette, the tables printed under each chart, navigation, tabs, buttons and forms hidden, one A4 page as the target |
+
+### 4. Three alternatives
+
+**A. A band of two charts above the four panels.**
+- For: the answer is the first thing on Results, where every analysis lands, demos included.
+- Against: the net saving and the payback also appear in the Business impact panel below.
+
+**B. The charts inside the Business impact panel.**
+- For: no repeated figures, and Results keeps its structure.
+- Against: the panel shares the first row with suitability, so the charts are half width at most and below the fold on a laptop.
+
+**C. A tab of its own, "Business case".**
+- For: room for the charts, and later for the what-if controls.
+- Against: one more click, and a demo visitor who lands on Results never sees it.
+
+For the payback curve, three forms were compared: **two lines** (cumulative savings and the investment), **one net position line** that starts below zero and crosses it, and **monthly bars**.
+
+### 5. Choice: A, with a two-line curve and a horizontal waterfall
+
+- **Answer first (inverted pyramid).** The Product Owner put the band at the top. The 30-second test starts where the analysis lands, and A is the only option that shows the answer there without a click.
+- **Titles state the answer.** Each chart title is the conclusion, as in the action titles of a consulting deck, and the chart is the evidence. Someone who reads only the titles passes the 30-second test.
+- **Two lines degrade gracefully.** With the implementation cost unknown, the savings line still draws and only the investment line is missing. A net position line cannot start without the investment, so it would show nothing. The crossing reads as "the money is back", with no negative axis to explain.
+- **A horizontal waterfall.** The labels fit at 375 px without rotation, so the form is the same at both widths (consistency), and it extends the horizontal bars the brief already allows.
+- **Status colours only for status** (brief). Bars are neutral and savings use the accent. "Never pays back" is a warning note, so a red bar never reads as an error of the product.
+- **Accepted cost.** The band repeats two figures of the Business impact panel. The band answers and the panel details. The usability session decides whether the panel keeps them.
+
+### 6. Wireframes
+
+The sidebar is the same as on every page and is left out of the sketches.
+
+Desktop, 1280 px:
+
+```text
++------------------------------------------------------------------------------+
+| Results . Analysis 3f2a1c, process v2, rules 1.4.0, LLM ok     (provenance)  |
++------------------------------------------------------------------------------+
+| Business case                                                   [ Print ]    |
+| From your assumptions: implementation 18000.00, tooling 150.00 a month,      |
+| a reduction on 5 of 7 steps.                       [ Change on Analyse ]     |
+|                                                                              |
+| +-----------------------------------+ +------------------------------------+ |
+| | Saves 4420.00 a month             | | Pays back in month 4.1             | |
+| |                                   | |                                    | |
+| | Current cost      ##########  6800| | 53040 |                        ..o | |
+| | Gross savings        <======  4570| |       |                  ...''     | |
+| | Tooling              =>        150| |       |            ...''           | |
+| | After automation  ####        2380| | 18000 |- - -x- - - - - - - - - - - | |
+| |                                   | |       |  ..' investment            | |
+| | Net saving, the gap: 4420.00      | |     0 +--+--+--+--+--+--+--+--+--  | |
+| |                                   | |       0  1  2  3  4  ...       12  | |
+| | [ Show as a table ]               | | [ Show as a table ]                | |
+| +-----------------------------------+ +------------------------------------+ |
+|                                                                              |
+| (the four panels follow: suitability, impact, risk, controls)                |
++------------------------------------------------------------------------------+
+```
+
+Partial, with the hourly cost unknown:
+
+```text
+| +-----------------------------------+ +------------------------------------+ |
+| | Savings unknown                   | | Payback unknown                    | |
+| |                                   | |                                    | |
+| | Current cost      Unknown ////////| | 18000 |- - - - - - - - - - - - - - | |
+| | Gross savings     Unknown ////////| |       |  investment                | |
+| | Tooling              =>        150| |       |  ///// savings unknown /// | |
+| | After automation  Unknown ////////| |     0 +--+--+--+--+--+--+--+--+--  | |
+| |                                   | |       0  1  2  3  4  ...       12  | |
+| | (i) Hourly cost not set. [ Set it in process settings ]                  | |
+| +-----------------------------------+ +------------------------------------+ |
+```
+
+Mobile, 375 px:
+
+```text
++-----------------------------------+
+| Business case           [ Print ] |
+| From your assumptions: implemen-  |
+| tation 18000.00, tooling 150.00 a |
+| month, a reduction on 5 of 7      |
+| steps. [ Change on Analyse ]      |
+|                                   |
+| Saves 4420.00 a month             |
+| Current cost     ########## 6800  |
+| Gross savings       <====== 4570  |
+| Tooling             =>       150  |
+| After automation ####       2380  |
+| [ Show as a table ]               |
+|                                   |
+| Pays back in month 4.1            |
+| 53040 |                    ..o    |
+|       |             ...''         |
+| 18000 |- - x- - - - - - - - -     |
+|       | .' investment             |
+|     0 +--+--+--+--+--+--+--       |
+|       0     3     6     9    12   |
+| [ Show as a table ]               |
++-----------------------------------+
+```
+
+Decisions for both sizes:
+
+- **The charts stack on mobile**, saving first: it is the answer the payback depends on.
+- **The curve labels every third month on mobile**, and every month from 1280 px.
+- **Screen readers get the table.** Each chart is drawn for the eye and hidden from assistive technology, and a table with the same figures sits next to it, visually hidden until "Show as a table" reveals it (`aria-expanded` on the button).
+- **Touch targets of at least 44 by 44 px** for Print, the links and the table buttons.
+
+### 7. Open questions
+
+- Does "After automation" read clearly as the last bar, or do people expect the net saving there?
+- Do people find the crossing month without reading the title?
+- Does the printed page fit on one A4 sheet with a dozen steps in the panels below?
+
 ## Comparative heuristic evaluation
 
 Do this once all the wireframes exist. Walk the three critical paths of `01-discovery.md` twice, once in the current client and once in your wireframes, at full width and at 375 px. To run the current client: `uv run uvicorn app.main:app --reload`, then open `http://localhost:8000/ui/`.
