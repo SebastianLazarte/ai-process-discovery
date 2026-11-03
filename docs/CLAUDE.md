@@ -16,7 +16,7 @@ Stable reference for the whole repo. Code changes read from here; this folder ch
 |---|---|---|---|
 | PDR 001 | MVP scope; "no hosted deployment" amended by ADR 0008 | accepted; target user amended by PDR 002 | Built: the whole workflow runs with the fake provider and no key |
 | PDR 002 | Product Goal (portfolio demo), roles and Scrum backlog | accepted | Built: the demo is live on 2.0.0; the backlog follows the format |
-| PDR 003 | Analysis dashboard on Results (B15) and what-if scenarios (B16), after B14; SVG charts from API series, no chart library | proposed 2026-10-26; amends the design brief (figures) | Not built; designed in `design/01-discovery.md` and `design/02-ia-wireframes.md`, milestones B15 and B16 in `scripts/bootstrap_github.py`; epic RU-15 approved and written in the PDR, it enters `requirements.toml` with the first B15 items |
+| PDR 003 | Analysis dashboard on Results (B15) and what-if scenarios (B16), after B14; SVG charts from API series, no chart library | proposed 2026-10-26; amends the design brief (figures) | Not built; designed in `design/01-discovery.md` and `design/02-ia-wireframes.md`, milestones B15 and B16 in `scripts/bootstrap_github.py`; epic approved and written in the PDR, renumbered RU-16 on 2026-11-03 because RU-15 went to B17 (ADR 0018); it enters `requirements.toml` with the first B15 items |
 | ADR 0001 | Python computes every number, the LLM only interprets; authority order | accepted | Built |
 | ADR 0002 | SQLite locally, PostgreSQL in CI, `ExactDecimal`, no migrations yet | accepted; migrations amended by ADR 0008 (Alembic from RS-59) | Built |
 | ADR 0003 | Domain, contracts and persistence are separate models | accepted | Built; enforced by `tests/unit/test_boundaries.py` |
@@ -30,10 +30,11 @@ Stable reference for the whole repo. Code changes read from here; this folder ch
 | ADR 0011 | Automated quality gauntlet: mutation testing on the domain, property-based tests, complexity limits, coverage 95 % | accepted 2026-10-22 (proposed 2026-10-15); completed by ADR 0012 | Built; the refactors guided by surviving mutants (RS-83 to RS-88) are open |
 | ADR 0012 | Test quality standard: ISO/IEC/IEEE 29119-4 techniques, ISO/IEC 25010 evidence map, marked requirement traceability, LLM eval dataset with task success rate and cost | accepted | Partly built: the `req` marker, `tests/unit/test_traceability.py` and the CI matrix (RS-103), enforced for B11 and B12; the other blocks and the LLM eval dataset are open |
 | ADR 0013 | Design system: tokens in CSS as source of truth, light and dark by system setting with a cookie toggle, WCAG 2.2 AA, Penpot and Claude Design as free tools | accepted 2026-10-22 (proposed 2026-10-16); navigation and themes amended by ADR 0014, design process by ADR 0015 | Partly built: `tokens.css`, Tailwind v4, Inter, jsx-a11y and axe in e2e. Not yet: the light theme with its cookie toggle, and the per-screen design process, which applies to new screens such as those of B14 |
-| ADR 0014 | Keep the look of the vanilla client: its sidebar and its exact dark palette as tokens, light theme later | accepted | Built; the light theme is later work |
+| ADR 0014 | Keep the look of the vanilla client: its sidebar and its exact dark palette as tokens, light theme later | accepted; navigation and surfaces amended by ADR 0018 | Built; the light theme is later work |
 | ADR 0015 | The parity screens (RS-74, RS-91, RS-75, RS-92, RS-76, RS-93, RS-94) take `web/` and their criteria as spec, with no wireframes | accepted | Built (2.0.0) |
 | ADR 0016 | Next.js at `/` from 2.0.0 with no public `/app/`, `/ui/` answers 301, one version per service on the server, change through working states | accepted | Built; the server switched S0 to S2 on 2026-10-21. Root `/docs`, `/redoc` and `/openapi.json` answer 301 to `/api/...` |
 | ADR 0017 | Accepted risk of AI-drafted processes (B14) | planned: written with RS-100 | Not written yet; drafts stay off (`process_drafts_enabled=false`) until RS-100 and RS-101 merge |
+| ADR 0018 | Graphite: the dark identity of ADR 0014 with elevation instead of borders, one filled primary action, the answer first on Results, an icon rail inside a process, own SVG icons | accepted 2026-11-03; amends ADR 0014 | Not built; block B17 (RS-104 to RS-109), before B15 |
 
 Adding or changing a decision updates this index, and the routing table in the root `CLAUDE.md` when it opens a new area. "In the code" says what is built today, so an accepted decision that is not built never reads as done.
 
@@ -58,7 +59,7 @@ The maintainer is the Product Owner and writes and approves the stories. An agen
 | Product Goal | `[product] goal` |
 | Epic | `[user_requirements.RU-nn]`: `name` and a story (`as_a`, `i_want`, `so_that`) |
 | Backlog item | `[[requirement]]` `RS-nn`: a user story or an enabler, one GitHub issue |
-| Release | `block` B0 to B16, one milestone each |
+| Release | `block` B0 to B17, one milestone each |
 | Sprint | One week from `first_sprint`; the Sprint field on the GitHub Project board |
 
 - **Definition of Ready**: a story (`as_a` from `roles`, `i_want`, `so_that`) or an enabler with a clear title; at least one Given/When/Then criterion; `points` in 1, 2, 3, 5 or 8 (split anything larger); `priority` must, should, could or wont; a `rank`; approved by the PO. Only Ready items enter a sprint.

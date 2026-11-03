@@ -60,7 +60,7 @@ Two releases, after B14 (guided capture) closes. Both serve the operations lead 
 - One new epic, approved by the Product Owner on 2026-10-26. It enters `docs/requirements.toml` with the first backlog items of B15, because every epic must have at least one item (`tests/unit/test_requirements_file.py`):
 
   ```toml
-  [user_requirements.RU-15]
+  [user_requirements.RU-16]
   name = "Business case at a glance"
   as_a = "operations lead"
   i_want = "to see how the savings build up against the investment, and to try other assumptions before I commit to one"
