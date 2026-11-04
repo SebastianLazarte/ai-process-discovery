@@ -1,7 +1,7 @@
 # Product backlog, one GitHub issue per requirement (scripts/bootstrap_github.py).
 #
 # Scrum mapping: each user requirement (RU) is an epic written as a user story, each system
-# requirement (RS) is a backlog item (a user story or an enabler), and each block (B0 to B17)
+# requirement (RS) is a backlog item (a user story or an enabler), and each block (B0 to B18)
 # is a release with its milestone. Refined items carry Given/When/Then criteria, Fibonacci
 # points, a MoSCoW priority and a rank; items delivered before refinement keep their
 # original title and acceptance list. Status and sprint live in GitHub, not here.
@@ -1928,3 +1928,148 @@ then = "each shows an empty state with a way to start, never a bare heading"
 given = "a page waiting for data"
 when = "it loads"
 then = "a skeleton the size of the real content shows, so the layout does not jump"
+
+[[requirement]]
+id = "RS-110"
+ru = "RU-02"
+block = "B18"
+area = "api"
+kind = "enabler"
+title = "An anonymous visitor cookie scopes the process lists on the public demo (ADR 0019)"
+points = 3
+priority = "must"
+rank = 47
+
+[[requirement.criteria]]
+given = "public_demo true and a request without a valid apd_visitor cookie"
+when = "the API answers"
+then = "the response sets apd_visitor to a random UUID with HttpOnly, Secure, SameSite=Lax, Path=/api and a Max-Age of 7 days"
+
+[[requirement.criteria]]
+given = "a visitor cookie"
+when = "a process is created, a demo is loaded or a process starts from a template"
+then = "the stored process carries that visitor"
+
+[[requirement.criteria]]
+given = "processes of two visitors"
+when = "each visitor calls GET /processes"
+then = "each list holds only that visitor's processes"
+
+[[requirement.criteria]]
+given = "a process of another visitor"
+when = "GET /processes/{id} is called with any cookie or none"
+then = "the process is returned as before"
+
+[[requirement.criteria]]
+given = "public_demo false"
+when = "any request is answered"
+then = "no cookie is set and GET /processes lists every process"
+
+[[requirement.criteria]]
+given = "any response of the API"
+when = "its body is read"
+then = "the visitor id does not appear in it"
+
+[[requirement]]
+id = "RS-111"
+ru = "RU-02"
+block = "B18"
+area = "domain"
+kind = "enabler"
+title = "Portfolio summary computed by the domain from the latest analysis of each process"
+points = 3
+priority = "must"
+rank = 48
+
+[[requirement.criteria]]
+given = "processes whose latest analyses have known current states"
+when = "the portfolio is summarised"
+then = "the monthly hours total and the known cost total equal the sums of the rows, in Decimal"
+
+[[requirement.criteria]]
+given = "a process with an unknown monthly cost"
+when = "the portfolio is summarised"
+then = "it stays out of the cost total, the known cost count excludes it, and its row has no share, never 0"
+
+[[requirement.criteria]]
+given = "at least one known cost above zero"
+when = "the rows are built"
+then = "they are ordered by monthly cost from the largest, unknown costs last, and the shares of the known rows add up to 1"
+
+[[requirement.criteria]]
+given = "a process with no analysis"
+when = "the portfolio is summarised"
+then = "it is listed as not analysed and counts in no total"
+
+[[requirement]]
+id = "RS-112"
+ru = "RU-02"
+block = "B18"
+area = "api"
+kind = "story"
+title = "GET /portfolio returns what this browser's processes consume"
+as_a = "operations lead"
+i_want = "one call that returns the totals and the rows of my processes"
+so_that = "the client can show how much is at stake without computing anything"
+points = 2
+priority = "must"
+rank = 49
+
+[[requirement.criteria]]
+given = "a visitor with processes"
+when = "GET /portfolio is called"
+then = "it returns the summary of RS-111 for that visitor's processes only, with money and hours as Decimal strings"
+
+[[requirement.criteria]]
+given = "openapi.json"
+when = "it is regenerated"
+then = "it describes /portfolio, and the response has no field from the LLM"
+
+[[requirement]]
+id = "RS-113"
+ru = "RU-02"
+block = "B18"
+area = "ui"
+kind = "story"
+title = "What is at stake, at the top of Home"
+as_a = "operations lead"
+i_want = "Home to open on how many hours and how much money my processes consume, and which one weighs most"
+so_that = "I know how much is at stake before I choose where to start"
+points = 5
+priority = "must"
+rank = 50
+
+[[requirement.criteria]]
+given = "a browser with at least one process"
+when = "Home renders"
+then = "the band comes before the ways to start, and with no process it does not show"
+
+[[requirement.criteria]]
+given = "a partial cost total"
+when = "the band renders"
+then = "the total reads with its count, such as 2 of 3 processes with a known cost, as the API returns them"
+
+[[requirement.criteria]]
+given = "a process with an unknown cost"
+when = "its row renders"
+then = "it reads Unknown with its reason and a link to the process settings, and has no bar"
+
+[[requirement.criteria]]
+given = "processes not analysed yet"
+when = "the band renders"
+then = "they are listed apart, each with a link to Analyse"
+
+[[requirement.criteria]]
+given = "the bars"
+when = "they render"
+then = "each length comes from the share the API sent, and a table with the same rows is available to screen readers and on demand"
+
+[[requirement.criteria]]
+given = "a 375 px screen"
+when = "Home renders"
+then = "the band reads in full with no horizontal scroll, and the axe pass finds no violation"
+
+[[requirement.criteria]]
+given = "the public demo"
+when = "the banner renders"
+then = "it says anything entered is visible to anyone with its link"

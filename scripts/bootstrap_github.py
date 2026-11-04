@@ -1,6 +1,6 @@
 """Set up the GitHub side of the repository with the gh CLI.
 
-Creates labels, milestones (one per release, B0-B17), one issue per backlog item in
+Creates labels, milestones (one per release, B0-B18), one issue per backlog item in
 docs/requirements.toml, a Project board with Points and Priority fields, the `main` ruleset
 and the security settings. Safe to re-run: existing labels, milestones and issues are left
 alone. With --sync, existing issues are brought back in line with the file (title, epic,
@@ -42,6 +42,7 @@ MILESTONES = {
     "B15": "Analysis dashboard",
     "B16": "What-if scenarios",
     "B17": "Graphite",
+    "B18": "Portfolio overview",
 }
 
 LABELS = {

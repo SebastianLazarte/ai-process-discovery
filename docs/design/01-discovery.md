@@ -154,3 +154,48 @@ flowchart LR
 9. **Series come from the API.** Every bar, segment and point is an API field. The client only scales a value to a length in pixels, as it does on a `<meter>`.
 10. **Each chart has a data table** with the same figures, and no chart relies on colour alone: labels sit on the bars and lines, and unknown segments carry a pattern and the word "Unknown".
 11. **Print has its own light palette.** Only the dark theme exists today (ADR 0014), and a dark page wastes toner and prints poorly.
+
+## Portfolio overview on Home (B18)
+
+Added with PDR 004. It follows the same method as the rest of this document.
+
+### Job
+
+| Role | Main job | What success looks like |
+|---|---|---|
+| Operations lead | When I come back with several processes, I want to see how many hours and how much money they consume today and which one weighs most, so I know how much is at stake before I choose where to start | Says both totals and the heaviest process from Home in 30 seconds, and can tell a partial total from a complete one |
+
+**Design hypotheses** (to check in the usability session):
+
+- Someone who returns to Home with a few analysed processes says the monthly hours, the monthly cost and the heaviest process within 30 seconds.
+- Nobody reads "4 of 6 processes with a known cost" as the cost of all six.
+- Nobody misses that a process without an analysis is left out of the totals.
+- On the public demo, nobody is surprised that the list holds only their own processes.
+
+### Objects
+
+| Object | Key content | Changed by the user |
+|---|---|---|
+| Portfolio (B18) | This browser's processes: total monthly hours, total known monthly cost, how many have a known cost, one row per analysed process with its monthly cost and share of the known cost, and the processes not analysed yet, all from the API | No; it follows the processes and their analyses |
+
+### Critical path
+
+#### F. Size what is at stake (operations lead, B18)
+
+```mermaid
+flowchart LR
+  A[Home] -->|Read the band| B{Every process analysed, every cost known?}
+  B -->|Yes| C[Hours, cost and the heaviest process]
+  B -->|Cost unknown| D[Row reads Unknown, with its reason]
+  D -->|Link| E[Process settings]
+  B -->|Not analysed| F[Listed apart]
+  F -->|Link| G[Analyse]
+  E -->|Run analysis| A
+  G -->|Run analysis| A
+```
+
+### Constraints the overview adds
+
+12. **Totals come from the API, and so does each share.** The client draws a bar from the share the API sends, and never adds, compares or sorts figures.
+13. **A partial total says it is partial**, next to the figure, in text.
+14. **Only this browser's processes** on the public demo (ADR 0019). The overview never mentions other visitors' processes.

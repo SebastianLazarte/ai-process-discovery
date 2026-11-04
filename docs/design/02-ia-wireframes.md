@@ -325,6 +325,134 @@ Decisions for both sizes:
 - Do people find the crossing month without reading the title?
 - Does the printed page fit on one A4 sheet with a dozen steps in the panels below?
 
+## Portfolio overview on Home (B18)
+
+Scope in PDR 004, discovery in the "Portfolio overview on Home" section of `01-discovery.md`. Home itself is redesigned by RS-106 (three ways to start) on Graphite (ADR 0018). This section designs only the new band and where it sits. The figures in the sketches are an example of four processes: warranty claims, 112.00 h and 5600.00 a month; order intake, 86.50 h and 3460.00; zoning design, 40.00 h with no hourly cost; and supplier onboarding, not analysed yet.
+
+### 1. Who arrives
+
+| Role | From | Wants |
+|---|---|---|
+| Operations lead | A bookmark, returning with processes they created | How much their processes consume, and which one to look at first |
+| Demo visitor | A first visit, or after loading a demo | With no processes, the three ways to start of RS-106. After loading a demo, see that their process now counts |
+
+### 2. Content priority
+
+1. The two totals: monthly hours and monthly cost, with their units.
+2. How complete the cost total is: "2 of 3 processes with a known cost".
+3. Which process weighs most: one bar per process, largest first.
+4. What is left out: the processes not analysed yet, each with a way to analyse it.
+5. The same figures as a table, on demand.
+
+With processes, the band comes before the three ways to start: a returning lead came for their processes, and starting a new one is the second job. With none, the band does not show at all.
+
+### 3. States
+
+| State | What shows |
+|---|---|
+| No processes in this browser | No band. Home is as RS-106 defines it |
+| Processes, none analysed | The band shows only the list of processes not analysed yet, with the sentence "Analyse a process to see what it costs" |
+| Normal | Totals, "n of m processes with a known cost", the bars, and the list of processes not analysed yet when there are any |
+| Some costs unknown | The cost total adds the known ones and says so. Each unknown row reads "Unknown", with "Hourly cost not set" and a link to the process settings, and no bar |
+| Every cost unknown | The hours total shows. The cost total reads "Unknown" with the same reason, and the rows show hours only |
+| Loading | A skeleton the size of the band, so the sections below do not jump |
+| API down | The band shows the error with a Retry button; the three ways to start still show below |
+
+### 4. Three alternatives
+
+**A. A band above the ways to start**: two totals, then the bars.
+- For: the answer is the first thing a returning lead sees, and the bars name the heaviest process without a click.
+- Against: a visitor with one demo loaded sees a band with one bar.
+
+**B. Totals in the sidebar, under the process list.**
+- For: always on screen, on every page.
+- Against: the sidebar becomes a rail inside a process (ADR 0018), so the totals vanish where they would matter, and a narrow column cannot hold the bars.
+
+**C. Cost and hours as columns of the process table.**
+- For: no new section.
+- Against: a table has no totals row that reads as partial, and it answers "which one" only after the eye scans every row.
+
+### 5. Choice: A
+
+- **Answer first (ADR 0018).** The band puts the totals where the eye lands, the same principle as the band on Results.
+- **Preattentive length.** A bar's length shows the heaviest process before any number is read, which a column of figures cannot do.
+- **Honesty about completeness.** The partial count sits right under the total it qualifies (proximity), in text, so it cannot be skipped.
+- **Progressive disclosure.** With no processes, the band stays away and the three ways to start keep the first screen.
+- **Accepted cost.** With one process the band holds one bar. It still states the totals, and the usability session decides whether a single bar should collapse into the totals.
+
+### 6. Wireframes
+
+The sidebar is the one of Home (RS-105), left out of the sketches. The band uses the elevation and the type of ADR 0018.
+
+Desktop, 1280 px:
+
+```text
++------------------------------------------------------------------------------+
+| What is at stake                                                             |
+| From the latest analysis of each of your processes.                          |
+|                                                                              |
+| +--------------------------------+  +--------------------------------------+ |
+| | Monthly hours                  |  | Monthly cost                         | |
+| | 238.50 h                       |  | 9060.00                              | |
+| | 3 analysed processes           |  | 2 of 3 processes with a known cost   | |
+| +--------------------------------+  +--------------------------------------+ |
+|                                                                              |
+| Monthly cost by process                                   [ Show as a table ]|
+| Warranty claims from installers  ######################   5600.00   62 %     |
+| Order intake from distributors   #############            3460.00   38 %     |
+| Zoning design and quote          Unknown: hourly cost not set  [ Set it ]    |
+|                                                                              |
+| Not analysed yet: Supplier onboarding  [ Analyse ]                           |
++------------------------------------------------------------------------------+
+| Start from your sector | Describe it in your words | Open a demo   (RS-106)  |
++------------------------------------------------------------------------------+
+```
+
+Mobile, 375 px:
+
+```text
++-----------------------------------+
+| What is at stake                  |
+| From the latest analysis of each  |
+| of your processes.                |
+|                                   |
+| Monthly hours                     |
+| 238.50 h                          |
+| 3 analysed processes              |
+|                                   |
+| Monthly cost                      |
+| 9060.00                           |
+| 2 of 3 processes with a known     |
+| cost                              |
+|                                   |
+| Monthly cost by process           |
+| Warranty claims from installers   |
+| ################    5600.00  62 % |
+| Order intake from distributors    |
+| ##########          3460.00  38 % |
+| Zoning design and quote           |
+| Unknown: hourly cost not set      |
+| [ Set it ]                        |
+| [ Show as a table ]               |
+|                                   |
+| Not analysed yet                  |
+| Supplier onboarding  [ Analyse ]  |
++-----------------------------------+
+```
+
+Decisions for both sizes:
+
+- **The name goes above its bar on mobile**, so long process names never truncate and the bar keeps the full width.
+- **The figure and the share sit after the bar**, in tabular digits, so they line up from row to row.
+- **Each name is a link** to its latest analysis, and each bar is drawn for the eye only. The table that "Show as a table" reveals holds the same rows for screen readers (`aria-expanded` on the button).
+- **Touch targets of at least 44 by 44 px** for the links, Set it, Analyse and the table button.
+
+### 7. Open questions
+
+- Do people read "2 of 3 processes with a known cost" before they quote the total?
+- Do they expect the processes not analysed yet to count in the hours total?
+- With one process, is a band with one bar useful, or noise?
+
 ## Comparative heuristic evaluation
 
 Do this once all the wireframes exist. Walk the three critical paths of `01-discovery.md` twice, once in the current client and once in your wireframes, at full width and at 375 px. To run the current client: `uv run uvicorn app.main:app --reload`, then open `http://localhost:8000/ui/`.
