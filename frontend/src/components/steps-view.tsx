@@ -195,7 +195,7 @@ function StepRow({
         <button
           ref={moveRef(-1)}
           type="button"
-          className={buttonClass("quiet")}
+          className={buttonClass("tertiary")}
           aria-label={`Move ${step.name} up`}
           disabled={first}
           onClick={() => onMove(-1)}
@@ -205,7 +205,7 @@ function StepRow({
         <button
           ref={moveRef(1)}
           type="button"
-          className={buttonClass("quiet")}
+          className={buttonClass("tertiary")}
           aria-label={`Move ${step.name} down`}
           disabled={last}
           onClick={() => onMove(1)}

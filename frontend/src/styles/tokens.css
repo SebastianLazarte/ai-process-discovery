@@ -1,75 +1,91 @@
-/* Design tokens (ADR 0013). Every colour, radius and type decision of the client lives here.
+/* Design tokens (ADR 0013, ADR 0018). Every colour, radius and type decision of the client
+   lives here.
 
-   Primitive: the palette. Only the semantic layer below uses it. The values are the dark
-   theme of web/styles.css, written in OKLCH (the hex each one came from is in its comment),
-   so the two clients look like the same product during the migration.
+   Primitive: the palette. Only the semantic layer below uses it. Graphite (ADR 0018) keeps
+   the dark identity and the accent of ADR 0014 and builds depth from elevation: a ground,
+   a raised surface and a higher one. The values are written in OKLCH, with the hex of the
+   mockups in each comment.
    Semantic: what components use, through the Tailwind utilities in globals.css. A light
    theme redefines this layer only. */
 
 :root {
   /* Primitive */
-  --navy-950: oklch(17.68% 0.0229 260.39); /* #0b111b */
-  --navy-925: oklch(18.98% 0.0274 258.29); /* #0c1420 */
-  --navy-900: oklch(19.86% 0.0272 258.3); /* #0e1622 */
-  --navy-850: oklch(22.07% 0.0307 259.02); /* #121b29 */
-  --navy-800: oklch(25.84% 0.0381 258.29); /* #182436 */
-  --navy-775: oklch(25.68% 0.0473 261.22); /* #16233a */
-  --navy-750: oklch(28.68% 0.0372 258.3); /* #1f2b3d */
-  --navy-700: oklch(32.3% 0.0437 259.23); /* #26344a */
-  --navy-550: oklch(51.86% 0.0574 261.28); /* #56698a */
-  --slate-100: oklch(94.12% 0.0138 258.35); /* #e6ecf5 */
-  --slate-200: oklch(84.76% 0.0241 256.11); /* #c3cedd */
-  --slate-250: oklch(83.58% 0.0267 259.05); /* #bfcadb */
-  --slate-400: oklch(72.68% 0.0318 256.04); /* #9aa8bb */
-  --slate-450: oklch(69.08% 0.0372 256.37); /* #8d9db3 */
+  --graphite-950: oklch(16.35% 0.0136 264.09); /* #0b0e14 */
+  --graphite-925: oklch(18.65% 0.0176 264.01); /* #0f131b */
+  --graphite-900: oklch(20.5% 0.0234 265.47); /* #121722 */
+  --graphite-875: oklch(21.81% 0.0296 263.67); /* #131a28 */
+  --graphite-850: oklch(23.03% 0.0274 262.48); /* #161d2a */
+  --graphite-800: oklch(24.38% 0.0329 263.67); /* #182030 */
+  --graphite-775: oklch(25.98% 0.0306 262.67); /* #1c2433 */
+  --graphite-750: oklch(28.49% 0.0379 262.8); /* #202a3d */
+  --graphite-500: oklch(55.56% 0.0449 260.06); /* #64748e */
+  --slate-100: oklch(94.13% 0.0109 256.7); /* #e7ecf3 */
+  --slate-250: oklch(80.74% 0.0256 257.65); /* #b6c1d1 */
+  --slate-400: oklch(72.44% 0.0313 257.78); /* #9aa7ba */
+  --blue-200: oklch(85.57% 0.0708 263.71); /* #b8d0ff */
   --blue-250: oklch(82.14% 0.0887 265.42); /* #a9c4ff */
   --blue-300: oklch(76.93% 0.1175 261.56); /* #8ab4ff */
   --blue-700: oklch(46.69% 0.0863 259.46); /* #3c5a8a */
   --blue-850: oklch(31.92% 0.0624 257.13); /* #1d3352 */
-  --blue-900: oklch(29.6% 0.0649 261.62); /* #1a2c4d */
-  --blue-925: oklch(28.68% 0.0577 261.53); /* #1a2a47 */
+  --blue-875: oklch(28.61% 0.0539 261.49); /* #1b2a45 */
+  --blue-900: oklch(28.16% 0.0605 264.49); /* #1a2847 */
   --blue-975: oklch(22% 0.0533 260.04); /* #0b1a33 */
+  --violet-250: oklch(81.8% 0.103 295.99); /* #c9b6ff */
   --green-300: oklch(82.64% 0.0908 161.8); /* #8fd9b4 */
-  --green-900: oklch(29.78% 0.0416 169.95); /* #15342a */
-  --amber-150: oklch(87.21% 0.0553 89.92); /* #e3d4ac */
-  --amber-300: oklch(84.31% 0.0985 85.11); /* #e9c77f */
-  --amber-900: oklch(30.07% 0.0319 86.54); /* #352d1b */
+  --green-900: oklch(28.41% 0.0377 178.55); /* #12302a */
+  --amber-150: oklch(90.45% 0.0634 84.94); /* #f3ddb0 */
+  --amber-300: oklch(81.82% 0.1254 72.68); /* #f5b661 */
+  --amber-900: oklch(28.06% 0.0417 82.9); /* #33270f */
+  --amber-975: oklch(23.27% 0.0486 77.52); /* #2a1a00 */
   --red-300: oklch(82.08% 0.1003 25.46); /* #ffaba3 */
   --red-700: oklch(44.79% 0.0762 13.65); /* #794248 */
   --red-850: oklch(32.3% 0.0403 14.71); /* #462b2d */
-  --red-900: oklch(29.14% 0.0404 7.37); /* #3d2328 */
+  --red-900: oklch(28.2% 0.0392 6.89); /* #3a2126 */
 
-  /* Semantic: surfaces and text */
+  /* Semantic: elevation. The ground, a raised surface (panels, cards), a higher one
+     (secondary buttons, the current tab, chips on a surface), and the band that carries the
+     answer on Results. No card sits inside a bordered panel. */
   color-scheme: dark;
-  --bg: var(--navy-950);
-  --sidebar: var(--navy-900);
-  --surface: var(--navy-850);
-  --surface-raised: var(--navy-800);
+  --bg: var(--graphite-950);
+  --sidebar: var(--graphite-925);
+  --surface: var(--graphite-900);
+  --surface-raised: var(--graphite-800);
+  --surface-hover: var(--graphite-750);
+  --band: var(--graphite-875);
+
+  /* Semantic: text and lines. Lines only separate content inside a surface. */
   --ink: var(--slate-100);
-  --ink-soft: var(--slate-200);
+  --ink-soft: var(--slate-250);
   --label: var(--slate-250);
   --muted: var(--slate-400);
-  --table-head: var(--slate-450);
-  --line: var(--navy-700);
-  --line-soft: var(--navy-750);
-  --input-bg: var(--navy-925);
-  /* web/ used #33445e here, 1.9:1 against the input; WCAG 1.4.11 asks 3:1 for a control. */
-  --input-line: var(--navy-550);
-  --icon-bg: var(--navy-775);
+  --table-head: var(--slate-400);
+  --line: var(--graphite-775);
+  --line-soft: var(--graphite-850);
+  --input-bg: var(--graphite-950);
+  /* WCAG 1.4.11 asks 3:1 for a control border, on the ground and on every surface. */
+  --input-line: var(--graphite-500);
+  --icon-bg: var(--graphite-800);
 
   /* Semantic: accent and status. Status colours only ever mean status. */
   --accent: var(--blue-300);
+  --accent-hover: var(--blue-200);
   --accent-ink: var(--blue-975);
-  --accent-soft: var(--blue-900);
+  --accent-soft: var(--blue-875);
   --good: var(--green-300);
   --good-bg: var(--green-900);
   --info: var(--blue-250);
-  --info-bg: var(--blue-925);
+  --info-bg: var(--blue-900);
   --warn: var(--amber-300);
   --warn-bg: var(--amber-900);
   --warn-ink: var(--amber-150);
   --bad: var(--red-300);
   --bad-bg: var(--red-900);
+
+  /* Semantic: the language of trust (design brief). The AI tone is reserved for AI
+     suggestions; "Required" is a filled badge for human controls. */
+  --ai: var(--violet-250);
+  --required: var(--amber-300);
+  --required-ink: var(--amber-975);
 
   /* Semantic: overlays */
   --toast-bg: var(--blue-850);

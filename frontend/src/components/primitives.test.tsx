@@ -96,7 +96,8 @@ describe("badge", () => {
     ["RULE_BASED", "good"],
     ["AI_CANDIDATE", "info"],
     ["RECOMMENDED", "warn"],
-    ["REQUIRED", "bad"],
+    ["REQUIRED", "required"],
+    ["AI", "ai"],
     ["MANUAL", "bad"],
     ["PARTIAL", "neutral"],
     [null, "neutral"],
@@ -112,7 +113,7 @@ describe("badge", () => {
       </>,
     );
     expect(screen.getByText("API integration")).toBeDefined();
-    expect(screen.getByText("Control: Required").getAttribute("data-tone")).toBe("bad");
+    expect(screen.getByText("Control: Required").getAttribute("data-tone")).toBe("required");
   });
 });
 
