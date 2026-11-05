@@ -3,8 +3,9 @@ import type { ReactNode } from "react";
 import { DemoBanner } from "./demo-banner";
 import { Sidebar } from "./sidebar";
 
-// Every page: skip link, the sidebar, the public demo banner and one main region, laid out
-// as in the vanilla client (ADR 0014).
+// Every page: skip link, the navigation, the public demo banner and one main region. The
+// navigation sets its own width: the full sidebar on Home, a rail inside a process
+// (ADR 0018).
 export function AppShell({ children }: { children: ReactNode }) {
   return (
     <>
@@ -14,7 +15,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       >
         Skip to content
       </a>
-      <div className="min-h-screen md:grid md:grid-cols-[268px_minmax(0,1fr)]">
+      <div className="min-h-screen md:grid md:grid-cols-[auto_minmax(0,1fr)]">
         <Sidebar />
         <div className="min-w-0">
           <DemoBanner />
