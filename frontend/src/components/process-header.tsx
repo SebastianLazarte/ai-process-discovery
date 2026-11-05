@@ -11,7 +11,7 @@ export function ProcessHeader({
   return (
     <header className="mb-6">
       <Eyebrow>Process · {version(process.version)}</Eyebrow>
-      <h1 className="mb-3 text-[27px] leading-[1.15] font-semibold tracking-[-1.1px] md:text-[34px]">
+      <h1 className="mb-3 text-[27px] leading-[1.15] font-semibold tracking-[-1.1px] md:text-title">
         {process.name}
       </h1>
       {process.description && (

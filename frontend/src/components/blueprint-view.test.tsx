@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { fakeApi } from "@/test/fake-api";
 import { ANALYSIS_ID, STEP_ID, blueprint, processRead, step } from "@/test/fixtures";
 import { renderWithProviders } from "@/test/render";
+import { expectGraphite } from "@/test/graphite";
 
 import { BlueprintView } from "./blueprint-view";
 
@@ -114,5 +115,15 @@ describe("RS-94: the Blueprint tab", () => {
     expect(link.getAttribute("download")).toBe("blueprint-66666666.md");
     // The browser fetches the file; the client never reads or rebuilds the Markdown.
     expect(calls).not.toContain(`GET ${BLUEPRINT_PATH}.md`);
+  });
+});
+
+describe("RS-108: Blueprint on Graphite", () => {
+  it("RS-108.1: uses the Graphite primitives", async () => {
+    renderBlueprint();
+
+    const download = await screen.findByRole("link", { name: "Download .md" });
+    expectGraphite(document.body);
+    expect(download.className.split(" ")).toContain("bg-accent");
   });
 });
