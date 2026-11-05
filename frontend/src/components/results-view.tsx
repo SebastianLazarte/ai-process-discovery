@@ -11,6 +11,7 @@ import { AnswerBand } from "./results/answer-band";
 import { ControlsPanel, ImpactPanel, Quads, RiskPanel, SuitabilityPanel } from "./results/panels";
 import { NO_HOURLY_COST, unknownNote } from "./results/reasons";
 import { StepAssessments } from "./results/step-assessments";
+import { ResultsSkeleton } from "./states";
 
 // The Results tab (RS-92, RS-107): the answer band with its provenance chips, the current
 // state, the four panels and the step-by-step assessments. Every figure is the API's.
@@ -18,8 +19,7 @@ export function ResultsView({ id, analysisId }: { id: string; analysisId: string
   const analysis = useAnalysis(analysisId);
   const process = useProcess(id);
 
-  if (analysis.isPending)
-    return <p className="py-24 text-center text-muted">Loading the analysis…</p>;
+  if (analysis.isPending) return <ResultsSkeleton />;
   if (analysis.isError) {
     const missing = analysis.error instanceof ApiError && analysis.error.status === 404;
     return (
