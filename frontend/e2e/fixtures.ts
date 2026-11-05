@@ -40,3 +40,11 @@ export async function expectAccessible(page: Page, name: string): Promise<void> 
     .join("\n");
   expect(report, `serious or critical axe violations on ${name}`).toBe("");
 }
+
+/** The page is no wider than the screen: nothing scrolls sideways (RS-105). */
+export async function expectNoSidewaysScroll(page: Page, name: string): Promise<void> {
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(overflow, `horizontal overflow in px on ${name}`).toBeLessThanOrEqual(0);
+}
