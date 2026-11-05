@@ -29,6 +29,9 @@ class Settings(BaseSettings):
 
     # Public deployment (ADR 0008): the web client warns that data is public and short-lived.
     public_demo: bool = False
+    # AI drafts of a process from a description (B14). Off until RS-100 and RS-101 merge
+    # (ADR 0017); the client hides "Describe it in your words" while it is off (RS-106).
+    process_drafts_enabled: bool = False
 
 
 @lru_cache

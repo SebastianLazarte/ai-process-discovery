@@ -380,6 +380,8 @@ export interface components {
             version: string;
             /** Public Demo */
             public_demo: boolean;
+            /** Process Drafts Enabled */
+            process_drafts_enabled: boolean;
         };
         /**
          * AutomationMethod
@@ -495,6 +497,10 @@ export interface components {
             name: string;
             /** Description */
             description: string;
+            /** Step Count */
+            step_count?: number | null;
+            /** Executions Per Month */
+            executions_per_month?: number | null;
         };
         /** HTTPValidationError */
         HTTPValidationError: {

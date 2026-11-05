@@ -28,18 +28,27 @@ def health(request: Request) -> JSONResponse:
 class AppMeta(BaseModel):
     version: str
     public_demo: bool
+    process_drafts_enabled: bool
 
 
 @router.get("/meta")
 def meta(request: Request) -> AppMeta:
     """What the client needs to know about this deployment."""
-    return AppMeta(version=__version__, public_demo=request.app.state.settings.public_demo)
+    settings = request.app.state.settings
+    return AppMeta(
+        version=__version__,
+        public_demo=settings.public_demo,
+        process_drafts_enabled=settings.process_drafts_enabled,
+    )
 
 
 class DemoSummary(BaseModel):
     slug: str
     name: str
     description: str
+    # The figures a demo card shows (RS-106), counted by the API. None when unknown.
+    step_count: int | None = None
+    executions_per_month: int | None = None
 
 
 @router.get("/demo-processes")
