@@ -6,6 +6,7 @@ import { cleanup, fireEvent, screen, waitFor, within } from "@testing-library/re
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { fakeApi } from "@/test/fake-api";
+import { expectGraphite } from "@/test/graphite";
 import { processRead, step } from "@/test/fixtures";
 import { push, renderWithProviders } from "@/test/render";
 
@@ -348,5 +349,15 @@ describe("RS-91: deleting a step", () => {
     expect(document.activeElement).toBe(remove);
     expect(stepNames()).toHaveLength(3);
     expect(calls.some((call) => call.startsWith("DELETE"))).toBe(false);
+  });
+});
+
+describe("RS-108: Steps on Graphite", () => {
+  it("RS-108.1: uses the Graphite primitives", async () => {
+    fakeApi({ [`GET ${PATH}`]: { body: processRead({ steps: [step()] }) } });
+    const { container } = renderWithProviders(<StepsView id={PROCESS.id} />);
+
+    await screen.findByRole("button", { name: "Add step" });
+    expectGraphite(container);
   });
 });

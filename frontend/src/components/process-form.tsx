@@ -9,7 +9,7 @@ import { ApiError, applyFieldErrors } from "@/lib/api";
 import { useCreateProcess, useUpdateProcess } from "@/lib/api/queries";
 import type { ProcessCreate, ProcessRead } from "@/lib/api/queries";
 
-import { buttonClass } from "./button";
+import { Button } from "./button";
 import { NumberField, TextField } from "./field";
 import { useToast } from "./toast";
 
@@ -129,6 +129,7 @@ export function ProcessSettingsForm({ process }: { process: ProcessRead }) {
         pending={update.isPending}
         label="Save process"
         pendingLabel="Saving…"
+        variant="secondary"
       />
     </form>
   );
@@ -187,17 +188,22 @@ function ProcessFields({
   );
 }
 
-/** The messages no field claimed, then the submit button. */
+/**
+ * The messages no field claimed, then the submit button. It is the primary action unless the
+ * view already has one, as the process settings beside Add step (ADR 0018).
+ */
 export function Submit({
   formError,
   pending,
   label,
   pendingLabel,
+  variant = "primary",
 }: {
   formError: string[];
   pending: boolean;
   label: string;
   pendingLabel: string;
+  variant?: "primary" | "secondary";
 }) {
   return (
     <>
@@ -207,9 +213,9 @@ export function Submit({
         </p>
       )}
       <div className="sm:col-span-2">
-        <button type="submit" className={buttonClass("primary")} disabled={pending}>
-          {pending ? pendingLabel : label}
-        </button>
+        <Button variant={variant} type="submit" pending={pending} pendingLabel={pendingLabel}>
+          {label}
+        </Button>
       </div>
     </>
   );

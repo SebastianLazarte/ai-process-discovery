@@ -31,7 +31,9 @@ export function TableScroll({
       tabIndex={0}
       aria-labelledby={labelledBy}
       aria-label={label}
-      className="overflow-x-auto"
+      // relative: a visually hidden header (position: absolute) stays inside the scroll box
+      // instead of widening the page on a phone.
+      className="relative overflow-x-auto"
     >
       {children}
     </div>

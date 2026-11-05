@@ -199,8 +199,8 @@ export function StepForm({
         {...field("integration_readiness")}
       />
       <TextField label="Tools" hint="Comma separated." {...field("tools")} />
-      <fieldset className="flex flex-wrap gap-x-[22px] rounded-[10px] border border-line px-4 pt-1.5 pb-2 sm:col-span-2">
-        <legend className="px-1.5 text-xs text-muted">Controls and data</legend>
+      <fieldset className="flex flex-wrap gap-x-[22px] rounded-card bg-surface-raised px-4 pt-3 pb-2 sm:col-span-2">
+        <legend className="float-left mb-2 w-full text-xs text-muted">Controls and data</legend>
         <CheckboxField label="Requires human judgement" {...field("requires_human_judgement")} />
         <CheckboxField label="Requires human approval" {...field("requires_human_approval")} />
         <CheckboxField label="Handles sensitive data" {...field("handles_sensitive_data")} />

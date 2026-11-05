@@ -6,7 +6,7 @@ import { enumLabel, hours, money, months, percent, score, shortId } from "@/lib/
 import { Badge } from "../badge";
 import { Meter } from "../meter";
 import { Panel } from "../panel";
-import { Note } from "./note";
+import { Note } from "../note";
 import {
   NO_HOURLY_COST,
   NO_IMPLEMENTATION_COST,

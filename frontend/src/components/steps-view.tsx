@@ -8,7 +8,8 @@ import type { ProcessRead } from "@/lib/api/queries";
 import { count, enumLabel, money, number, percent } from "@/lib/format";
 
 import { Badge } from "./badge";
-import { buttonClass } from "./button";
+import { Button, buttonClass } from "./button";
+import { ArrowDownIcon, ArrowUpIcon, PlusIcon } from "./icons";
 import { ConfirmButton, ConfirmQuestion } from "./confirm-button";
 import { Dialog } from "./dialog";
 import { Metric, Metrics } from "./metric";
@@ -87,9 +88,10 @@ export function StepsView({ id }: { id: string }) {
         title="Steps"
         className="mb-6"
         action={
-          <button type="button" className={buttonClass("primary")} onClick={() => setEditing({})}>
+          <Button variant="primary" onClick={() => setEditing({})}>
+            <PlusIcon className="size-4" />
             Add step
-          </button>
+          </Button>
         }
       >
         {data.steps.length > 0 ? (
@@ -139,9 +141,9 @@ export function StepsView({ id }: { id: string }) {
             onSaved={close}
           />
         )}
-        <button type="button" className={`${buttonClass()} mt-2`} onClick={close}>
+        <Button className="mt-2" onClick={close}>
           Close
-        </button>
+        </Button>
       </Dialog>
     </>
   );
@@ -200,7 +202,7 @@ function StepRow({
           disabled={first}
           onClick={() => onMove(-1)}
         >
-          ↑
+          <ArrowUpIcon className="size-4" />
         </button>
         <button
           ref={moveRef(1)}
@@ -210,7 +212,7 @@ function StepRow({
           disabled={last}
           onClick={() => onMove(1)}
         >
-          ↓
+          <ArrowDownIcon className="size-4" />
         </button>
         <button
           type="button"

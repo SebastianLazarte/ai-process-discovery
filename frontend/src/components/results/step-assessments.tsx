@@ -3,7 +3,7 @@ import { count, detail, enumLabel, hours, percent } from "@/lib/format";
 
 import { Badge } from "../badge";
 import { TableScroll } from "../data-table";
-import { Note } from "./note";
+import { Note } from "../note";
 import { OverrideForm } from "./override-form";
 import { SourceBadge } from "./source-badge";
 

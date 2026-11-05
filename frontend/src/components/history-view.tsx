@@ -7,7 +7,7 @@ import type { components } from "@/lib/api/schema";
 import { count, shortId, timestamp, version } from "@/lib/format";
 
 import { Badge } from "./badge";
-import { buttonClass } from "./button";
+import { Button, buttonClass } from "./button";
 import { DataTable, SkeletonRows, type Column } from "./data-table";
 import { Panel } from "./panel";
 
@@ -59,13 +59,9 @@ export function HistoryView({ id }: { id: string }) {
       {analyses.isError && (
         <p className="text-sm text-muted">
           The analyses could not be loaded.{" "}
-          <button
-            type="button"
-            className="text-accent underline"
-            onClick={() => analyses.refetch()}
-          >
+          <Button variant="tertiary" onClick={() => analyses.refetch()}>
             Try again
-          </button>
+          </Button>
         </p>
       )}
       {analyses.data?.length === 0 && (
