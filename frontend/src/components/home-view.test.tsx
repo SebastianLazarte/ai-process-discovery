@@ -48,7 +48,7 @@ describe("RS-73.1: loading a demo", () => {
     });
     renderWithProviders(<HomeView />);
 
-    expect(await screen.findByText("No processes yet. Load a demo or create one.")).toBeDefined();
+    expect(await screen.findByRole("heading", { name: "No processes yet" })).toBeDefined();
     fireEvent.click(await screen.findByRole("button", { name: `Load and open: ${DEMO.name}` }));
 
     const table = await screen.findByRole("table", { name: "Your processes" });
@@ -151,5 +151,56 @@ describe("RS-106: three ways to start", () => {
     if (!counted || !plain) throw new Error("expected two demo cards");
     expect(within(counted).getByText("7 steps · 1,320 runs a month")).toBeDefined();
     expect(plain.textContent).not.toMatch(/\d/);
+  });
+});
+
+describe("RS-109: empty states and skeletons on Home", () => {
+  it("RS-109.2: the sidebar and Home show an empty state with a way to start", async () => {
+    fakeApi({
+      "GET /meta": { body: META },
+      "GET /demo-processes": { body: [DEMO] },
+      "GET /processes": { body: [] },
+    });
+    renderWithProviders(
+      <AppShell>
+        <HomeView />
+      </AppShell>,
+    );
+
+    const nav = screen.getByRole("navigation", { name: "Processes" });
+    expect(await within(nav).findByRole("heading", { name: "No processes yet" })).toBeDefined();
+    expect(
+      within(nav).getByRole("link", { name: "Start from your sector" }).getAttribute("href"),
+    ).toBe("/processes/new");
+    expect(within(nav).getByRole("link", { name: "Open a demo" }).getAttribute("href")).toBe(
+      "/#demos-title",
+    );
+
+    const panel = screen.getByRole("region", { name: "Your processes" });
+    expect(await within(panel).findByRole("heading", { name: "No processes yet" })).toBeDefined();
+    expect(
+      within(panel).getByRole("link", { name: "Start from your sector" }).getAttribute("href"),
+    ).toBe("/processes/new");
+    expect(within(panel).getByRole("link", { name: "Open a demo" }).getAttribute("href")).toBe(
+      "#demos-title",
+    );
+  });
+
+  it("RS-109.3: the demos wait in a skeleton laid out as the cards", async () => {
+    fakeApi({
+      "GET /meta": { body: META },
+      "GET /demo-processes": { body: [DEMO], delay: 50 },
+      "GET /processes": { body: [] },
+    });
+    renderWithProviders(<HomeView />);
+
+    const skeleton = screen.getByRole("status", { name: "Loading demos" });
+    const grid = skeleton.querySelector("[aria-hidden] > div");
+    expect(grid?.children).toHaveLength(3);
+    const skeletonGrid = grid?.className;
+
+    const cards = await screen.findByRole("list", { name: "Demos" });
+    expect(screen.queryByRole("status", { name: "Loading demos" })).toBeNull();
+    expect(cards.className).toBe(skeletonGrid);
   });
 });

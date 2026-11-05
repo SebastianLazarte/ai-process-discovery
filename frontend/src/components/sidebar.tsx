@@ -10,6 +10,7 @@ import { steps, version } from "@/lib/format";
 import { BrandIcon } from "./brand-icon";
 import { buttonClass } from "./button";
 import { PlusIcon, ProcessesIcon } from "./icons";
+import { EmptyState, ProcessListSkeleton } from "./states";
 
 // The navigation in two forms (ADR 0018). Home and New process keep the full sidebar of
 // ADR 0014: brand, New process, and every process one click away, the current one marked.
@@ -153,8 +154,22 @@ function ProcessList({ layout }: { layout: "fold" | "stack" }) {
   const pathname = usePathname();
   const fold = layout === "fold";
 
+  if (processes.isPending) return <ProcessListSkeleton fold={fold} />;
   if (processes.data?.length === 0) {
-    return <p className="mx-2.5 text-sm text-muted">No processes yet.</p>;
+    return (
+      <EmptyState
+        compact
+        title="No processes yet"
+        action={
+          <>
+            <Link href="/processes/new">Start from your sector</Link>
+            <Link href="/#demos-title">Open a demo</Link>
+          </>
+        }
+      >
+        Start one, or open a finished demo.
+      </EmptyState>
+    );
   }
   return (
     <ul className={fold ? "flex gap-1.5 overflow-x-auto md:block md:space-y-0.5" : "space-y-0.5"}>

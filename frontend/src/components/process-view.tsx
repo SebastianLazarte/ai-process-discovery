@@ -8,14 +8,14 @@ import { useProcess } from "@/lib/api/queries";
 import { Eyebrow } from "./panel";
 import { ProcessHeader } from "./process-header";
 import { ProcessTabs } from "./process-tabs";
+import { ProcessSkeleton } from "./states";
 
 // The frame of every process page (app/processes/[id]/layout.tsx): the title and the
 // section tabs, then the section. A process that does not load shows why, and no section.
 export function ProcessView({ id, children }: { id: string; children?: ReactNode }) {
   const process = useProcess(id);
 
-  if (process.isPending)
-    return <p className="py-24 text-center text-muted">Loading the process…</p>;
+  if (process.isPending) return <ProcessSkeleton />;
   if (process.isError) {
     const missing = process.error instanceof ApiError && process.error.status === 404;
     return (

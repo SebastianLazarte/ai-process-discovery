@@ -145,3 +145,20 @@ describe("RS-108: the process tabs", () => {
     for (const link of others) expect(link.getAttribute("aria-current")).toBeNull();
   });
 });
+
+describe("RS-109.3: a process page while it loads", () => {
+  it("shows a skeleton of the title, the tabs and a panel, announced once", async () => {
+    pathname.current = PATH;
+    fakeApi({
+      [`GET ${PATH}`]: { body: PROCESS, delay: 50 },
+      [`GET ${PATH}/analyses`]: { body: [] },
+    });
+    renderWithProviders(<ProcessView id={PROCESS.id} />);
+
+    const skeleton = screen.getByRole("status", { name: "Loading the process" });
+    expect(skeleton.getAttribute("aria-busy")).toBe("true");
+    expect(skeleton.querySelector("[aria-hidden]")?.children).toHaveLength(3);
+    expect(await screen.findByRole("heading", { name: PROCESS.name, level: 1 })).toBeDefined();
+    expect(screen.queryByRole("status", { name: "Loading the process" })).toBeNull();
+  });
+});

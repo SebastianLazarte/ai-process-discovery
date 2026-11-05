@@ -100,7 +100,7 @@ describe("RS-93: the History tab", () => {
 
     expect(await screen.findByRole("heading", { name: "No analyses yet" })).toBeDefined();
     expect(screen.queryByRole("table")).toBeNull();
-    expect(screen.getByRole("link", { name: "Analyse" }).getAttribute("href")).toBe(
+    expect(screen.getByRole("link", { name: "Go to Analyse" }).getAttribute("href")).toBe(
       `/processes/${PROCESS_ID}/analyse`,
     );
   });

@@ -12,9 +12,10 @@ import { keys, useProcess, useRunAnalysis } from "@/lib/api/queries";
 import type { ProcessRead } from "@/lib/api/queries";
 import { percent } from "@/lib/format";
 
-import { Button } from "./button";
+import { Button, buttonClass } from "./button";
 import { PlayIcon } from "./icons";
 import { Note } from "./note";
+import { EmptyState } from "./states";
 import { CheckboxField, NumberField } from "./field";
 import { LlmWait } from "./llm-wait";
 import type { WaitStatus } from "./llm-wait";
@@ -41,13 +42,16 @@ export function AnalyseView({ id }: { id: string }) {
   if (process.data.steps.length === 0)
     return (
       <Panel id="analyse-title" title="Analyse">
-        <div className="py-8 text-center">
-          <span aria-hidden="true">◎</span>
-          <h3 className="font-semibold">No steps to analyse</h3>
-          <p className="text-[13px] text-muted">
-            Add steps on the <Link href={`/processes/${id}`}>Steps</Link> tab first.
-          </p>
-        </div>
+        <EmptyState
+          title="No steps to analyse"
+          action={
+            <Link href={`/processes/${id}`} className={buttonClass("secondary")}>
+              Go to Steps
+            </Link>
+          }
+        >
+          Add steps on the Steps tab first.
+        </EmptyState>
       </Panel>
     );
   return <AnalyseForm process={process.data} />;
