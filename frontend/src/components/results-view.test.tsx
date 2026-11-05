@@ -1,5 +1,6 @@
 // RS-92, criteria 1 to 4: Results in four panels with the language of trust. Criterion 5
 // (a demo opens its first analysis) is in home-view.test.tsx.
+// RS-107: the answer band first, with its provenance chips.
 import { cleanup, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -177,7 +178,7 @@ describe("RS-92: Results", () => {
       }),
     );
 
-    const bar = await screen.findByRole("region", { name: "Provenance" });
+    const bar = await screen.findByRole("list", { name: "Provenance" });
     expect(bar.textContent).toContain("rules 2.1.0");
     expect(bar.textContent).toContain("prompt step-v3");
     expect(within(bar).getByText("LLM ok · anthropic/claude-sonnet-5-5")).toBeDefined();
@@ -186,7 +187,7 @@ describe("RS-92: Results", () => {
   it("says when the LLM was not requested and no prompt was used", async () => {
     show(analysisRead());
 
-    const bar = await screen.findByRole("region", { name: "Provenance" });
+    const bar = await screen.findByRole("list", { name: "Provenance" });
     expect(within(bar).getByText("LLM not requested")).toBeDefined();
     expect(bar.textContent).toContain("prompt none");
   });
@@ -199,6 +200,88 @@ describe("RS-92: Results", () => {
     renderWithProviders(<ResultsView id={PROCESS_ID} analysisId={ANALYSIS_ID} />);
 
     expect(await screen.findByText("This analysis does not exist.")).toBeDefined();
+  });
+});
+
+const band = () => screen.findByRole("region", { name: "The answer" });
+
+describe("RS-107: the answer first", () => {
+  it("RS-107.1: opens on the net saving per month and the payback as the API returns them", async () => {
+    show(analysisRead({ business_impact: KNOWN_IMPACT }));
+
+    const answer = await band();
+    const first = document.querySelector("section");
+    expect(first).toBe(answer);
+    const terms = within(answer)
+      .getAllByRole("term")
+      .map((term) => term.textContent);
+    expect(terms).toEqual([
+      "Net savings / month",
+      "Payback",
+      "Hours freed / month",
+      "ROI at 12 months",
+    ]);
+    const values = within(answer)
+      .getAllByRole("definition")
+      .map((value) => value.textContent);
+    expect(values).toEqual(["1,200.50", "4.0 mo", "6.50 h", "150%"]);
+  });
+
+  it("RS-107.2: reads unknown with its reason, never 0", async () => {
+    show(analysisRead());
+
+    const answer = await band();
+    const values = within(answer)
+      .getAllByRole("definition")
+      .map((value) => value.textContent);
+    expect(values).toEqual([
+      "unknown",
+      "Hourly cost not set",
+      "unknown",
+      "Hourly cost not set",
+      "6.00 h",
+      "unknown",
+      "Hourly cost not set",
+    ]);
+    expect(values.some((value) => /^0(\.0+)?( h| mo|%)?$/.test(value ?? ""))).toBe(false);
+  });
+
+  it("RS-107.2: says why the payback is unknown when every input is known", async () => {
+    show(
+      analysisRead({
+        business_impact: { ...KNOWN_IMPACT, net_monthly_savings: "-20", payback_months: null },
+      }),
+    );
+
+    const answer = await band();
+    expect(
+      within(answer).getByText("Net savings are not positive, so it never pays back"),
+    ).toBeDefined();
+  });
+
+  it("RS-107.3: shows the rules, LLM, prompt and process versions as chips in the band", async () => {
+    show(analysisRead({ rules_version: "2.1.0", process_version: 3 }));
+
+    const chips = within(await band()).getByRole("list", { name: "Provenance" });
+    const texts = within(chips)
+      .getAllByRole("listitem")
+      .map((chip) => chip.textContent);
+    expect(texts.slice(0, 4)).toEqual([
+      "rules 2.1.0",
+      "LLM not requested",
+      "prompt none",
+      "process v3",
+    ]);
+  });
+
+  it("RS-107.4: no figure of the band or the panels combines them into one score", async () => {
+    show(analysisRead({ business_impact: KNOWN_IMPACT }));
+
+    const answer = await band();
+    expect(answer.textContent).not.toMatch(/score|\/ 100|overall|combined/i);
+    expect(screen.getAllByText("/ 100")).toHaveLength(1);
+    expect(within(panel("Automation suitability")).getByText("/ 100")).toBeDefined();
+    expect(screen.queryByText(/combined|overall|total score/i)).toBeNull();
   });
 });
 
@@ -228,7 +311,7 @@ describe("Results without the LLM", () => {
   it("shows no note when the LLM was not requested", async () => {
     show(analysisRead());
 
-    await screen.findByRole("region", { name: "Provenance" });
+    await screen.findByRole("list", { name: "Provenance" });
     expect(screen.queryByRole("note")).toBeNull();
   });
 });
