@@ -26,27 +26,26 @@ export function AnswerBand({ analysis }: { analysis: AnalysisRead }) {
       <h2 id="answer-title" className="sr-only">
         The answer
       </h2>
-      <dl className="grid gap-6">
-        <div className="min-w-0">
+      {/* Every term and value pair is a direct child of the list, as axe asks. */}
+      <dl className="grid gap-x-4 gap-y-5 sm:grid-cols-3">
+        <div className="min-w-0 sm:col-span-3">
           <dt className="text-sm text-muted">Net savings / month</dt>
           <dd className="text-[40px] leading-tight font-semibold tracking-[-1.5px] break-words text-accent tabular-nums md:text-figure">
             {money(impact.net_monthly_savings)}
           </dd>
           {netReason && <dd className="text-sm text-ink-soft">{netReason}</dd>}
         </div>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Figure
-            term="Payback"
-            value={months(impact.payback_months)}
-            note={unknownNote(impact.payback_months, paybackReason(impact))}
-          />
-          <Figure term="Hours freed / month" value={hours(impact.estimated_hours_saved)} />
-          <Figure
-            term="ROI at 12 months"
-            value={percent(impact.roi_12_months)}
-            note={unknownNote(impact.roi_12_months, roiReason(impact))}
-          />
-        </div>
+        <Figure
+          term="Payback"
+          value={months(impact.payback_months)}
+          note={unknownNote(impact.payback_months, paybackReason(impact))}
+        />
+        <Figure term="Hours freed / month" value={hours(impact.estimated_hours_saved)} />
+        <Figure
+          term="ROI at 12 months"
+          value={percent(impact.roi_12_months)}
+          note={unknownNote(impact.roi_12_months, roiReason(impact))}
+        />
       </dl>
       <div className="mt-6">
         <Chips label="Provenance">

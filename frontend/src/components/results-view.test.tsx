@@ -225,6 +225,11 @@ describe("RS-107: the answer first", () => {
       .getAllByRole("definition")
       .map((value) => value.textContent);
     expect(values).toEqual(["1,200.50", "4.0 mo", "6.50 h", "150%"]);
+    // A valid definition list, as axe checks it: groups of terms and values only.
+    for (const group of answer.querySelector("dl")?.children ?? []) {
+      expect(group.tagName).toBe("DIV");
+      expect([...group.children].every((child) => ["DT", "DD"].includes(child.tagName))).toBe(true);
+    }
   });
 
   it("RS-107.2: reads unknown with its reason, never 0", async () => {
