@@ -4,8 +4,9 @@ from pydantic import BaseModel
 from sqlalchemy import text
 
 from app import __version__
-from app.api.dependencies import DemoServiceDep
+from app.api.dependencies import DemoServiceDep, UsageServiceDep
 from app.models.schemas.process import ProcessRead
+from app.services.usage_service import UsageEvent
 
 router = APIRouter(tags=["system"])
 
@@ -48,6 +49,8 @@ def list_demo_processes(service: DemoServiceDep) -> list[DemoSummary]:
 
 
 @router.post("/demo-processes/{slug}", status_code=status.HTTP_201_CREATED)
-def load_demo_process(slug: str, service: DemoServiceDep) -> ProcessRead:
+def load_demo_process(slug: str, service: DemoServiceDep, usage: UsageServiceDep) -> ProcessRead:
     """Create the demo process, plus a first analysis without the LLM when it has assumptions."""
-    return service.load(slug)
+    process = service.load(slug)
+    usage.record(UsageEvent.DEMO_LOADED)
+    return process
