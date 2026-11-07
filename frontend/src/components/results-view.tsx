@@ -7,12 +7,12 @@ import { hours, money } from "@/lib/format";
 import { LlmUnavailableNote } from "./llm-wait";
 import { Metric, Metrics } from "./metric";
 import { Panel } from "./panel";
+import { AnswerBand } from "./results/answer-band";
 import { ControlsPanel, ImpactPanel, Quads, RiskPanel, SuitabilityPanel } from "./results/panels";
-import { ProvenanceBar } from "./results/provenance";
 import { NO_HOURLY_COST, unknownNote } from "./results/reasons";
 import { StepAssessments } from "./results/step-assessments";
 
-// The Results tab (RS-92), as resultsPage in web/analysis-views.js: provenance, the current
+// The Results tab (RS-92, RS-107): the answer band with its provenance chips, the current
 // state, the four panels and the step-by-step assessments. Every figure is the API's.
 export function ResultsView({ id, analysisId }: { id: string; analysisId: string }) {
   const analysis = useAnalysis(analysisId);
@@ -35,7 +35,7 @@ export function ResultsView({ id, analysisId }: { id: string; analysisId: string
   );
   return (
     <>
-      <ProvenanceBar analysis={data} />
+      <AnswerBand analysis={data} />
       <LlmUnavailableNote llm={data.llm} />
       <section aria-label="Current state">
         <Metrics className="md:grid-cols-2 xl:grid-cols-2">

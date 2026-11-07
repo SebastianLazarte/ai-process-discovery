@@ -80,7 +80,7 @@ export function SuitabilityPanel({ analysis }: { analysis: AnalysisRead }) {
 
 function MiniMetric({ term, value, note }: { term: string; value: string; note?: string }) {
   return (
-    <div className="min-w-0 rounded-panel border border-line bg-surface-raised px-3.5 py-3">
+    <div className="min-w-0 rounded-card bg-surface-raised px-3.5 py-3">
       <dt className="text-xs text-muted">{term}</dt>
       <dd className="text-[19px] leading-snug font-semibold tracking-[-0.5px] break-words tabular-nums">
         {value}
