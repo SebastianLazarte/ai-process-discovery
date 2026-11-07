@@ -4,8 +4,8 @@ import { expect, test } from "./fixtures";
 // bookmarks under /ui/ answer 301 to the home page, which Next.js serves, and the API only
 // answers under /api/.
 //
-// Plain requests, no page: a full page load pulls every static file through the edge's
-// per-address rate limit, which the walkthroughs share. The viewport changes nothing here,
+// Plain requests, no page: a full page load would pull every static file through the edge's
+// rate limit for nothing. The viewport changes nothing here,
 // so the mobile project skips the file.
 const OLD_LINKS = ["/ui", "/ui/", "/ui/app.js", "/ui/index.html"];
 
