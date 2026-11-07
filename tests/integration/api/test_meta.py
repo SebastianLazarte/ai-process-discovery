@@ -20,9 +20,19 @@ def _meta(database_url: str, **overrides: object) -> dict[str, object]:
 
 @pytest.mark.req("RS-62", criterion=1)
 def test_meta_reports_version_and_a_private_deployment_by_default(database_url: str) -> None:
-    assert _meta(database_url) == {"version": __version__, "public_demo": False}
+    assert _meta(database_url) == {
+        "version": __version__,
+        "public_demo": False,
+        "process_drafts_enabled": False,
+    }
 
 
 @pytest.mark.req("RS-62", criterion=1)
 def test_meta_reports_a_public_demo(database_url: str) -> None:
     assert _meta(database_url, public_demo=True)["public_demo"] is True
+
+
+@pytest.mark.req("RS-106", criterion=2)
+def test_meta_reports_whether_process_drafts_are_enabled(database_url: str) -> None:
+    assert _meta(database_url)["process_drafts_enabled"] is False
+    assert _meta(database_url, process_drafts_enabled=True)["process_drafts_enabled"] is True
