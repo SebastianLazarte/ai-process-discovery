@@ -320,3 +320,28 @@ describe("Results without the LLM", () => {
     expect(screen.queryByRole("note")).toBeNull();
   });
 });
+
+describe("RS-109.3: Results while it loads", () => {
+  it("shows a skeleton of the band, the current state and the four panels", async () => {
+    fakeApi({
+      [`GET /analyses/${ANALYSIS_ID}`]: { body: analysisRead(), delay: 50 },
+      [`GET /processes/${PROCESS_ID}`]: { body: processRead() },
+    });
+    renderWithProviders(<ResultsView id={PROCESS_ID} analysisId={ANALYSIS_ID} />);
+
+    const skeleton = screen.getByRole("status", { name: "Loading the analysis" });
+    const [band, state, quads] = [...(skeleton.querySelector("[aria-hidden]")?.children ?? [])];
+    expect(band?.className.split(" ")).toEqual(expect.arrayContaining(["rounded-band", "bg-band"]));
+    expect(state?.children).toHaveLength(2);
+    expect(quads?.children).toHaveLength(4);
+    const quadsLayout = quads?.className;
+
+    const answer = await screen.findByRole("region", { name: "The answer" });
+    expect(answer.className.split(" ")).toEqual(
+      expect.arrayContaining(["rounded-band", "bg-band"]),
+    );
+    expect(screen.queryByRole("status", { name: "Loading the analysis" })).toBeNull();
+    const panels = screen.getByRole("region", { name: "Automation suitability" }).parentElement;
+    expect(panels?.className).toBe(quadsLayout);
+  });
+});

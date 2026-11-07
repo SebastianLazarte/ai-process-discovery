@@ -19,6 +19,7 @@ import {
 import { Badge } from "./badge";
 import { buttonClass } from "./button";
 import { DownloadIcon } from "./icons";
+import { BlueprintSkeleton, EmptyState } from "./states";
 import { DataTable } from "./data-table";
 import type { Column } from "./data-table";
 import { Metric } from "./metric";
@@ -35,8 +36,7 @@ export function BlueprintView({ id, analysisId }: { id: string; analysisId: stri
   const blueprint = useBlueprint(analysisId);
   const process = useProcess(id);
 
-  if (blueprint.isPending)
-    return <p className="py-24 text-center text-muted">Loading the blueprint…</p>;
+  if (blueprint.isPending) return <BlueprintSkeleton />;
   if (blueprint.isError)
     return <p className="py-24 text-center text-muted">The blueprint could not be loaded.</p>;
 
@@ -250,14 +250,11 @@ function Bullets({
   );
 }
 
-/** The empty state of web/views.js: a quiet mark and a title. */
+/** A section with nothing to list. */
 function Empty({ title }: { title: string }) {
   return (
-    <div className="px-3 py-7 text-center">
-      <span aria-hidden="true" className="mb-2 block text-[30px] text-muted">
-        ◎
-      </span>
-      <h3 className="mb-1.5 text-[15px] font-semibold">{title}</h3>
+    <div className="py-2">
+      <EmptyState title={title} />
     </div>
   );
 }

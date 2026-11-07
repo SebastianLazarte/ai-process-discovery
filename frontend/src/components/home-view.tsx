@@ -10,11 +10,12 @@ import { keys, useDemos, useLoadDemo, useMeta, useProcesses } from "@/lib/api/qu
 import { count, steps, timestamp, version } from "@/lib/format";
 
 import { Badge } from "./badge";
-import { Button } from "./button";
+import { Button, buttonClass } from "./button";
 import { DataTable, SkeletonRows } from "./data-table";
 import type { Column } from "./data-table";
-import { DescribeIcon, PlayIcon, TemplatesIcon } from "./icons";
+import { DescribeIcon, PlayIcon, ProcessesIcon, TemplatesIcon } from "./icons";
 import { Eyebrow, Panel } from "./panel";
+import { DemoCardsSkeleton, EmptyState } from "./states";
 
 // Home (RS-73, RS-106 on Graphite, ADR 0018): the promise, then three ways to start, the
 // demos and the processes of this browser. The sidebar holds the one filled primary
@@ -135,35 +136,37 @@ function Demos() {
 
   return (
     <Panel id="demos-title" title="Demos" className="scroll-mt-6">
-      {demos.isPending && <p className="text-sm text-muted">Loading demos…</p>}
+      {demos.isPending && <DemoCardsSkeleton />}
       {demos.isError && <p className="text-sm text-muted">Demos are not available right now.</p>}
-      <ul aria-labelledby="demos-title" className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {demos.data?.map((demo) => {
-          const loading = load.isPending && load.variables === demo.slug;
-          const figures = demoFigures(demo);
-          return (
-            <li key={demo.slug} className="flex flex-col rounded-card bg-surface-raised p-5">
-              <h3 className="mb-1 text-base font-semibold">{demo.name}</h3>
-              {figures.length > 0 && (
-                <p className="mb-2 text-[13px] text-muted tabular-nums">{figures.join(" · ")}</p>
-              )}
-              <p className="mb-4 flex-1 text-[13px] text-ink-soft">{demo.description}</p>
-              <Button
-                className="self-start"
-                pending={loading}
-                onClick={() =>
-                  load.mutate(demo.slug, {
-                    onSuccess: (process) => open(process.id),
-                  })
-                }
-              >
-                Load and open
-                <span className="sr-only">: {demo.name}</span>
-              </Button>
-            </li>
-          );
-        })}
-      </ul>
+      {demos.data && (
+        <ul aria-labelledby="demos-title" className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {demos.data?.map((demo) => {
+            const loading = load.isPending && load.variables === demo.slug;
+            const figures = demoFigures(demo);
+            return (
+              <li key={demo.slug} className="flex flex-col rounded-card bg-surface-raised p-5">
+                <h3 className="mb-1 text-base font-semibold">{demo.name}</h3>
+                {figures.length > 0 && (
+                  <p className="mb-2 text-[13px] text-muted tabular-nums">{figures.join(" · ")}</p>
+                )}
+                <p className="mb-4 flex-1 text-[13px] text-ink-soft">{demo.description}</p>
+                <Button
+                  className="self-start"
+                  pending={loading}
+                  onClick={() =>
+                    load.mutate(demo.slug, {
+                      onSuccess: (process) => open(process.id),
+                    })
+                  }
+                >
+                  Load and open
+                  <span className="sr-only">: {demo.name}</span>
+                </Button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </Panel>
   );
 }
@@ -202,19 +205,28 @@ function Processes() {
       {processes.isError && (
         <p className="text-sm text-muted">
           The processes could not be loaded.{" "}
-          <button
-            type="button"
-            className="text-accent underline"
-            onClick={() => processes.refetch()}
-          >
+          <Button variant="tertiary" onClick={() => processes.refetch()}>
             Try again
-          </button>
+          </Button>
         </p>
       )}
       {processes.data?.length === 0 && (
-        <p className="py-7 text-center text-[13px] text-muted">
-          No processes yet. Load a demo or create one.
-        </p>
+        <EmptyState
+          title="No processes yet"
+          icon={<ProcessesIcon />}
+          action={
+            <>
+              <Link href="/processes/new" className={buttonClass("secondary")}>
+                Start from your sector
+              </Link>
+              <Link href="#demos-title" className={buttonClass("tertiary")}>
+                Open a demo
+              </Link>
+            </>
+          }
+        >
+          Load a demo or create one. It shows here with its runs, steps and version.
+        </EmptyState>
       )}
       {processes.data && processes.data.length > 0 && (
         <DataTable

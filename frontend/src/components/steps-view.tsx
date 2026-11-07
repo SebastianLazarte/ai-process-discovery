@@ -9,7 +9,8 @@ import { count, enumLabel, money, number, percent } from "@/lib/format";
 
 import { Badge } from "./badge";
 import { Button, buttonClass } from "./button";
-import { ArrowDownIcon, ArrowUpIcon, PlusIcon } from "./icons";
+import { ArrowDownIcon, ArrowUpIcon, PlusIcon, ProcessesIcon } from "./icons";
+import { EmptyState } from "./states";
 import { ConfirmButton, ConfirmQuestion } from "./confirm-button";
 import { Dialog } from "./dialog";
 import { Metric, Metrics } from "./metric";
@@ -109,15 +110,9 @@ export function StepsView({ id }: { id: string }) {
             ))}
           </ol>
         ) : (
-          <div className="px-3 py-7 text-center">
-            <span aria-hidden="true" className="mb-2 block text-[30px] text-muted">
-              ◎
-            </span>
-            <h3 className="mb-1 text-[15px] font-semibold">No steps yet</h3>
-            <p className="mx-auto max-w-[360px] text-[13px] text-muted">
-              Add the first step to analyse this process.
-            </p>
-          </div>
+          <EmptyState title="No steps yet" icon={<ProcessesIcon />}>
+            Add the first step with Add step to analyse this process.
+          </EmptyState>
         )}
       </Panel>
       <Panel
