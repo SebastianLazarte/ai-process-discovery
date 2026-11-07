@@ -20,7 +20,7 @@ from app.llm.provider import LLMProvider
 from app.llm.providers.fake import FakeLLMProvider
 
 ALEMBIC_INI = Path(__file__).resolve().parents[2] / "alembic.ini"
-TABLES = {"processes", "process_steps", "analyses", "recommendation_overrides"}
+TABLES = {"processes", "process_steps", "analyses", "recommendation_overrides", "usage_counters"}
 
 
 @pytest.fixture
