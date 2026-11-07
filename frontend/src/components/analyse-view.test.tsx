@@ -7,6 +7,7 @@ import { fakeApi } from "@/test/fake-api";
 import type { Reply } from "@/test/fake-api";
 import { ANALYSIS_ID, analysisRead, processRead, step } from "@/test/fixtures";
 import { push, renderWithProviders } from "@/test/render";
+import { expectGraphite } from "@/test/graphite";
 
 import { AnalyseView } from "./analyse-view";
 import { START_MESSAGE } from "./llm-wait";
@@ -206,5 +207,16 @@ describe("a failed run", () => {
     fireEvent.click(screen.getByRole("button", { name: "Try again" }));
     await vi.waitFor(() => expect(push).toHaveBeenCalledWith(RESULTS));
     expect(calls.filter((call) => call === RUN)).toHaveLength(2);
+  });
+});
+
+describe("RS-108: Analyse on Graphite", () => {
+  it("RS-108.1: uses the Graphite primitives, with the sensitive-data notice open", async () => {
+    api({ status: 201, body: analysisRead() });
+    const { container } = renderWithProviders(<AnalyseView id={PROCESS.id} />);
+
+    await screen.findByRole("heading", { name: "Analyse" });
+    fireEvent.click(llmToggle());
+    expectGraphite(container);
   });
 });

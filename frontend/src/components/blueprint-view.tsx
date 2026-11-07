@@ -18,6 +18,7 @@ import {
 
 import { Badge } from "./badge";
 import { buttonClass } from "./button";
+import { DownloadIcon } from "./icons";
 import { DataTable } from "./data-table";
 import type { Column } from "./data-table";
 import { Metric } from "./metric";
@@ -52,6 +53,7 @@ export function BlueprintView({ id, analysisId }: { id: string; analysisId: stri
           download={`blueprint-${shortId(data.analysis_id)}.md`}
           className={buttonClass("primary")}
         >
+          <DownloadIcon className="size-4" />
           Download .md
         </a>
       </div>
@@ -214,7 +216,7 @@ function Section({
 /** The .mini-metrics card of web/styles.css: a smaller figure on the raised surface. */
 function MiniMetric({ term, value }: { term: string; value: string }) {
   return (
-    <div className="min-w-0 rounded-panel border border-line bg-surface-raised px-3.5 py-3">
+    <div className="min-w-0 rounded-card bg-surface-raised px-3.5 py-3">
       <dt className="text-xs text-muted">{term}</dt>
       <dd className="text-[19px] leading-snug font-semibold tracking-[-0.5px] break-words tabular-nums">
         {value}

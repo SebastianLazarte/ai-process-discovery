@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import type { AnalysisRead } from "@/lib/api/queries";
 import { enumLabel } from "@/lib/format";
 
+import { Note } from "./note";
+
 // RS-75: the honest wait. The API reports no progress, so the expected wait comes from the
 // API configuration (src/app/core/config.py): LLM_TIMEOUT_SECONDS times 1 + LLM_MAX_RETRIES,
 // the same bound that sets proxy_read_timeout in deploy/nginx/apd-routes.conf.
@@ -73,7 +75,7 @@ export function LlmWait({
         {message}
       </p>
       {running && (
-        <div className="rounded-r-lg border-l-[3px] border-info bg-info-bg px-4 py-3 text-[13px] text-ink">
+        <Note tone="info" className="">
           <progress aria-label="Running the analysis" className="mb-2 block w-full accent-accent" />
           <p>
             Elapsed <span role="timer">{clock(elapsed)}</span> · expected wait up to{" "}
@@ -89,7 +91,7 @@ export function LlmWait({
             Leaving this page does not cancel the run: the analysis will appear in the{" "}
             <Link href={`/processes/${processId}/history`}>History</Link>.
           </p>
-        </div>
+        </Note>
       )}
     </div>
   );
@@ -99,13 +101,10 @@ export function LlmWait({
 export function LlmUnavailableNote({ llm }: { llm: AnalysisRead["llm"] }) {
   if (llm.status !== "unavailable") return null;
   return (
-    <p
-      role="note"
-      className="mb-4 rounded-r-lg border-l-[3px] border-warn bg-warn-bg px-4 py-3 text-[13px] text-warn-ink"
-    >
+    <Note role="note">
       {llm.error_kind === "daily_quota"
         ? "Today's AI quota of this demo is used up, so the LLM was skipped. The deterministic results are complete."
         : `The LLM was unavailable (${enumLabel(llm.error_kind ?? "error")}). The deterministic results are complete.`}
-    </p>
+    </Note>
   );
 }
