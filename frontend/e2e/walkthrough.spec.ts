@@ -17,7 +17,7 @@ const REASON = "The order desk keeps the final check.";
 test("RS-78: load a demo, analyse, override and download the blueprint", async ({ page }) => {
   await test.step("home", async () => {
     await page.goto(HOME);
-    await expect(page.getByRole("heading", { name: "Start from a demo" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Demos", exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: LOAD_DEMO })).toBeEnabled();
     await expectAccessible(page, "home");
   });

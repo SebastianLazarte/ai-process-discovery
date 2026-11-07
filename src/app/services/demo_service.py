@@ -31,9 +31,15 @@ class DemoService:
         self._processes = processes
         self._analyses = analyses
 
-    def list(self) -> list[dict[str, str]]:
+    def list(self) -> list[dict[str, Any]]:
         return [
-            {"slug": slug, "name": data["name"], "description": data["description"]}
+            {
+                "slug": slug,
+                "name": data["name"],
+                "description": data["description"],
+                "step_count": len(data.get("steps", [])),
+                "executions_per_month": data.get("executions_per_month"),
+            }
             for slug, data in demo_files().items()
         ]
 

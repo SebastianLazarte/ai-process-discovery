@@ -1074,12 +1074,17 @@
           "public_demo": {
             "type": "boolean",
             "title": "Public Demo"
+          },
+          "process_drafts_enabled": {
+            "type": "boolean",
+            "title": "Process Drafts Enabled"
           }
         },
         "type": "object",
         "required": [
           "version",
-          "public_demo"
+          "public_demo",
+          "process_drafts_enabled"
         ],
         "title": "AppMeta"
       },
@@ -1458,6 +1463,28 @@
           "description": {
             "type": "string",
             "title": "Description"
+          },
+          "step_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Step Count"
+          },
+          "executions_per_month": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Executions Per Month"
           }
         },
         "type": "object",
