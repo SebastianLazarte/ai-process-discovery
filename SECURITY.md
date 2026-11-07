@@ -26,5 +26,6 @@ What protects the demo host and the API key:
 - The demo processes are synthetic: a fictitious manufacturer, invented volumes and costs.
 - Everything visitors create is deleted every night at 00:05 UTC once it is older than 24 hours: processes, steps, analyses and overrides. Editing a process does not extend its life.
 - The database is backed up every night after that purge. Backups are kept for 7 days on the demo host, never leave the host, and are readable only by the demo's own system user. They exist to recover from a failure, never to keep visitor data.
+- The only data kept after the purge are daily usage counters: a UTC day, an event such as `demo_loaded` and a count (ADR 0020). They hold no process id, text, IP address or visitor id.
 - Logs never contain prompts or step descriptions.
 - Steps flagged as sensitive reach the LLM provider only after the visitor confirms it, and monetary inputs never do.
