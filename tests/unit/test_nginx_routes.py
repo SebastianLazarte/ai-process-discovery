@@ -145,3 +145,40 @@ def test_both_zones_exist_wherever_the_routes_are_included() -> None:
     for config in (SITE, EDGE):
         assert "zone=apd_general:10m" in config
         assert "zone=apd_analyses:10m" in config
+
+
+def _zones(config: str) -> dict[str, tuple[str, str]]:
+    found = re.findall(r"^limit_req_zone\s+(\S+)\s+zone=(\w+):\S+\s+rate=(\S+);", config, re.M)
+    return {zone: (key, rate) for key, zone, rate in found}
+
+
+def _analysis_key(config: str) -> str:
+    [key] = re.findall(r"map \$request_method \$apd_analysis_key \{\s*POST\s+(\S+);", config)
+    return key
+
+
+@pytest.mark.req("RS-65")
+def test_production_limits_each_client_address() -> None:
+    # The host site keys both zones on the address alone: no request header picks a bucket.
+    assert _zones(SITE) == {
+        "apd_analyses": ("$apd_analysis_key", "10r/m"),
+        "apd_general": ("$binary_remote_addr", "10r/s"),
+    }
+    assert _analysis_key(SITE) == "$binary_remote_addr"
+
+
+@pytest.mark.req("RS-78")
+@pytest.mark.req("RS-65")
+def test_the_edge_has_the_production_rates_with_one_bucket_per_test() -> None:
+    # The end-to-end tests run one after another from one address, each in a fresh browser
+    # context. The edge adds their X-E2E-Visitor header to the key, so a test never starts
+    # with the burst the previous one spent; the rates and bursts stay those of production.
+    site, edge = _zones(SITE), _zones(EDGE)
+    assert {zone: rate for zone, (_, rate) in edge.items()} == {
+        zone: rate for zone, (_, rate) in site.items()
+    }
+    assert edge["apd_general"][0] == "$binary_remote_addr$http_x_e2e_visitor"
+    assert edge["apd_analyses"][0] == "$apd_analysis_key"
+    assert _analysis_key(EDGE) == "$binary_remote_addr$http_x_e2e_visitor"
+    # The header stops at the edge: the api and web containers never receive it.
+    assert re.search(r'^\s*proxy_set_header X-E2E-Visitor "";', EDGE, flags=re.MULTILINE)

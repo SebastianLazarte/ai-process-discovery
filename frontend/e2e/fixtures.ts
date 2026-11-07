@@ -15,6 +15,12 @@ const CSP = /Content Security Policy/i;
  * lint rule would take for the hook of that name.
  */
 export const test = base.extend<{ pageProblems: void }>({
+  // Each test is one visitor with an empty cache. The edge (deploy/nginx/edge.conf) keys its
+  // rate limits on the address plus this header, so a test never inherits the burst another
+  // one spent, and the limits stay those of production.
+  extraHTTPHeaders: async ({ extraHTTPHeaders }, run, testInfo) => {
+    await run({ ...extraHTTPHeaders, "X-E2E-Visitor": testInfo.testId });
+  },
   pageProblems: [
     async ({ page }, run) => {
       const problems: string[] = [];

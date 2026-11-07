@@ -6,8 +6,8 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "e2e",
   forbidOnly: !!process.env.CI,
-  // One browser at a time: both projects reach the edge from the same address, and its
-  // rate limits are per address.
+  // One browser at a time: both projects reach the edge from the same address. Each test
+  // gets its own rate limit bucket there (X-E2E-Visitor, set in e2e/fixtures.ts).
   workers: 1,
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : [["list"]],
   use: {
