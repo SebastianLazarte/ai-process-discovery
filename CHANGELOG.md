@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.2.0](https://github.com/SebastianLazarte/ai-process-discovery/compare/v2.1.0...v2.2.0) (2026-11-07)
+
+
+### Features
+
+* **ui:** Home with three ways to start (RS-106) ([#232](https://github.com/SebastianLazarte/ai-process-discovery/issues/232)) ([41c7313](https://github.com/SebastianLazarte/ai-process-discovery/commit/41c731313b176dca7f3f2d37d6dff84e58e053ee))
+* **ui:** slim demo banner, empty states and skeletons (RS-109) ([#235](https://github.com/SebastianLazarte/ai-process-discovery/issues/235)) ([651cac5](https://github.com/SebastianLazarte/ai-process-discovery/commit/651cac53c49ce584a4c665279e3a09e4f9baccbf))
+* **ui:** Steps, Analyse, Blueprint and History on Graphite (RS-108) ([#234](https://github.com/SebastianLazarte/ai-process-discovery/issues/234)) ([565fd9b](https://github.com/SebastianLazarte/ai-process-discovery/commit/565fd9b66ce285437514fe2db2ce4b38fe430583))
+
 ## [2.1.0](https://github.com/SebastianLazarte/ai-process-discovery/compare/v2.0.0...v2.1.0) (2026-11-05)
 
 
