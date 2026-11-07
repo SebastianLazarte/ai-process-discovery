@@ -25,7 +25,7 @@ Stable reference for the whole repo. Code changes read from here; this folder ch
 | ADR 0005 | Streamlit as a REST client | replaced by ADR 0007 from 1.2.0; retired in 2.0.0, Streamlit removed (RS-80) | Removed in 2.0.0 |
 | ADR 0006 | GitHub Flow, required checks, release-please, release authorship | accepted; required checks amended by ADR 0009, supply chain by ADR 0010, coverage minimum by ADR 0011 | Built, except the approval of the `production` environment, which does not exist yet (see ADR 0008) |
 | ADR 0007 | Vanilla web client served by FastAPI | replaced by ADR 0009 from 2.0.0; `web/` removed (RS-80) | Removed in 2.0.0; in git history at tag `v1.5.0` |
-| ADR 0008 | Public demo on the maintainer's VPS (block B11, RS-59 to RS-68) | accepted; layout amended by ADR 0009, process lists scoped per visitor by ADR 0019 | Built and live. The `deploy` job of RS-67 is built but inactive until the `production` environment, its secrets and `DEPLOY_ENABLED` exist; releases deploy by hand with `deploy.sh` |
+| ADR 0008 | Public demo on the maintainer's VPS (block B11, RS-59 to RS-68) | accepted; layout amended by ADR 0009, process lists scoped per visitor by ADR 0019, daily usage counters kept after the purge by ADR 0020 | Built and live. The `deploy` job of RS-67 is built but inactive until the `production` environment, its secrets and `DEPLOY_ENABLED` exist; releases deploy by hand with `deploy.sh` |
 | ADR 0009 | Next.js frontend as a separate service, API under `/api` (block B12, RS-69 to RS-80; RS-91 to RS-94 split from RS-74 to RS-76) | accepted; dependencies amended by ADR 0013, migration and rollback by ADR 0016 | Built (2.0.0) |
 | ADR 0010 | Dependency updates: grouped minor and patch after a cooldown, majors planned, Python version fixed | accepted | Built (`.github/dependabot.yml`) |
 | ADR 0011 | Automated quality gauntlet: mutation testing on the domain, property-based tests, complexity limits, coverage 95 % | accepted 2026-10-22 (proposed 2026-10-15); completed by ADR 0012 | Built; the refactors guided by surviving mutants (RS-83 to RS-88) are open |
@@ -37,6 +37,7 @@ Stable reference for the whole repo. Code changes read from here; this folder ch
 | ADR 0017 | Accepted risk of AI-drafted processes (B14) | planned: written with RS-100 | Not written yet; drafts stay off (`process_drafts_enabled=false`) until RS-100 and RS-101 merge |
 | ADR 0018 | Graphite: the dark identity of ADR 0014 with elevation instead of borders, one filled primary action, the answer first on Results, an icon rail inside a process, own SVG icons | accepted 2026-11-03; amends ADR 0014 | Partly built: tokens and primitives (RS-104), the full sidebar on Home and the icon rail inside a process (RS-105). Not yet: Home, Results and the other screens (RS-106 to RS-109), before B15 |
 | ADR 0019 | Anonymous `apd_visitor` cookie on the public demo scopes the process lists to the browser that created them; access by id unchanged, never a credential | accepted 2026-11-03; amends ADR 0008 (what the demo shows) | Not built; RS-110 |
+| ADR 0020 | Aggregate daily usage counters (day, event, count) that outlive the purge, recorded at the route after success, read with `python -m app.usage` on the server only | accepted 2026-11-07; amends ADR 0008 (what the demo keeps) | Not built; block B19, RS-114 under RU-10 |
 
 Adding or changing a decision updates this index, and the routing table in the root `CLAUDE.md` when it opens a new area. "In the code" says what is built today, so an accepted decision that is not built never reads as done.
 
@@ -61,7 +62,7 @@ The maintainer is the Product Owner and writes and approves the stories. An agen
 | Product Goal | `[product] goal` |
 | Epic | `[user_requirements.RU-nn]`: `name` and a story (`as_a`, `i_want`, `so_that`) |
 | Backlog item | `[[requirement]]` `RS-nn`: a user story or an enabler, one GitHub issue |
-| Release | `block` B0 to B18, one milestone each |
+| Release | `block` B0 to B19, one milestone each |
 | Sprint | One week from `first_sprint`; the Sprint field on the GitHub Project board |
 
 - **Definition of Ready**: a story (`as_a` from `roles`, `i_want`, `so_that`) or an enabler with a clear title; at least one Given/When/Then criterion; `points` in 1, 2, 3, 5 or 8 (split anything larger); `priority` must, should, could or wont; a `rank`; approved by the PO. Only Ready items enter a sprint.
