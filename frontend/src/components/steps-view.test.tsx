@@ -80,7 +80,9 @@ describe("the step list", () => {
         name: "Check the warranty",
         responsible_role: "",
         minutes_per_execution: "12.5",
+        frequency: null,
         occurrence_rate: "0.25",
+        exception_frequency: null,
         exception_rate: "0.1",
         requires_human_approval: true,
       }),
@@ -93,7 +95,7 @@ describe("the step list", () => {
     expect(within(first!).getByText("01")).toBeDefined();
     expect(within(first!).getByRole("heading", { name: "Read the claim email" })).toBeDefined();
     expect(
-      within(first!).getByText(/Claims clerk · 4\.0 min · runs in 100% of executions/),
+      within(first!).getByText("Claims clerk · 4.0 min · runs always · exceptions: don't know"),
     ).toBeDefined();
     expect(within(second!).getByText("02")).toBeDefined();
     expect(within(second!).getByRole("heading", { name: "Check the warranty" })).toBeDefined();

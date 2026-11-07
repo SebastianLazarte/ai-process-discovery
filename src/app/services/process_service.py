@@ -1,8 +1,11 @@
+from typing import Any
 from uuid import UUID
 
 from sqlalchemy.orm import Session
 
 from app.core.errors import AppError, LimitExceededError, NotFoundError
+from app.domain.enums import ExceptionFrequency, StepFrequency
+from app.domain.policies import DEFAULT_CAPTURE_POLICY
 from app.models.persistence import ProcessORM, ProcessStepORM
 from app.models.persistence.base import utcnow
 from app.models.schemas.process import (
@@ -78,9 +81,11 @@ class ProcessService:
 
     def update_step(self, step_id: UUID, data: StepUpdate) -> ProcessRead:
         step = self._get_step(step_id)
-        for field, value in data.model_dump(exclude_unset=True).items():
+        values = data.model_dump(exclude_unset=True)
+        for field, value in values.items():
             if field != "exception_rate" and value is None:
                 raise AppError(f"{field} cannot be null")
+        for field, value in _with_rates(values, creating=False).items():
             setattr(step, field, value.value if hasattr(value, "value") else value)
         return self._save(step.process)
 
@@ -124,8 +129,36 @@ class ProcessService:
 
 
 def _new_step(data: StepFields, position: int) -> ProcessStepORM:
+    given = data.model_dump(mode="python", exclude={"position"}, exclude_unset=True)
     values = data.model_dump(mode="python", exclude={"position"})
+    values.update(_with_rates(given, creating=True))
     for key, value in values.items():
         if hasattr(value, "value"):
             values[key] = value.value
     return ProcessStepORM(**values, position=position)
+
+
+def _with_rates(given: dict[str, Any], *, creating: bool) -> dict[str, Any]:
+    """Resolve each plain-word choice and its rate from the fields the client sent (RS-115).
+
+    A choice sets its rate through the capture policy. A rate sent alone is an exact figure
+    and clears the choice, except an unknown exception rate, which is the same as "Don't
+    know". A new step that sends neither gets the choice its default rate stands for.
+    """
+    values = dict(given)
+    policy = DEFAULT_CAPTURE_POLICY
+    if (frequency := given.get("frequency")) is not None:
+        values["occurrence_rate"] = policy.occurrence_rate(StepFrequency(frequency))
+    elif given.get("occurrence_rate") is not None:
+        values["frequency"] = None
+    elif creating:
+        values["frequency"] = StepFrequency.ALWAYS
+        values["occurrence_rate"] = policy.occurrence_rate(StepFrequency.ALWAYS)
+
+    if (exceptions := given.get("exception_frequency")) is not None:
+        values["exception_rate"] = policy.exception_rate(ExceptionFrequency(exceptions))
+    elif given.get("exception_rate") is not None:
+        values["exception_frequency"] = None
+    elif creating or "exception_rate" in given:
+        values["exception_frequency"] = ExceptionFrequency.UNKNOWN
+    return values
