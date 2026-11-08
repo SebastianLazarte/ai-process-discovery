@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { fakeApi } from "@/test/fake-api";
 import { analysisSummary, PROCESS_ID } from "@/test/fixtures";
 import { renderWithProviders } from "@/test/render";
+import { expectGraphite } from "@/test/graphite";
 
 import { HistoryView } from "./history-view";
 
@@ -99,8 +100,18 @@ describe("RS-93: the History tab", () => {
 
     expect(await screen.findByRole("heading", { name: "No analyses yet" })).toBeDefined();
     expect(screen.queryByRole("table")).toBeNull();
-    expect(screen.getByRole("link", { name: "Analyse" }).getAttribute("href")).toBe(
+    expect(screen.getByRole("link", { name: "Go to Analyse" }).getAttribute("href")).toBe(
       `/processes/${PROCESS_ID}/analyse`,
     );
+  });
+});
+
+describe("RS-108: History on Graphite", () => {
+  it("RS-108.1: uses the Graphite primitives", async () => {
+    fakeApi({ [PATH]: { body: [analysisSummary({ id: NEWER })] } });
+    const { container } = renderWithProviders(<HistoryView id={PROCESS_ID} />);
+
+    await screen.findByRole("link", { name: /^Open analysis/ });
+    expectGraphite(container);
   });
 });

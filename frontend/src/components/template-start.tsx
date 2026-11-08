@@ -14,6 +14,7 @@ import { Badge } from "./badge";
 import { ChoiceField, NumberField, TextField } from "./field";
 import { Panel } from "./panel";
 import { ProcessForm, Submit } from "./process-form";
+import { FrequencyFields, frequencyBody, frequencyValues } from "./step-frequency";
 
 // RS-96: start a process from a template of the catalog (RS-95, RS-97). The template brings
 // the steps and their qualitative traits; the person types only the numbers of their
@@ -78,13 +79,14 @@ export function TemplateStart() {
 
 // Values travel as typed; the API validates and converts them (hard rule 7). The client
 // checks only that the figures a template cannot know are there: minutes for every step
-// and executions per month. An empty hourly cost or exception rate is sent as null,
-// meaning unknown, never as zero. Each step keeps the traits of its template, unedited.
+// and executions per month. An empty hourly cost is sent as null, meaning unknown, never
+// as zero; frequency and exceptions are plain-word choices the API turns into rates
+// (RS-115). Each step keeps the traits of its template, unedited.
 type Traits = ProcessTemplate["steps"][number];
 type StepFigures = {
   minutes_per_execution: string;
-  occurrence_rate: string;
-  exception_rate: string;
+  frequency: string;
+  exception_frequency: string;
 };
 type StepValues = StepFigures & { traits: Traits };
 type Values = {
@@ -114,8 +116,7 @@ function toValues(template: ProcessTemplate): Values {
     steps: template.steps.map((traits) => ({
       traits,
       minutes_per_execution: "",
-      occurrence_rate: "1",
-      exception_rate: "",
+      ...frequencyValues(),
     })),
   };
 }
@@ -131,8 +132,7 @@ function toBody(values: Values): ProcessCreate {
     steps: values.steps.map((step) => ({
       ...step.traits,
       minutes_per_execution: step.minutes_per_execution,
-      occurrence_rate: step.occurrence_rate,
-      exception_rate: step.exception_rate.trim() || null,
+      ...frequencyBody(step),
     })),
   };
 }
@@ -156,7 +156,7 @@ function TemplateReview({ template }: { template: ProcessTemplate }) {
   // Step paths come first, so a step's "name" never lands on the process name.
   const names: FieldPath<Values>[] = [
     ...template.steps.flatMap((_, index) =>
-      (["minutes_per_execution", "occurrence_rate", "exception_rate"] as const).map(
+      (["minutes_per_execution", "frequency", "exception_frequency"] as const).map(
         (field) => `steps.${index}.${field}` as const,
       ),
     ),
@@ -242,19 +242,16 @@ function TemplateReview({ template }: { template: ProcessTemplate }) {
                       validate: filled("Enter the minutes per execution."),
                     })}
                   />
-                  <NumberField
-                    id={id("occurrence_rate")}
-                    label="Occurrence rate (0 to 1)"
-                    hint="Share of executions that go through this step."
-                    error={stepErrors?.occurrence_rate?.message}
-                    register={register(`steps.${index}.occurrence_rate`)}
-                  />
-                  <NumberField
-                    id={id("exception_rate")}
-                    label="Exception rate (0 to 1)"
-                    hint="Leave empty if unknown."
-                    error={stepErrors?.exception_rate?.message}
-                    register={register(`steps.${index}.exception_rate`)}
+                  <FrequencyFields
+                    idPrefix={`template-step-${index}`}
+                    frequency={{
+                      register: register(`steps.${index}.frequency`),
+                      error: stepErrors?.frequency?.message,
+                    }}
+                    exceptions={{
+                      register: register(`steps.${index}.exception_frequency`),
+                      error: stepErrors?.exception_frequency?.message,
+                    }}
                   />
                 </fieldset>
               </li>

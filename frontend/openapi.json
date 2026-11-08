@@ -1074,12 +1074,17 @@
           "public_demo": {
             "type": "boolean",
             "title": "Public Demo"
+          },
+          "process_drafts_enabled": {
+            "type": "boolean",
+            "title": "Process Drafts Enabled"
           }
         },
         "type": "object",
         "required": [
           "version",
-          "public_demo"
+          "public_demo",
+          "process_drafts_enabled"
         ],
         "title": "AppMeta"
       },
@@ -1458,6 +1463,28 @@
           "description": {
             "type": "string",
             "title": "Description"
+          },
+          "step_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Step Count"
+          },
+          "executions_per_month": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Executions Per Month"
           }
         },
         "type": "object",
@@ -1467,6 +1494,18 @@
           "description"
         ],
         "title": "DemoSummary"
+      },
+      "ExceptionFrequency": {
+        "type": "string",
+        "enum": [
+          "ALMOST_NEVER",
+          "SOMETIMES",
+          "OFTEN",
+          "ALMOST_ALWAYS",
+          "UNKNOWN"
+        ],
+        "title": "ExceptionFrequency",
+        "description": "How often a step goes off the normal path, in plain words (RS-115)."
       },
       "HTTPValidationError": {
         "properties": {
@@ -2378,6 +2417,17 @@
               "4.0"
             ]
           },
+          "frequency": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StepFrequency"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "How often an execution goes through the step, in plain words (RS-115)."
+          },
           "occurrence_rate": {
             "anyOf": [
               {
@@ -2388,10 +2438,24 @@
               {
                 "type": "string",
                 "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
               }
             ],
             "title": "Occurrence Rate",
-            "default": "1"
+            "description": "An exact rate, instead of frequency."
+          },
+          "exception_frequency": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExceptionFrequency"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "How often the step goes off the normal path, in plain words (RS-115)."
           },
           "exception_rate": {
             "anyOf": [
@@ -2533,6 +2597,17 @@
               "4.0"
             ]
           },
+          "frequency": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StepFrequency"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "How often an execution goes through the step, in plain words (RS-115)."
+          },
           "occurrence_rate": {
             "anyOf": [
               {
@@ -2543,10 +2618,24 @@
               {
                 "type": "string",
                 "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
               }
             ],
             "title": "Occurrence Rate",
-            "default": "1"
+            "description": "An exact rate, instead of frequency."
+          },
+          "exception_frequency": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExceptionFrequency"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "How often the step goes off the normal path, in plain words (RS-115)."
           },
           "exception_rate": {
             "anyOf": [
@@ -2573,6 +2662,18 @@
           "minutes_per_execution"
         ],
         "title": "StepFields"
+      },
+      "StepFrequency": {
+        "type": "string",
+        "enum": [
+          "ALWAYS",
+          "MOST_OF_THE_TIME",
+          "HALF_OF_THE_TIME",
+          "SOMETIMES",
+          "RARELY"
+        ],
+        "title": "StepFrequency",
+        "description": "How often an execution goes through a step, in the words a person can answer (RS-115)."
       },
       "StepOrder": {
         "properties": {
@@ -2687,11 +2788,33 @@
               "4.0"
             ]
           },
+          "frequency": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StepFrequency"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "How often an execution goes through the step, in plain words (RS-115)."
+          },
           "occurrence_rate": {
             "type": "string",
             "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
             "title": "Occurrence Rate",
             "default": "1"
+          },
+          "exception_frequency": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExceptionFrequency"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "How often the step goes off the normal path, in plain words (RS-115)."
           },
           "exception_rate": {
             "anyOf": [
@@ -2914,6 +3037,17 @@
             ],
             "title": "Minutes Per Execution"
           },
+          "frequency": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StepFrequency"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "How often an execution goes through the step, in plain words (RS-115)."
+          },
           "occurrence_rate": {
             "anyOf": [
               {
@@ -2960,6 +3094,17 @@
                 "type": "null"
               }
             ]
+          },
+          "exception_frequency": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExceptionFrequency"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "How often the step goes off the normal path, in plain words (RS-115)."
           },
           "exception_rate": {
             "anyOf": [

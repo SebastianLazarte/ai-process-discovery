@@ -46,10 +46,13 @@ class ProcessStepORM(Base):
     input_description: Mapped[str] = mapped_column(Text, default="")
     output_description: Mapped[str] = mapped_column(Text, default="")
     minutes_per_execution: Mapped[Decimal] = mapped_column(ExactDecimal)
+    # The plain-word choice behind each rate (RS-115); null when the rate is an exact figure.
+    frequency: Mapped[str | None] = mapped_column(String(32), nullable=True)
     occurrence_rate: Mapped[Decimal] = mapped_column(ExactDecimal)
     repetitiveness: Mapped[str] = mapped_column(String(32))
     rule_clarity: Mapped[str] = mapped_column(String(32))
     input_type: Mapped[str] = mapped_column(String(32))
+    exception_frequency: Mapped[str | None] = mapped_column(String(32), nullable=True)
     exception_rate: Mapped[Decimal | None] = mapped_column(ExactDecimal, nullable=True)
     integration_readiness: Mapped[str] = mapped_column(String(32))
     requires_human_judgement: Mapped[bool] = mapped_column(Boolean, default=False)

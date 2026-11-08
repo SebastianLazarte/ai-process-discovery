@@ -10,13 +10,13 @@ The traits are chosen so the rules give a realistic mix rather than one answer f
 
 - Intake from email, paper and portals is `MIXED`, so the rules ask an analyst to review it.
 - Reading documents (invoices, claims evidence, trade documents) is `DIGITAL_UNSTRUCTURED` without judgement, so it becomes an AI candidate.
-- Clear checks on structured data (three-way match, sanctions screening, policy cover) have high rule clarity, so they become rule based once the person types a low exception rate.
+- Clear checks on structured data (three-way match, sanctions screening, policy cover) have high rule clarity, so they become rule based once the person says the step goes off the normal path "Almost never" or "Sometimes" (RS-115).
 - Steps in systems that already integrate well become API integration, and physical work without integration (counting stock, inspecting a return, scanning cards) stays manual.
 - Approvals, credit and claims decisions, fraud referrals and clinical priorities keep a person in control. KYC, loans, claims, health records and payment details are flagged as sensitive data.
 
 ## The screen (RS-96)
 
-New process (`/processes/new`) asks for a sector, then one of its processes. Each list ends with Other, which opens the blank process form instead. A chosen template opens a review: the process name and description come from the template, and every step shows its traits read only. The person types the executions per month and, for each step, the minutes per execution, plus the hourly cost, occurrence and exception rates when they know them. The screen sends nothing until the minutes of every step and the executions per month are there, then creates the process with its steps in one request and opens its Steps page, where any trait can be changed.
+New process (`/processes/new`) asks for a sector, then one of its processes. Each list ends with Other, which opens the blank process form instead. A chosen template opens a review: the process name and description come from the template, and every step shows its traits read only. The person types the executions per month and, for each step, the minutes per execution, plus the hourly cost when they know it. How often each step happens and how often it goes off the normal path are plain-word choices, Always and Don't know by default, which the API turns into rates through its capture policy (RS-115). The screen sends nothing until the minutes of every step and the executions per month are there, then creates the process with its steps in one request and opens its Steps page, where any trait can be changed.
 
 ## How to read the sources
 

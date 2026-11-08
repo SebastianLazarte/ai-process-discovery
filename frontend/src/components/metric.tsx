@@ -13,7 +13,7 @@ export function Metrics({ children, className = "" }: { children: ReactNode; cla
 
 export function Metric({ term, value, note }: { term: string; value: string; note?: string }) {
   return (
-    <div className="min-w-0 rounded-panel border border-line bg-surface px-5 py-[18px]">
+    <div className="min-w-0 rounded-panel bg-surface px-5 py-[18px]">
       <dt className="text-xs text-muted">{term}</dt>
       <dd className="text-[26px] leading-snug font-semibold tracking-[-0.5px] break-words tabular-nums">
         {value}

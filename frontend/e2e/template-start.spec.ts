@@ -2,7 +2,8 @@ import { expect, expectAccessible, test } from "./fixtures";
 
 // RS-96: start a process from a sector template through the production routes. Pick the
 // sector and the process, type only the figures of the company, and the new process opens
-// on its Steps page with the template's steps, with axe on every page on the way.
+// on its Steps page with the template's steps, with axe on every page on the way. A
+// frequency chosen in plain words reaches the API as its rate (RS-115).
 const SECTOR = "Manufacturing";
 const TEMPLATE = "Supplier invoice processing";
 const STEPS_URL = /\/processes\/[^/]+$/;
@@ -30,6 +31,11 @@ test("RS-96: start a process from a sector template", async ({ page }) => {
   await test.step("create the process", async () => {
     await review.getByLabel("Executions per month").fill("400");
     for (let i = 0; i < count; i++) await minutes.nth(i).fill("5");
+    // RS-115: frequency is a plain-word choice; the API turns it into the rate.
+    await review
+      .getByLabel("How often does this step happen?")
+      .first()
+      .selectOption({ label: "Sometimes (about 1 in 4)" });
     await review.getByRole("button", { name: "Create process" }).click();
     await page.waitForURL(STEPS_URL);
     await expect(page.getByRole("heading", { name: TEMPLATE, level: 1 })).toBeVisible();
@@ -45,5 +51,7 @@ test("RS-96: start a process from a sector template", async ({ page }) => {
     expect(process.executions_per_month).toBe(400);
     expect(process.steps).toHaveLength(count);
     expect(Number(process.steps[0].minutes_per_execution)).toBe(5);
+    expect(process.steps[0].frequency).toBe("SOMETIMES");
+    expect(Number(process.steps[0].occurrence_rate)).toBe(0.25);
   });
 });

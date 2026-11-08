@@ -25,6 +25,26 @@ class IntegrationReadiness(StrEnum):
     UNKNOWN = "UNKNOWN"
 
 
+class StepFrequency(StrEnum):
+    """How often an execution goes through a step, in the words a person can answer (RS-115)."""
+
+    ALWAYS = "ALWAYS"
+    MOST_OF_THE_TIME = "MOST_OF_THE_TIME"
+    HALF_OF_THE_TIME = "HALF_OF_THE_TIME"
+    SOMETIMES = "SOMETIMES"
+    RARELY = "RARELY"
+
+
+class ExceptionFrequency(StrEnum):
+    """How often a step goes off the normal path, in plain words (RS-115)."""
+
+    ALMOST_NEVER = "ALMOST_NEVER"
+    SOMETIMES = "SOMETIMES"
+    OFTEN = "OFTEN"
+    ALMOST_ALWAYS = "ALMOST_ALWAYS"
+    UNKNOWN = "UNKNOWN"
+
+
 class AutomationMethod(StrEnum):
     RULE_BASED = "RULE_BASED"
     API_INTEGRATION = "API_INTEGRATION"

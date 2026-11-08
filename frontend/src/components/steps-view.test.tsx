@@ -6,6 +6,7 @@ import { cleanup, fireEvent, screen, waitFor, within } from "@testing-library/re
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { fakeApi } from "@/test/fake-api";
+import { expectGraphite } from "@/test/graphite";
 import { processRead, step } from "@/test/fixtures";
 import { push, renderWithProviders } from "@/test/render";
 
@@ -79,7 +80,9 @@ describe("the step list", () => {
         name: "Check the warranty",
         responsible_role: "",
         minutes_per_execution: "12.5",
+        frequency: null,
         occurrence_rate: "0.25",
+        exception_frequency: null,
         exception_rate: "0.1",
         requires_human_approval: true,
       }),
@@ -92,7 +95,7 @@ describe("the step list", () => {
     expect(within(first!).getByText("01")).toBeDefined();
     expect(within(first!).getByRole("heading", { name: "Read the claim email" })).toBeDefined();
     expect(
-      within(first!).getByText(/Claims clerk · 4\.0 min · runs in 100% of executions/),
+      within(first!).getByText("Claims clerk · 4.0 min · runs always · exceptions: don't know"),
     ).toBeDefined();
     expect(within(second!).getByText("02")).toBeDefined();
     expect(within(second!).getByRole("heading", { name: "Check the warranty" })).toBeDefined();
@@ -348,5 +351,15 @@ describe("RS-91: deleting a step", () => {
     expect(document.activeElement).toBe(remove);
     expect(stepNames()).toHaveLength(3);
     expect(calls.some((call) => call.startsWith("DELETE"))).toBe(false);
+  });
+});
+
+describe("RS-108: Steps on Graphite", () => {
+  it("RS-108.1: uses the Graphite primitives", async () => {
+    fakeApi({ [`GET ${PATH}`]: { body: processRead({ steps: [step()] }) } });
+    const { container } = renderWithProviders(<StepsView id={PROCESS.id} />);
+
+    await screen.findByRole("button", { name: "Add step" });
+    expectGraphite(container);
   });
 });

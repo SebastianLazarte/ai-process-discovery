@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
-// The panel of the vanilla client: a titled surface with an optional action at the right.
+// A titled surface with an optional action at the right. Graphite (ADR 0018): the panel
+// is raised from the ground by its colour, with no border.
 export function Panel({
   id,
   title,
@@ -15,10 +16,7 @@ export function Panel({
   className?: string;
 }) {
   return (
-    <section
-      aria-labelledby={id}
-      className={`min-w-0 rounded-panel border border-line bg-surface p-6 ${className}`}
-    >
+    <section aria-labelledby={id} className={`min-w-0 rounded-panel bg-surface p-6 ${className}`}>
       <div className="mb-[18px] flex flex-wrap items-center justify-between gap-3">
         <h2 id={id} className="text-[17px] leading-snug font-semibold tracking-tight">
           {title}

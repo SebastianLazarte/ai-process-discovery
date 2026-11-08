@@ -76,31 +76,31 @@ describe("RS-74: the step form", () => {
     expect(sent.body?.repetitiveness).toBe("VERY_HIGH");
   });
 
-  it("reads an unknown exception rate as unknown and saves it untouched as null (criterion 4)", async () => {
+  it("reads an unknown exception rate as Don't know and keeps it unknown, never 0 (criterion 4)", async () => {
     const { sent, route } = savingStep();
-    const { form } = await editStep(step({ exception_rate: null }), route);
-
-    expect(screen.getByText(/exception rate unknown/)).toBeDefined();
-    const field = within(form).getByRole("textbox", { name: "Exception rate (0 to 1)" });
-    expect((field as HTMLInputElement).value).toBe("");
-    expect(document.getElementById(field.getAttribute("aria-describedby") ?? "")?.textContent).toBe(
-      "Leave empty if unknown.",
+    const { form } = await editStep(
+      step({ exception_frequency: "UNKNOWN", exception_rate: null }),
+      route,
     );
+
+    expect(screen.getByText(/exceptions: don't know/)).toBeDefined();
+    const field = within(form).getByRole("combobox", { name: /cases unusual/ });
+    expect((field as HTMLSelectElement).value).toBe("UNKNOWN");
+    expect(within(field).getByRole("option", { name: "Don't know" })).toBeDefined();
 
     fireEvent.click(within(form).getByRole("button", { name: "Save step" }));
     await waitFor(() => expect(sent.body).toBeDefined());
-    expect(sent.body?.exception_rate).toBeNull();
+    expect(sent.body?.exception_frequency).toBe("UNKNOWN");
+    expect(sent.body).not.toHaveProperty("exception_rate");
     expect(await screen.findByText("Step saved.")).toBeDefined();
     expect(screen.queryByRole("dialog")).toBeNull();
   });
 
-  it("shows the API's error on an occurrence rate outside 0 to 1 and keeps every value (criterion 5)", async () => {
+  it("shows the API's error on a frequency it refuses and keeps every value (criterion 5)", async () => {
     const { form } = await editStep(step(), {
       [`PATCH /steps/${STEP_ID}`]: {
         status: 422,
-        body: {
-          detail: [{ loc: ["body", "occurrence_rate"], msg: "Must be between 0 and 1" }],
-        },
+        body: { detail: [{ loc: ["body", "frequency"], msg: "Input should be a valid choice" }] },
       },
     });
 
@@ -109,14 +109,14 @@ describe("RS-74: the step form", () => {
         target: { value },
       });
     change("Name", "Read and sort the claim email");
-    change("Occurrence rate", "1.5");
     change("Tools", "Outlook, Excel");
+    const frequency = within(form).getByRole("combobox", { name: /How often does this step/ });
+    fireEvent.change(frequency, { target: { value: "SOMETIMES" } });
     fireEvent.click(within(form).getByRole("button", { name: "Save step" }));
 
-    const rate = within(form).getByRole("textbox", { name: "Occurrence rate (0 to 1)" });
-    await waitFor(() => expect(rate.getAttribute("aria-invalid")).toBe("true"));
-    expect(within(form).getByText("Must be between 0 and 1")).toBeDefined();
-    expect((rate as HTMLInputElement).value).toBe("1.5");
+    await waitFor(() => expect(frequency.getAttribute("aria-invalid")).toBe("true"));
+    expect(within(form).getByText("Input should be a valid choice")).toBeDefined();
+    expect((frequency as HTMLSelectElement).value).toBe("SOMETIMES");
     const value = (name: RegExp) =>
       (within(form).getByRole("textbox", { name }) as HTMLInputElement).value;
     expect(value(/^Name/)).toBe("Read and sort the claim email");
@@ -148,15 +148,77 @@ describe("RS-74: the step form", () => {
     expect(sent).toMatchObject({
       name: "Check the warranty",
       minutes_per_execution: "5",
-      occurrence_rate: "1",
-      exception_rate: null,
+      frequency: "ALWAYS",
+      exception_frequency: "UNKNOWN",
       repetitiveness: "UNKNOWN",
       input_type: "UNKNOWN",
       integration_readiness: "UNKNOWN",
       tools: [],
       handles_sensitive_data: false,
     });
+    expect(sent).not.toHaveProperty("occurrence_rate");
+    expect(sent).not.toHaveProperty("exception_rate");
     expect(await screen.findByRole("heading", { name: "Read the claim email" })).toBeDefined();
     expect(screen.getByRole("status").textContent).toBe("Step added.");
+  });
+});
+
+describe("RS-115: frequency and exceptions in plain words", () => {
+  it("RS-115.1: asks both as plain-word choices, Always and Don't know by default", async () => {
+    fakeApi({ [`GET ${PATH}`]: { body: processRead() } });
+    renderWithProviders(<StepsView id={processRead().id} />);
+    fireEvent.click(await screen.findByRole("button", { name: "Add step" }));
+    const form = screen.getByRole("dialog", { name: "Add a step" });
+
+    const names = (select: HTMLElement) =>
+      within(select)
+        .getAllByRole("option")
+        .map((option) => option.textContent);
+    const frequency = within(form).getByRole("combobox", { name: /How often does this step/ });
+    const exceptions = within(form).getByRole("combobox", { name: /cases unusual/ });
+    expect(names(frequency)).toEqual([
+      "Always",
+      "Most of the time (about 3 in 4)",
+      "Half of the time",
+      "Sometimes (about 1 in 4)",
+      "Rarely (about 1 in 10)",
+    ]);
+    expect(names(exceptions)).toEqual([
+      "Almost never",
+      "Sometimes (about 1 in 10)",
+      "Often (about 1 in 3)",
+      "Almost always",
+      "Don't know",
+    ]);
+    expect((frequency as HTMLSelectElement).value).toBe("ALWAYS");
+    expect((exceptions as HTMLSelectElement).value).toBe("UNKNOWN");
+    expect(within(form).queryByRole("textbox", { name: /rate/i })).toBeNull();
+  });
+
+  it("RS-115.3: keeps an exact rate as Exact figure and sends nothing for it", async () => {
+    const { sent, route } = savingStep();
+    const exact = step({
+      frequency: null,
+      occurrence_rate: "0.45",
+      exception_frequency: null,
+      exception_rate: "0.06",
+    });
+    const { form } = await editStep(exact, route);
+
+    expect(screen.getByText(/runs in 45% of executions · exception rate 6%/)).toBeDefined();
+    const frequency = within(form).getByRole("combobox", { name: /How often does this step/ });
+    expect(
+      within(frequency).getByRole("option", { name: "Exact figure: 45%", selected: true }),
+    ).toBeDefined();
+    const exceptions = within(form).getByRole("combobox", { name: /cases unusual/ });
+    expect(
+      within(exceptions).getByRole("option", { name: "Exact figure: 6%", selected: true }),
+    ).toBeDefined();
+
+    fireEvent.click(within(form).getByRole("button", { name: "Save step" }));
+    await waitFor(() => expect(sent.body).toBeDefined());
+    for (const field of ["frequency", "occurrence_rate", "exception_frequency", "exception_rate"]) {
+      expect(sent.body).not.toHaveProperty(field);
+    }
   });
 });

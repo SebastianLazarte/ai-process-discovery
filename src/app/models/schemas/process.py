@@ -5,9 +5,15 @@ from decimal import Decimal
 from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, field_validator
 
-from app.domain.enums import InputType, IntegrationReadiness, Level
+from app.domain.enums import (
+    ExceptionFrequency,
+    InputType,
+    IntegrationReadiness,
+    Level,
+    StepFrequency,
+)
 
 # Size limits for a public deployment (RS-60). They bound storage and the prompt sent to
 # the LLM provider; the demo processes stay far below them.
@@ -45,10 +51,48 @@ class StepTraits(_Schema):
     problems: TextList = Field(default_factory=list)
 
 
-class StepFields(StepTraits):
+_FREQUENCY = "How often an execution goes through the step, in plain words (RS-115)."
+_EXCEPTIONS = "How often the step goes off the normal path, in plain words (RS-115)."
+_RATE_OR_WORDS = "Give the plain-word choice or the exact rate, not both"
+
+
+def _one_way_to_say_it(choice_field: str, value: Decimal | None, info: ValidationInfo) -> None:
+    """A rate given next to its plain-word choice is ambiguous: refuse it, naming the rate.
+
+    The choice is declared before its rate, so it is already in ``info.data``. A field
+    validator runs only on a value the client sent, never on the default.
+    """
+    if value is not None and info.data.get(choice_field) is not None:
+        raise ValueError(_RATE_OR_WORDS)
+
+
+class _StepFigures(StepTraits):
     minutes_per_execution: Decimal = Field(ge=0, examples=["4.0"])
+    # Each choice comes before its rate: the service turns the choice into the rate through
+    # the capture policy, and a rate sent on its own is kept as an exact figure.
+    frequency: StepFrequency | None = Field(default=None, description=_FREQUENCY)
     occurrence_rate: Decimal = Field(default=Decimal(1), ge=0, le=1)
+    exception_frequency: ExceptionFrequency | None = Field(default=None, description=_EXCEPTIONS)
     exception_rate: Decimal | None = Field(default=None, ge=0, le=1)
+
+
+class StepFields(_StepFigures):
+    # Optional on input: a step that sends neither the choice nor the rate runs Always.
+    occurrence_rate: Decimal | None = Field(  # type: ignore[assignment]
+        default=None, ge=0, le=1, description="An exact rate, instead of frequency."
+    )
+
+    @field_validator("occurrence_rate")
+    @classmethod
+    def _occurrence_one_way(cls, value: Decimal | None, info: ValidationInfo) -> Decimal | None:
+        _one_way_to_say_it("frequency", value, info)
+        return value
+
+    @field_validator("exception_rate")
+    @classmethod
+    def _exceptions_one_way(cls, value: Decimal | None, info: ValidationInfo) -> Decimal | None:
+        _one_way_to_say_it("exception_frequency", value, info)
+        return value
 
 
 class StepCreate(StepFields):
@@ -65,10 +109,12 @@ class StepUpdate(_Schema):
     input_description: LongText | None = None
     output_description: LongText | None = None
     minutes_per_execution: Decimal | None = Field(default=None, ge=0)
+    frequency: StepFrequency | None = Field(default=None, description=_FREQUENCY)
     occurrence_rate: Decimal | None = Field(default=None, ge=0, le=1)
     repetitiveness: Level | None = None
     rule_clarity: Level | None = None
     input_type: InputType | None = None
+    exception_frequency: ExceptionFrequency | None = Field(default=None, description=_EXCEPTIONS)
     exception_rate: Decimal | None = Field(default=None, ge=0, le=1)
     integration_readiness: IntegrationReadiness | None = None
     requires_human_judgement: bool | None = None
@@ -77,8 +123,20 @@ class StepUpdate(_Schema):
     criticality: Level | None = None
     problems: TextList | None = None
 
+    @field_validator("occurrence_rate")
+    @classmethod
+    def _occurrence_one_way(cls, value: Decimal | None, info: ValidationInfo) -> Decimal | None:
+        _one_way_to_say_it("frequency", value, info)
+        return value
 
-class StepRead(StepFields):
+    @field_validator("exception_rate")
+    @classmethod
+    def _exceptions_one_way(cls, value: Decimal | None, info: ValidationInfo) -> Decimal | None:
+        _one_way_to_say_it("exception_frequency", value, info)
+        return value
+
+
+class StepRead(_StepFigures):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID

@@ -136,6 +136,14 @@ def test_unknown_ids_return_404(client: TestClient) -> None:
     assert [r.status_code for r in responses] == [404, 404, 404]
 
 
+@pytest.mark.req("RS-106", criterion=3)
+def test_demo_list_counts_the_figures_of_each_card(client: TestClient) -> None:
+    demos = {d["slug"]: d for d in client.get("/api/demo-processes").json()}
+    orders = demos["distributor-orders"]
+    assert (orders["step_count"], orders["executions_per_month"]) == (6, 1100)
+    assert (demos["warranty-claims"]["step_count"], demos["zoning-quotes"]["step_count"]) == (7, 6)
+
+
 def test_demo_processes_load(client: TestClient) -> None:
     demos = client.get("/api/demo-processes").json()
     assert {d["slug"] for d in demos} == {
