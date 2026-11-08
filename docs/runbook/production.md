@@ -153,6 +153,16 @@ cd /opt/apd && sudo docker compose exec -T api python -m app.purge --older-than-
 
 It logs one `demo_data_purged` event with the number of processes deleted. `apd-purge.timer` runs it daily at 00:05 UTC, just after the daily LLM quota resets: the quota counts the day's analyses, so a purge later in the day would delete some of them and free quota early. Check the last run with `journalctl -u apd-purge.service -n 20`.
 
+## Read demo usage
+
+The API counts six events per UTC day: `demo_loaded`, `process_created` (also from a template), `analysis_run`, `override_created`, `blueprint_viewed` and `blueprint_downloaded` (ADR 0020). A row holds only the day, the event and the count, so the purge leaves the counters in place. No HTTP route exposes them.
+
+```bash
+cd /opt/apd && sudo docker compose exec -T api python -m app.usage --days 30
+```
+
+It prints one row per day, newest first, with 0 where nothing happened, and a total row. Counters start on the day the release with RS-114 is deployed.
+
 ## Rotate the Anthropic key
 
 Create a new key in the demo workspace, replace it in `/opt/apd/.env`, run `docker compose up -d api` in `/opt/apd`, run one analysis with the LLM, then revoke the old key.

@@ -1,9 +1,9 @@
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Any
 from uuid import UUID, uuid4
 
-from sqlalchemy import Boolean, ForeignKey, Integer, String, Text, Uuid
+from sqlalchemy import Boolean, Date, ForeignKey, Integer, String, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.persistence.base import Base, ExactDecimal, JsonDocument, UTCDateTime, utcnow
@@ -109,3 +109,13 @@ class OverrideORM(Base):
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
 
     analysis: Mapped[AnalysisORM] = relationship(back_populates="overrides")
+
+
+class UsageCounterORM(Base):
+    """How many times an event happened on a UTC day (ADR 0020). Never tied to a visitor."""
+
+    __tablename__ = "usage_counters"
+
+    day: Mapped[date] = mapped_column(Date, primary_key=True)
+    event: Mapped[str] = mapped_column(String(32), primary_key=True)
+    count: Mapped[int] = mapped_column(Integer)

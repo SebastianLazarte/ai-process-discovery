@@ -10,6 +10,7 @@ from app.services.analysis_service import AnalysisService
 from app.services.demo_service import DemoService
 from app.services.process_service import ProcessService
 from app.services.template_service import TemplateService
+from app.services.usage_service import UsageService
 
 
 def get_session(request: Request) -> Iterator[Session]:
@@ -61,3 +62,10 @@ def get_template_service() -> TemplateService:
 
 
 TemplateServiceDep = Annotated[TemplateService, Depends(get_template_service)]
+
+
+def get_usage_service(session: SessionDep) -> UsageService:
+    return UsageService(session)
+
+
+UsageServiceDep = Annotated[UsageService, Depends(get_usage_service)]
