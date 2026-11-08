@@ -22,6 +22,26 @@ const LITERAL = /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|oklch|oklab|lab|lch)\(/gi;
 const PALETTE =
   /\b(?:bg|text|border|outline|ring|divide|fill|stroke|from|to|via|accent|caret|decoration|shadow)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|black|white)(?:-\d{2,3})?\b/g;
 
+describe("RS-104.2: the colour guard", () => {
+  it.each(["#8ab4ff", "rgb(0 0 0)", "oklch(50% 0.1 260)"])("catches the literal %s", (text) => {
+    expect(text.match(LITERAL)).not.toBeNull();
+  });
+
+  it.each(["bg-blue-500", "text-white", "border-slate-700", "fill-black"])(
+    "catches the palette class %s",
+    (text) => {
+      expect(text.match(PALETTE)).not.toBeNull();
+    },
+  );
+
+  it.each(["bg-surface", "text-accent-ink", "border-ai", "bg-required"])(
+    "lets the semantic class %s through",
+    (text) => {
+      expect(text.match(PALETTE)).toBeNull();
+    },
+  );
+});
+
 describe("RS-90.1: design tokens", () => {
   const files = sources(SRC);
 
@@ -101,5 +121,42 @@ describe("RS-90.2: dark theme contrast", () => {
     ["accent", "sidebar", 3],
   ])("%s on %s reaches %s:1", (fg, bg, minimum) => {
     expect(contrast(fg as string, bg as string)).toBeGreaterThanOrEqual(minimum as number);
+  });
+});
+
+// Graphite (ADR 0018) builds depth from elevation, so every text, control border and focus
+// colour is checked on the ground and on each surface raised from it.
+const GROUNDS = ["bg", "sidebar", "surface", "band", "surface-raised", "surface-hover"];
+const TEXT = ["ink", "ink-soft", "label", "muted", "table-head", "accent"];
+const CONTROLS = ["input-line", "accent"];
+
+describe("RS-104.1: Graphite contrast on every elevation", () => {
+  it.each(TEXT.flatMap((fg) => GROUNDS.map((bg) => [fg, bg])))(
+    "text %s on %s reaches 4.5:1",
+    (fg, bg) => {
+      expect(contrast(fg!, bg!)).toBeGreaterThanOrEqual(4.5);
+    },
+  );
+
+  it.each(CONTROLS.flatMap((fg) => GROUNDS.map((bg) => [fg, bg])))(
+    "control border or focus %s on %s reaches 3:1",
+    (fg, bg) => {
+      expect(contrast(fg!, bg!)).toBeGreaterThanOrEqual(3);
+    },
+  );
+
+  it.each([
+    ["accent-ink", "accent"],
+    ["accent-ink", "accent-hover"],
+    ["ink", "surface-raised"],
+    ["ink", "surface-hover"],
+    ["bad", "surface-raised"],
+    ["bad", "surface-hover"],
+    ["required-ink", "required"],
+    ["ai", "surface"],
+    ["ai", "surface-raised"],
+    ["accent", "accent-soft"],
+  ])("button and badge text %s on %s reaches 4.5:1", (fg, bg) => {
+    expect(contrast(fg, bg)).toBeGreaterThanOrEqual(4.5);
   });
 });

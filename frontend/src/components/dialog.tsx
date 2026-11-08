@@ -40,7 +40,7 @@ export function Dialog({
       ref={ref}
       aria-labelledby={titleId}
       onClose={onClose}
-      className={`m-auto ${wide ? "w-[min(760px,calc(100vw-32px))]" : "w-[min(560px,calc(100vw-32px))]"} rounded-panel border border-line bg-surface p-6 text-ink backdrop:bg-bg/70`}
+      className={`m-auto ${wide ? "w-[min(760px,calc(100vw-32px))]" : "w-[min(560px,calc(100vw-32px))]"} rounded-panel bg-surface-raised p-6 text-ink backdrop:bg-bg/70`}
     >
       <h2 id={titleId} className="mb-[18px] text-[17px] leading-snug font-semibold tracking-tight">
         {title}

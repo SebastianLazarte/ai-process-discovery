@@ -1,10 +1,12 @@
 import { readFile } from "node:fs/promises";
 
-import { expect, expectAccessible, test } from "./fixtures";
+import { expect, expectAccessible, expectNoSidewaysScroll, test } from "./fixtures";
 
 // RS-78: the critical path of the demo, through the production routes with the fake LLM
 // provider. Load a demo, run an analysis, save an override and download the blueprint,
 // with axe on every page on the way (ADR 0013). The client lives at the root (ADR 0016).
+// On the way it checks the two forms of the navigation (RS-105, ADR 0018), inside this one
+// walk so the stack sees no extra requests against its rate limits.
 const HOME = "/";
 const DEMO = "Order intake from distributors";
 // The demo name follows a visually hidden ": ", read with a space before the colon.
@@ -15,9 +17,15 @@ const REASON = "The order desk keeps the final check.";
 test("RS-78: load a demo, analyse, override and download the blueprint", async ({ page }) => {
   await test.step("home", async () => {
     await page.goto(HOME);
-    await expect(page.getByRole("heading", { name: "Start from a demo" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Demos", exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: LOAD_DEMO })).toBeEnabled();
     await expectAccessible(page, "home");
+  });
+
+  await test.step("RS-105.3: Home keeps the full sidebar, with no horizontal scroll", async () => {
+    await expect(page.getByRole("link", { name: "New process" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Processes" })).toHaveCount(0);
+    await expectNoSidewaysScroll(page, "home");
   });
 
   const demoAnalysis = await test.step("load a demo", async () => {
@@ -28,6 +36,25 @@ test("RS-78: load a demo, analyse, override and download the blueprint", async (
     await expect(page.getByRole("heading", { name: "Step by step", exact: true })).toBeVisible();
     await expectAccessible(page, "results of the demo");
     return page.url().match(ANALYSIS_URL)?.[2];
+  });
+
+  await test.step("RS-105.3: a process page shows the rail, with no horizontal scroll", async () => {
+    const rail = page.getByRole("list", { name: "Navigation" });
+    await expect(rail.getByRole("link", { name: "Home" })).toBeVisible();
+    await expect(rail.getByRole("link", { name: "New process" })).toBeVisible();
+    await expectNoSidewaysScroll(page, "results with the rail");
+
+    await rail.getByRole("button", { name: "Processes" }).click();
+    const list = page.getByRole("navigation", { name: "Processes" });
+    await expect(list.getByRole("link", { name: new RegExp(DEMO) }).first()).toBeVisible();
+    const marks = await list
+      .getByRole("link")
+      .evaluateAll((links) => links.map((link) => link.getAttribute("aria-current")));
+    expect(marks.filter((mark) => mark === "page")).toHaveLength(1);
+    await expectNoSidewaysScroll(page, "results with the process list open");
+    await expectAccessible(page, "results with the process list open");
+    await page.keyboard.press("Escape");
+    await expect(list).toBeHidden();
   });
 
   const tabs = page.getByRole("navigation", { name: "Process sections" });
@@ -94,5 +121,19 @@ test("RS-78: load a demo, analyse, override and download the blueprint", async (
     // The browser saved the API's own bytes, with the override applied.
     expect(file.equals(await api.body())).toBe(true);
     expect(file.toString("utf8")).toContain(REASON);
+  });
+
+  // Analyse, Results and Blueprint ran axe above; Steps and History complete the screens of
+  // a process on Graphite.
+  await test.step("RS-108.2: Steps and History pass axe, with no horizontal scroll", async () => {
+    await tabs.getByRole("link", { name: "Steps" }).click();
+    await expect(page.getByRole("button", { name: "Add step" })).toBeVisible();
+    await expectAccessible(page, "steps");
+    await expectNoSidewaysScroll(page, "steps");
+
+    await tabs.getByRole("link", { name: "History" }).click();
+    await expect(page.getByRole("heading", { name: "Analysis history" })).toBeVisible();
+    await expectAccessible(page, "history");
+    await expectNoSidewaysScroll(page, "history");
   });
 });

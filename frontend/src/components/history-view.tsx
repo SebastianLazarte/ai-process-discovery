@@ -7,7 +7,9 @@ import type { components } from "@/lib/api/schema";
 import { count, shortId, timestamp, version } from "@/lib/format";
 
 import { Badge } from "./badge";
-import { buttonClass } from "./button";
+import { Button, buttonClass } from "./button";
+import { PlayIcon } from "./icons";
+import { EmptyState } from "./states";
 import { DataTable, SkeletonRows, type Column } from "./data-table";
 import { Panel } from "./panel";
 
@@ -59,25 +61,23 @@ export function HistoryView({ id }: { id: string }) {
       {analyses.isError && (
         <p className="text-sm text-muted">
           The analyses could not be loaded.{" "}
-          <button
-            type="button"
-            className="text-accent underline"
-            onClick={() => analyses.refetch()}
-          >
+          <Button variant="tertiary" onClick={() => analyses.refetch()}>
             Try again
-          </button>
+          </Button>
         </p>
       )}
       {analyses.data?.length === 0 && (
-        <div className="px-3 py-7 text-center">
-          <span aria-hidden="true" className="mb-2 block text-[30px] text-muted">
-            ◎
-          </span>
-          <h3 className="text-[15px] font-semibold">No analyses yet</h3>
-          <p className="mx-auto mt-1 max-w-[360px] text-[13px] text-muted">
-            Run one from the <Link href={`/processes/${id}/analyse`}>Analyse</Link> tab.
-          </p>
-        </div>
+        <EmptyState
+          title="No analyses yet"
+          icon={<PlayIcon />}
+          action={
+            <Link href={`/processes/${id}/analyse`} className={buttonClass("secondary")}>
+              Go to Analyse
+            </Link>
+          }
+        >
+          Each analysis you run is kept here as a snapshot.
+        </EmptyState>
       )}
       {analyses.data && analyses.data.length > 0 && (
         <DataTable

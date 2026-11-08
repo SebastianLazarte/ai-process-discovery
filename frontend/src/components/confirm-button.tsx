@@ -3,7 +3,8 @@
 import { useId, useState } from "react";
 import type { ReactNode } from "react";
 
-import { buttonClass } from "./button";
+import { Button } from "./button";
+import { noteClass } from "./note";
 
 type Confirmation = {
   question: ReactNode;
@@ -21,9 +22,9 @@ export function ConfirmButton({ label, ...confirmation }: Confirmation & { label
 
   if (!confirming) {
     return (
-      <button type="button" className={buttonClass("danger")} onClick={() => setConfirming(true)}>
+      <Button variant="danger" onClick={() => setConfirming(true)}>
         {label}
-      </button>
+      </Button>
     );
   }
   return <ConfirmQuestion {...confirmation} onCancel={() => setConfirming(false)} />;
@@ -45,23 +46,16 @@ export function ConfirmQuestion({
     <div
       role="group"
       aria-labelledby={questionId}
-      className={`max-w-xl rounded-r-control border-l-[3px] border-bad bg-bad-bg px-4 py-3 ${className}`}
+      className={`max-w-xl ${noteClass("bad")} ${className}`}
     >
       <p id={questionId} className="text-sm text-ink">
         {question}
       </p>
       <div className="mt-3 flex flex-wrap gap-3">
-        <button
-          type="button"
-          className={buttonClass("danger")}
-          disabled={pending}
-          onClick={onConfirm}
-        >
-          {pending ? pendingLabel : confirmLabel}
-        </button>
-        <button type="button" className={buttonClass("secondary")} onClick={onCancel}>
-          {cancelLabel}
-        </button>
+        <Button variant="danger" pending={pending} pendingLabel={pendingLabel} onClick={onConfirm}>
+          {confirmLabel}
+        </Button>
+        <Button onClick={onCancel}>{cancelLabel}</Button>
       </div>
     </div>
   );

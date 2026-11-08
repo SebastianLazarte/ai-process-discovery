@@ -12,7 +12,10 @@ import { keys, useProcess, useRunAnalysis } from "@/lib/api/queries";
 import type { ProcessRead } from "@/lib/api/queries";
 import { percent } from "@/lib/format";
 
-import { buttonClass } from "./button";
+import { Button, buttonClass } from "./button";
+import { PlayIcon } from "./icons";
+import { Note } from "./note";
+import { EmptyState } from "./states";
 import { CheckboxField, NumberField } from "./field";
 import { LlmWait } from "./llm-wait";
 import type { WaitStatus } from "./llm-wait";
@@ -39,13 +42,16 @@ export function AnalyseView({ id }: { id: string }) {
   if (process.data.steps.length === 0)
     return (
       <Panel id="analyse-title" title="Analyse">
-        <div className="py-8 text-center">
-          <span aria-hidden="true">◎</span>
-          <h3 className="font-semibold">No steps to analyse</h3>
-          <p className="text-[13px] text-muted">
-            Add steps on the <Link href={`/processes/${id}`}>Steps</Link> tab first.
-          </p>
-        </div>
+        <EmptyState
+          title="No steps to analyse"
+          action={
+            <Link href={`/processes/${id}`} className={buttonClass("secondary")}>
+              Go to Steps
+            </Link>
+          }
+        >
+          Add steps on the Steps tab first.
+        </EmptyState>
       </Panel>
     );
   return <AnalyseForm process={process.data} />;
@@ -162,8 +168,10 @@ function AnalyseForm({ process }: { process: ProcessRead }) {
           error={error("monthly_tooling_cost")}
           register={register("monthly_tooling_cost")}
         />
-        <fieldset className="min-w-0 rounded-[10px] border border-line px-4 pt-3.5 pb-1.5 sm:col-span-2">
-          <legend className="px-1.5 text-xs text-muted">Expected time reduction per step</legend>
+        <fieldset className="min-w-0 rounded-card bg-surface-raised px-4 pt-3.5 pb-1.5 sm:col-span-2 [&>legend+*]:clear-left">
+          <legend className="float-left mb-2 w-full text-xs text-muted">
+            Expected time reduction per step
+          </legend>
           {process.steps.map((s) => {
             const name = `expected_time_reduction_by_step.${s.id}` as const;
             return (
@@ -199,10 +207,12 @@ function AnalyseForm({ process }: { process: ProcessRead }) {
         />
         {/* Kept mounted and hidden, as in web/, so the confirmation survives a toggle. */}
         <div className="sm:col-span-2" hidden={!useLlm || sensitive.length === 0}>
-          <p className="mb-2 rounded-r-lg border-l-[3px] border-bad bg-bad-bg px-4 py-3 text-[13px] text-ink">
-            These steps handle sensitive data and their descriptions would be sent to the LLM
-            provider: {sensitive.join(", ")}.
-          </p>
+          <Note tone="bad" className="mb-2">
+            <p>
+              These steps handle sensitive data and their descriptions would be sent to the LLM
+              provider: {sensitive.join(", ")}.
+            </p>
+          </Note>
           <CheckboxField
             id="confirm_sensitive"
             label="I confirm these descriptions can be sent to the provider"
@@ -211,7 +221,7 @@ function AnalyseForm({ process }: { process: ProcessRead }) {
         </div>
         <LlmWait processId={process.id} status={status} startedAt={startedAt} />
         {failure && !run.isPending && (
-          <div className="rounded-r-lg border-l-[3px] border-bad bg-bad-bg px-4 py-3 text-[13px] text-ink sm:col-span-2">
+          <Note tone="bad" className="sm:col-span-2">
             <p>The analysis did not run: {failure.message}</p>
             {MAYBE_RUNNING.has(failure.status) && (
               <p className="mt-1">
@@ -221,10 +231,10 @@ function AnalyseForm({ process }: { process: ProcessRead }) {
               </p>
             )}
             <p className="mt-1">Your values are kept.</p>
-            <button type="submit" className={`${buttonClass("secondary")} mt-2`} disabled={!canRun}>
+            <Button type="submit" className="mt-2" disabled={!canRun}>
               Try again
-            </button>
-          </div>
+            </Button>
+          </Note>
         )}
         {formError.length > 0 && (
           <p role="alert" className="text-[13px] whitespace-pre-line text-bad sm:col-span-2">
@@ -232,9 +242,16 @@ function AnalyseForm({ process }: { process: ProcessRead }) {
           </p>
         )}
         <div className="sm:col-span-2">
-          <button type="submit" className={buttonClass("primary")} disabled={!canRun}>
-            {run.isPending ? "Running…" : "Run analysis"}
-          </button>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={!canRun}
+            pending={run.isPending}
+            pendingLabel="Running…"
+          >
+            <PlayIcon className="size-4" />
+            Run analysis
+          </Button>
         </div>
       </form>
     </Panel>

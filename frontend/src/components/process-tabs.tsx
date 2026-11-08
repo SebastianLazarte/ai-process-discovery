@@ -5,9 +5,10 @@ import { usePathname } from "next/navigation";
 
 import { useAnalyses } from "@/lib/api/queries";
 
-// The sections of a process, as the tabs of web/process-views.js. Results and Blueprint
-// open the analysis on screen, else the latest one; with no analysis yet they stay
-// disabled and say why.
+// The sections of a process, as the tabs of web/process-views.js, drawn as a segmented
+// control (ADR 0018): the current section sits on the raised surface. Results and
+// Blueprint open the analysis on screen, else the latest one; with no analysis yet they
+// stay disabled and say why.
 
 type Tab = { key: string; title: string; href: string | null };
 
@@ -39,17 +40,17 @@ export function ProcessTabs({ processId }: { processId: string }) {
   ];
 
   const look =
-    "block border-b-2 border-transparent px-4 py-2.5 text-sm font-semibold whitespace-nowrap text-muted no-underline";
+    "flex min-h-11 items-center rounded-segment px-3.5 text-sm whitespace-nowrap text-ink-soft no-underline";
   return (
-    <nav aria-label="Process sections" className="mb-7 border-b border-line">
-      <ul className="flex gap-1 overflow-x-auto">
+    <nav aria-label="Process sections" className="mb-7 max-w-full overflow-x-auto">
+      <ul className="inline-flex gap-1 rounded-panel bg-surface p-1">
         {tabs.map((tab) => (
           <li key={tab.key}>
             {tab.href ? (
               <Link
                 href={tab.href}
                 aria-current={tab.key === current ? "page" : undefined}
-                className={`${look} hover:text-ink hover:no-underline aria-[current=page]:border-accent aria-[current=page]:text-accent`}
+                className={`${look} hover:bg-surface-raised hover:text-ink hover:no-underline aria-[current=page]:bg-surface-raised aria-[current=page]:font-semibold aria-[current=page]:text-ink`}
               >
                 {tab.title}
               </Link>

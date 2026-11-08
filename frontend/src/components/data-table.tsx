@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { Bone, Skeleton } from "./states";
+
 // The table of the vanilla client: uppercase heads, soft row lines, and a horizontal
 // scroll on narrow screens instead of a page that overflows.
 
@@ -31,7 +33,9 @@ export function TableScroll({
       tabIndex={0}
       aria-labelledby={labelledBy}
       aria-label={label}
-      className="overflow-x-auto"
+      // relative: a visually hidden header (position: absolute) stays inside the scroll box
+      // instead of widening the page on a phone.
+      className="relative overflow-x-auto"
     >
       {children}
     </div>
@@ -89,16 +93,15 @@ export function DataTable<Row>({
   );
 }
 
-/** Three grey rows while a list loads, hidden from screen readers. */
-export function SkeletonRows({ rows = 3 }: { rows?: number }) {
+/** Rows the height of a table row while a list loads, announced as one status. */
+export function SkeletonRows({ rows = 3, label = "Loading" }: { rows?: number; label?: string }) {
   return (
-    <ul aria-hidden="true" className="space-y-3">
-      {Array.from({ length: rows }, (_, row) => (
-        <li
-          key={row}
-          className="h-12 animate-pulse rounded-control bg-surface-raised motion-reduce:animate-none"
-        />
-      ))}
-    </ul>
+    <Skeleton label={label}>
+      <div className="space-y-3">
+        {Array.from({ length: rows }, (_, row) => (
+          <Bone key={row} className="h-12 rounded-control bg-surface-raised" />
+        ))}
+      </div>
+    </Skeleton>
   );
 }

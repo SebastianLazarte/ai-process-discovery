@@ -8,7 +8,9 @@ import type { ProcessRead } from "@/lib/api/queries";
 import { count, enumLabel, money, number, percent } from "@/lib/format";
 
 import { Badge } from "./badge";
-import { buttonClass } from "./button";
+import { Button, buttonClass } from "./button";
+import { ArrowDownIcon, ArrowUpIcon, PlusIcon, ProcessesIcon } from "./icons";
+import { EmptyState } from "./states";
 import { ConfirmButton, ConfirmQuestion } from "./confirm-button";
 import { Dialog } from "./dialog";
 import { Metric, Metrics } from "./metric";
@@ -87,9 +89,10 @@ export function StepsView({ id }: { id: string }) {
         title="Steps"
         className="mb-6"
         action={
-          <button type="button" className={buttonClass("primary")} onClick={() => setEditing({})}>
+          <Button variant="primary" onClick={() => setEditing({})}>
+            <PlusIcon className="size-4" />
             Add step
-          </button>
+          </Button>
         }
       >
         {data.steps.length > 0 ? (
@@ -107,15 +110,9 @@ export function StepsView({ id }: { id: string }) {
             ))}
           </ol>
         ) : (
-          <div className="px-3 py-7 text-center">
-            <span aria-hidden="true" className="mb-2 block text-[30px] text-muted">
-              ◎
-            </span>
-            <h3 className="mb-1 text-[15px] font-semibold">No steps yet</h3>
-            <p className="mx-auto max-w-[360px] text-[13px] text-muted">
-              Add the first step to analyse this process.
-            </p>
-          </div>
+          <EmptyState title="No steps yet" icon={<ProcessesIcon />}>
+            Add the first step with Add step to analyse this process.
+          </EmptyState>
         )}
       </Panel>
       <Panel
@@ -139,9 +136,9 @@ export function StepsView({ id }: { id: string }) {
             onSaved={close}
           />
         )}
-        <button type="button" className={`${buttonClass()} mt-2`} onClick={close}>
+        <Button className="mt-2" onClick={close}>
           Close
-        </button>
+        </Button>
       </Dialog>
     </>
   );
@@ -195,22 +192,22 @@ function StepRow({
         <button
           ref={moveRef(-1)}
           type="button"
-          className={buttonClass("quiet")}
+          className={buttonClass("tertiary")}
           aria-label={`Move ${step.name} up`}
           disabled={first}
           onClick={() => onMove(-1)}
         >
-          ↑
+          <ArrowUpIcon className="size-4" />
         </button>
         <button
           ref={moveRef(1)}
           type="button"
-          className={buttonClass("quiet")}
+          className={buttonClass("tertiary")}
           aria-label={`Move ${step.name} down`}
           disabled={last}
           onClick={() => onMove(1)}
         >
-          ↓
+          <ArrowDownIcon className="size-4" />
         </button>
         <button
           type="button"

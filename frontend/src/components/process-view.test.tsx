@@ -124,3 +124,41 @@ describe("the process tabs", () => {
     );
   });
 });
+
+describe("RS-108: the process tabs", () => {
+  it("RS-108.1: are a segmented control, the current section raised on one surface", async () => {
+    pathname.current = `${PATH}/history`;
+    api([analysisSummary()]);
+    renderWithProviders(<ProcessView id={PROCESS.id} />);
+
+    const tabs = await screen.findByRole("navigation", { name: "Process sections" });
+    const segments = within(tabs).getByRole("list");
+    expect(segments.className.split(" ")).toEqual(
+      expect.arrayContaining(["bg-surface", "rounded-panel"]),
+    );
+    const current = await within(tabs).findByRole("link", { name: "History" });
+    expect(current.getAttribute("aria-current")).toBe("page");
+    expect(current.className.split(" ")).toContain("aria-[current=page]:bg-surface-raised");
+    const others = within(tabs)
+      .getAllByRole("link")
+      .filter((link) => link !== current);
+    for (const link of others) expect(link.getAttribute("aria-current")).toBeNull();
+  });
+});
+
+describe("RS-109.3: a process page while it loads", () => {
+  it("shows a skeleton of the title, the tabs and a panel, announced once", async () => {
+    pathname.current = PATH;
+    fakeApi({
+      [`GET ${PATH}`]: { body: PROCESS, delay: 50 },
+      [`GET ${PATH}/analyses`]: { body: [] },
+    });
+    renderWithProviders(<ProcessView id={PROCESS.id} />);
+
+    const skeleton = screen.getByRole("status", { name: "Loading the process" });
+    expect(skeleton.getAttribute("aria-busy")).toBe("true");
+    expect(skeleton.querySelector("[aria-hidden]")?.children).toHaveLength(3);
+    expect(await screen.findByRole("heading", { name: PROCESS.name, level: 1 })).toBeDefined();
+    expect(screen.queryByRole("status", { name: "Loading the process" })).toBeNull();
+  });
+});
