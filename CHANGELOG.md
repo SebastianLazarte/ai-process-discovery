@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.3.0](https://github.com/SebastianLazarte/ai-process-discovery/compare/v2.2.0...v2.3.0) (2026-11-08)
+
+
+### Features
+
+* **api:** daily usage counters and a report command (RS-114) ([#237](https://github.com/SebastianLazarte/ai-process-discovery/issues/237)) ([fa36830](https://github.com/SebastianLazarte/ai-process-discovery/commit/fa36830f6cafc7ac84b759140ada03c8fc3bf46d))
+* **api:** step frequency and exceptions in plain words (RS-115) ([#240](https://github.com/SebastianLazarte/ai-process-discovery/issues/240)) ([6b16d4f](https://github.com/SebastianLazarte/ai-process-discovery/commit/6b16d4fbd54be8ac1b83fe35344da0113fb0c3ef))
+
+
+### Documentation
+
+* daily usage counters on the public demo (ADR 0020, RS-114) ([#236](https://github.com/SebastianLazarte/ai-process-discovery/issues/236)) ([f3518c8](https://github.com/SebastianLazarte/ai-process-discovery/commit/f3518c8aeee53b762561675821b85658171bb1bc))
+
 ## [2.2.0](https://github.com/SebastianLazarte/ai-process-discovery/compare/v2.1.0...v2.2.0) (2026-11-07)
 
 
