@@ -84,7 +84,7 @@ describe("RS-74: the step form", () => {
     );
 
     expect(screen.getByText(/exceptions: don't know/)).toBeDefined();
-    const field = within(form).getByRole("combobox", { name: /go off the normal path/ });
+    const field = within(form).getByRole("combobox", { name: /cases unusual/ });
     expect((field as HTMLSelectElement).value).toBe("UNKNOWN");
     expect(within(field).getByRole("option", { name: "Don't know" })).toBeDefined();
 
@@ -175,7 +175,7 @@ describe("RS-115: frequency and exceptions in plain words", () => {
         .getAllByRole("option")
         .map((option) => option.textContent);
     const frequency = within(form).getByRole("combobox", { name: /How often does this step/ });
-    const exceptions = within(form).getByRole("combobox", { name: /go off the normal path/ });
+    const exceptions = within(form).getByRole("combobox", { name: /cases unusual/ });
     expect(names(frequency)).toEqual([
       "Always",
       "Most of the time (about 3 in 4)",
@@ -210,7 +210,7 @@ describe("RS-115: frequency and exceptions in plain words", () => {
     expect(
       within(frequency).getByRole("option", { name: "Exact figure: 45%", selected: true }),
     ).toBeDefined();
-    const exceptions = within(form).getByRole("combobox", { name: /go off the normal path/ });
+    const exceptions = within(form).getByRole("combobox", { name: /cases unusual/ });
     expect(
       within(exceptions).getByRole("option", { name: "Exact figure: 6%", selected: true }),
     ).toBeDefined();

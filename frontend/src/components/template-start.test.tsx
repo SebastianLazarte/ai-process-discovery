@@ -18,7 +18,7 @@ afterEach(() => {
 
 const CREATED_ID = "33333333-3333-4333-8333-333333333333";
 const FREQUENCY = "How often does this step happen?";
-const EXCEPTIONS = "How often does it go off the normal path?";
+const EXCEPTIONS = "How often are cases unusual?";
 
 function serve(extra: Parameters<typeof fakeApi>[0] = {}) {
   return fakeApi({ "GET /process-templates": { body: [sectorTemplates()] }, ...extra });

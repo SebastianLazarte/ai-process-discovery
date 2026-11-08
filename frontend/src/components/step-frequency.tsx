@@ -98,8 +98,8 @@ export function FrequencyFields({
       />
       <SelectField
         id={`${idPrefix}-exception_frequency`}
-        label="How often does it go off the normal path?"
-        hint="Cases that need special handling."
+        label="How often are cases unusual?"
+        hint="Off the normal path, with special handling."
         {...off}
         {...exceptions}
       />
