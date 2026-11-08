@@ -98,6 +98,22 @@ export function ArrowRightIcon(props: IconProps) {
   );
 }
 
+export function ArrowUpIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M12 19V5M6 11l6-6 6 6" />
+    </Icon>
+  );
+}
+
+export function ArrowDownIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M12 5v14M6 13l6 6 6-6" />
+    </Icon>
+  );
+}
+
 export function CheckIcon(props: IconProps) {
   return (
     <Icon {...props}>
@@ -151,6 +167,8 @@ export const ICONS = {
   PlayIcon,
   DownloadIcon,
   ArrowRightIcon,
+  ArrowUpIcon,
+  ArrowDownIcon,
   CheckIcon,
   InfoIcon,
   WarningIcon,

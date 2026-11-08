@@ -88,14 +88,20 @@ export function NumberField({ integer, ...props }: FieldProps & { integer?: bool
 }
 
 /**
- * A select over enum values, each labelled with enumLabel. A current value the list does
- * not name (a newer API) is kept as an option, so saving never swaps it silently (RS-58).
+ * A select over enum values, each labelled with enumLabel unless `labels` names it. A
+ * current value the list does not name (a newer API) is kept as an option, so saving never
+ * swaps it silently (RS-58).
  */
 export function SelectField({
   options,
   current,
+  labels,
   ...props
-}: FieldProps & { options: readonly string[]; current?: string | null }) {
+}: FieldProps & {
+  options: readonly string[];
+  current?: string | null;
+  labels?: Readonly<Partial<Record<string, string>>>;
+}) {
   const values = current && !options.includes(current) ? [...options, current] : options;
   return (
     <div className={props.wide ? "sm:col-span-2" : undefined}>
@@ -103,7 +109,7 @@ export function SelectField({
       <select className={CONTROL} {...controlProps(props)}>
         {values.map((value) => (
           <option key={value} value={value}>
-            {enumLabel(value)}
+            {labels?.[value] ?? enumLabel(value)}
           </option>
         ))}
       </select>

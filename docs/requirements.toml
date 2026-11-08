@@ -1,7 +1,7 @@
 # Product backlog, one GitHub issue per requirement (scripts/bootstrap_github.py).
 #
 # Scrum mapping: each user requirement (RU) is an epic written as a user story, each system
-# requirement (RS) is a backlog item (a user story or an enabler), and each block (B0 to B18)
+# requirement (RS) is a backlog item (a user story or an enabler), and each block (B0 to B19)
 # is a release with its milestone. Refined items carry Given/When/Then criteria, Fibonacci
 # points, a MoSCoW priority and a rank; items delivered before refinement keep their
 # original title and acceptance list. Status and sprint live in GitHub, not here.
@@ -907,10 +907,10 @@ then = "that value stays selected and saving keeps it"
 [[requirement.criteria]]
 given = "a step with an unknown exception rate"
 when = "it is shown or edited"
-then = "it reads Unknown, and saving it untouched sends null, never 0"
+then = "it reads Don't know, and saving it untouched keeps it unknown, never 0"
 
 [[requirement.criteria]]
-given = "an occurrence rate outside 0 to 1"
+given = "a frequency or an exception choice the API refuses"
 when = "the form is submitted"
 then = "that field shows the API's error and every other value stays"
 
@@ -2073,3 +2073,81 @@ then = "the band reads in full with no horizontal scroll, and the axe pass finds
 given = "the public demo"
 when = "the banner renders"
 then = "it says anything entered is visible to anyone with its link"
+
+[[requirement]]
+id = "RS-114"
+ru = "RU-10"
+block = "B19"
+area = "api"
+kind = "story"
+as_a = "maintainer"
+i_want = "to know each day how many visitors create their own process, load a demo, run an analysis or generate a blueprint"
+so_that = "I can tell whether the live demo is used and where people stop"
+title = "Daily usage counters that outlive the purge, read with a server command (ADR 0020)"
+points = 3
+priority = "should"
+rank = 51
+
+[[requirement.criteria]]
+given = "a request that succeeds: POST /processes, POST /demo-processes/{slug}, POST /processes/{id}/analyses, POST /analyses/{id}/overrides, GET /analyses/{id}/blueprint or GET /analyses/{id}/blueprint.md"
+when = "it is answered"
+then = "the counter of its event for the current UTC day goes up by one: process_created, demo_loaded, analysis_run, override_created, blueprint_viewed or blueprint_downloaded"
+
+[[requirement.criteria]]
+given = "a demo with assumptions"
+when = "a visitor loads it"
+then = "only demo_loaded goes up, never process_created or analysis_run for the process and analysis the demo creates"
+
+[[requirement.criteria]]
+given = "a request that fails with 404, 409 or 422"
+when = "it is answered"
+then = "no counter changes"
+
+[[requirement.criteria]]
+given = "counters and processes older than the retention window"
+when = "the purge runs"
+then = "the processes are deleted and the counters stay, holding only a day, an event and a count: no process id, text, IP address or visitor id"
+
+[[requirement.criteria]]
+given = "counters on several days"
+when = "python -m app.usage --days 7 runs"
+then = "it prints one row per UTC day of the last 7 days, newest first, one column per event with 0 where nothing happened, and a total row"
+
+[[requirement.criteria]]
+given = "the counter cannot be written"
+when = "a counted request is answered"
+then = "the request still succeeds and a usage_not_recorded warning is logged"
+
+[[requirement]]
+id = "RS-115"
+ru = "RU-01"
+block = "B14"
+area = "api"
+kind = "story"
+title = "Say how often a step happens and goes off the normal path in plain words"
+as_a = "operations lead"
+i_want = "to say how often a step happens and how often it goes off the normal path in plain words"
+so_that = "I can answer without knowing the exact figure"
+points = 5
+priority = "should"
+rank = 52
+
+[[requirement.criteria]]
+given = "the step form or a template review"
+when = "I open it"
+then = "frequency is a choice of Always, Most of the time, Half of the time, Sometimes or Rarely, Always by default, and exceptions a choice of Almost never, Sometimes, Often, Almost always or Don't know, Don't know by default, with no numeric field"
+
+[[requirement.criteria]]
+given = "a step saved with a choice"
+when = "it is analysed"
+then = "hours and score use the rate the versioned capture policy assigns to that choice, and the step keeps the choice"
+
+[[requirement.criteria]]
+given = "a step with an exact rate, as in the demos or through the API"
+when = "I open its form"
+then = "the current choice reads Exact figure with its percent, and saving without changing it keeps the rate"
+
+[[requirement.criteria]]
+given = "the API"
+when = "it receives a choice and a rate for the same field"
+then = "it answers 422 naming the field"

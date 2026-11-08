@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, status
 
-from app.api.dependencies import ProcessServiceDep
+from app.api.dependencies import ProcessServiceDep, UsageServiceDep
 from app.models.schemas.process import (
     ProcessCreate,
     ProcessRead,
@@ -12,13 +12,18 @@ from app.models.schemas.process import (
     StepOrder,
     StepUpdate,
 )
+from app.services.usage_service import UsageEvent
 
 router = APIRouter(tags=["processes"])
 
 
 @router.post("/processes", status_code=status.HTTP_201_CREATED)
-def create_process(data: ProcessCreate, service: ProcessServiceDep) -> ProcessRead:
-    return service.create(data)
+def create_process(
+    data: ProcessCreate, service: ProcessServiceDep, usage: UsageServiceDep
+) -> ProcessRead:
+    process = service.create(data)
+    usage.record(UsageEvent.PROCESS_CREATED)
+    return process
 
 
 @router.get("/processes")

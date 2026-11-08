@@ -1,9 +1,9 @@
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Any
 from uuid import UUID, uuid4
 
-from sqlalchemy import Boolean, ForeignKey, Integer, String, Text, Uuid
+from sqlalchemy import Boolean, Date, ForeignKey, Integer, String, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.persistence.base import Base, ExactDecimal, JsonDocument, UTCDateTime, utcnow
@@ -46,10 +46,13 @@ class ProcessStepORM(Base):
     input_description: Mapped[str] = mapped_column(Text, default="")
     output_description: Mapped[str] = mapped_column(Text, default="")
     minutes_per_execution: Mapped[Decimal] = mapped_column(ExactDecimal)
+    # The plain-word choice behind each rate (RS-115); null when the rate is an exact figure.
+    frequency: Mapped[str | None] = mapped_column(String(32), nullable=True)
     occurrence_rate: Mapped[Decimal] = mapped_column(ExactDecimal)
     repetitiveness: Mapped[str] = mapped_column(String(32))
     rule_clarity: Mapped[str] = mapped_column(String(32))
     input_type: Mapped[str] = mapped_column(String(32))
+    exception_frequency: Mapped[str | None] = mapped_column(String(32), nullable=True)
     exception_rate: Mapped[Decimal | None] = mapped_column(ExactDecimal, nullable=True)
     integration_readiness: Mapped[str] = mapped_column(String(32))
     requires_human_judgement: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -106,3 +109,13 @@ class OverrideORM(Base):
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
 
     analysis: Mapped[AnalysisORM] = relationship(back_populates="overrides")
+
+
+class UsageCounterORM(Base):
+    """How many times an event happened on a UTC day (ADR 0020). Never tied to a visitor."""
+
+    __tablename__ = "usage_counters"
+
+    day: Mapped[date] = mapped_column(Date, primary_key=True)
+    event: Mapped[str] = mapped_column(String(32), primary_key=True)
+    count: Mapped[int] = mapped_column(Integer)

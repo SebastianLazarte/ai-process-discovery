@@ -17,6 +17,8 @@ afterEach(() => {
 });
 
 const CREATED_ID = "33333333-3333-4333-8333-333333333333";
+const FREQUENCY = "How often does this step happen?";
+const EXCEPTIONS = "How often are cases unusual?";
 
 function serve(extra: Parameters<typeof fakeApi>[0] = {}) {
   return fakeApi({ "GET /process-templates": { body: [sectorTemplates()] }, ...extra });
@@ -74,6 +76,19 @@ describe("RS-96.1: choosing a sector and one of its processes", () => {
     ).toEqual(["Requires human judgement", "Requires human approval", "Handles sensitive data"]);
     expect(valueOf(first, "Minutes per execution")).toBe("");
   });
+
+  it("RS-115.1: asks frequency and exceptions as plain-word choices, with no rate field", async () => {
+    serve();
+    renderWithProviders(<TemplateStart />);
+
+    await choose("Manufacturing", "Supplier invoice processing");
+
+    const review = screen.getByRole("region", { name: "Review: Supplier invoice processing" });
+    const first = within(review).getByRole("group", { name: "1. Receive the invoice" });
+    expect(valueOf(first, FREQUENCY)).toBe("ALWAYS");
+    expect(valueOf(first, EXCEPTIONS)).toBe("UNKNOWN");
+    expect(within(review).queryByLabelText(/rate/i)).toBeNull();
+  });
 });
 
 describe("RS-96.2: creating without the figures a template cannot know", () => {
@@ -121,9 +136,9 @@ describe("RS-96.3: creating a completed review", () => {
     ];
     type(review, "Executions per month", "300");
     type(first, "Minutes", "6");
-    type(first, "Exception rate", "0.1");
+    type(first, EXCEPTIONS, "SOMETIMES");
     type(second, "Minutes", "3");
-    type(second, "Occurrence rate", "0.4");
+    type(second, FREQUENCY, "HALF_OF_THE_TIME");
 
     fireEvent.click(within(review).getByRole("button", { name: "Create process" }));
 
@@ -137,8 +152,18 @@ describe("RS-96.3: creating a completed review", () => {
       hourly_cost: null,
       description: "Supplier invoices are received, matched and posted for payment.",
       steps: [
-        { ...traitsOne, minutes_per_execution: "6", occurrence_rate: "1", exception_rate: "0.1" },
-        { ...traitsTwo, minutes_per_execution: "3", occurrence_rate: "0.4", exception_rate: null },
+        {
+          ...traitsOne,
+          minutes_per_execution: "6",
+          frequency: "ALWAYS",
+          exception_frequency: "SOMETIMES",
+        },
+        {
+          ...traitsTwo,
+          minutes_per_execution: "3",
+          frequency: "HALF_OF_THE_TIME",
+          exception_frequency: "UNKNOWN",
+        },
       ],
     });
   });
@@ -148,7 +173,7 @@ describe("RS-96.3: creating a completed review", () => {
       "POST /processes": {
         status: 422,
         body: {
-          detail: [{ loc: ["body", "steps", 1, "occurrence_rate"], msg: "Must be at most 1" }],
+          detail: [{ loc: ["body", "steps", 1, "frequency"], msg: "Input should be a choice" }],
         },
       },
     });
@@ -159,13 +184,14 @@ describe("RS-96.3: creating a completed review", () => {
     type(review, "Executions per month", "300");
     type(within(review).getByRole("group", { name: "1. Receive the invoice" }), "Minutes", "6");
     type(second, "Minutes", "3");
-    type(second, "Occurrence rate", "4");
+    type(second, FREQUENCY, "RARELY");
 
     fireEvent.click(within(review).getByRole("button", { name: "Create process" }));
 
-    const rate = within(second).getByLabelText("Occurrence rate", { exact: false });
-    await waitFor(() => expect(rate.getAttribute("aria-invalid")).toBe("true"));
-    expect(within(second).getByText("Must be at most 1")).toBeDefined();
+    const frequency = within(second).getByLabelText(FREQUENCY, { exact: false });
+    await waitFor(() => expect(frequency.getAttribute("aria-invalid")).toBe("true"));
+    expect(within(second).getByText("Input should be a choice")).toBeDefined();
+    expect((frequency as HTMLSelectElement).value).toBe("RARELY");
     expect(push).not.toHaveBeenCalled();
   });
 });

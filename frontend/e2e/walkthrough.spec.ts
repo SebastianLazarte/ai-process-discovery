@@ -17,7 +17,7 @@ const REASON = "The order desk keeps the final check.";
 test("RS-78: load a demo, analyse, override and download the blueprint", async ({ page }) => {
   await test.step("home", async () => {
     await page.goto(HOME);
-    await expect(page.getByRole("heading", { name: "Start from a demo" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Demos", exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: LOAD_DEMO })).toBeEnabled();
     await expectAccessible(page, "home");
   });
@@ -121,5 +121,19 @@ test("RS-78: load a demo, analyse, override and download the blueprint", async (
     // The browser saved the API's own bytes, with the override applied.
     expect(file.equals(await api.body())).toBe(true);
     expect(file.toString("utf8")).toContain(REASON);
+  });
+
+  // Analyse, Results and Blueprint ran axe above; Steps and History complete the screens of
+  // a process on Graphite.
+  await test.step("RS-108.2: Steps and History pass axe, with no horizontal scroll", async () => {
+    await tabs.getByRole("link", { name: "Steps" }).click();
+    await expect(page.getByRole("button", { name: "Add step" })).toBeVisible();
+    await expectAccessible(page, "steps");
+    await expectNoSidewaysScroll(page, "steps");
+
+    await tabs.getByRole("link", { name: "History" }).click();
+    await expect(page.getByRole("heading", { name: "Analysis history" })).toBeVisible();
+    await expectAccessible(page, "history");
+    await expectNoSidewaysScroll(page, "history");
   });
 });

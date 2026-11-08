@@ -12,20 +12,21 @@ import type { InputType, IntegrationReadiness, Level } from "@/lib/format/option
 
 import { CheckboxField, NumberField, SelectField, TextField } from "./field";
 import { Submit } from "./process-form";
+import { FrequencyFields, frequencyBody, frequencyValues } from "./step-frequency";
 import { useToast } from "./toast";
 
 type Step = ProcessRead["steps"][number];
 
-// Values travel as typed; the API validates and converts them (hard rule 7). An empty
-// exception rate is sent as null, meaning unknown, never as zero. Selects keep a stored
-// value the option lists do not name (RS-58), so their values are plain strings here.
+// Values travel as typed; the API validates and converts them (hard rule 7). Frequency and
+// exceptions are plain-word choices the API turns into rates (RS-115). Selects keep a
+// stored value the option lists do not name (RS-58), so their values are plain strings here.
 type Values = {
   name: string;
   responsible_role: string;
   description: string;
   minutes_per_execution: string;
-  occurrence_rate: string;
-  exception_rate: string;
+  frequency: string;
+  exception_frequency: string;
   repetitiveness: string;
   rule_clarity: string;
   criticality: string;
@@ -42,8 +43,8 @@ const FIELDS: FieldPath<Values>[] = [
   "responsible_role",
   "description",
   "minutes_per_execution",
-  "occurrence_rate",
-  "exception_rate",
+  "frequency",
+  "exception_frequency",
   "repetitiveness",
   "rule_clarity",
   "criticality",
@@ -61,8 +62,7 @@ function toValues(step?: Step): Values {
     responsible_role: step?.responsible_role ?? "",
     description: step?.description ?? "",
     minutes_per_execution: step?.minutes_per_execution ?? "5",
-    occurrence_rate: step?.occurrence_rate ?? "1",
-    exception_rate: step?.exception_rate ?? "",
+    ...frequencyValues(step),
     repetitiveness: step?.repetitiveness ?? "UNKNOWN",
     rule_clarity: step?.rule_clarity ?? "UNKNOWN",
     criticality: step?.criticality ?? "UNKNOWN",
@@ -82,8 +82,7 @@ function toBody(values: Values) {
     responsible_role: values.responsible_role.trim(),
     description: values.description.trim(),
     minutes_per_execution: values.minutes_per_execution.trim(),
-    occurrence_rate: values.occurrence_rate.trim() || "1",
-    exception_rate: values.exception_rate.trim() || null,
+    ...frequencyBody(values),
     // A value the client does not list goes back as it came, so the casts only widen.
     repetitiveness: values.repetitiveness as Level,
     rule_clarity: values.rule_clarity as Level,
@@ -158,15 +157,14 @@ export function StepForm({
       <TextField label="Responsible role" {...field("responsible_role")} />
       <TextField label="Description" multiline wide {...field("description")} />
       <NumberField label="Minutes per execution" required {...field("minutes_per_execution")} />
-      <NumberField
-        label="Occurrence rate (0 to 1)"
-        hint="Share of executions that go through this step."
-        {...field("occurrence_rate")}
-      />
-      <NumberField
-        label="Exception rate (0 to 1)"
-        hint="Leave empty if unknown."
-        {...field("exception_rate")}
+      <FrequencyFields
+        idPrefix="step"
+        step={step}
+        frequency={{ register: register("frequency"), error: error("frequency") }}
+        exceptions={{
+          register: register("exception_frequency"),
+          error: error("exception_frequency"),
+        }}
       />
       <SelectField
         label="Repetitiveness"
@@ -199,8 +197,8 @@ export function StepForm({
         {...field("integration_readiness")}
       />
       <TextField label="Tools" hint="Comma separated." {...field("tools")} />
-      <fieldset className="flex flex-wrap gap-x-[22px] rounded-[10px] border border-line px-4 pt-1.5 pb-2 sm:col-span-2">
-        <legend className="px-1.5 text-xs text-muted">Controls and data</legend>
+      <fieldset className="flex flex-wrap gap-x-[22px] rounded-card bg-surface-raised px-4 pt-3 pb-2 sm:col-span-2">
+        <legend className="float-left mb-2 w-full text-xs text-muted">Controls and data</legend>
         <CheckboxField label="Requires human judgement" {...field("requires_human_judgement")} />
         <CheckboxField label="Requires human approval" {...field("requires_human_approval")} />
         <CheckboxField label="Handles sensitive data" {...field("handles_sensitive_data")} />

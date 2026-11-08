@@ -51,6 +51,22 @@ describe("the public demo banner", () => {
   });
 });
 
+describe("RS-109.1: the slim demo banner", () => {
+  it("is one line with a status dot and keeps the full text of RS-62", async () => {
+    api(true);
+    renderWithProviders(<AppShell>page</AppShell>);
+
+    const banner = await screen.findByRole("note");
+    expect(banner.textContent).toBe(
+      "Public demo v1.3.1. Anything you enter is visible to other visitors and deleted daily. Do not enter real or personal data.",
+    );
+    expect(banner.querySelector("br, p, div")).toBeNull();
+    const dot = banner.firstElementChild;
+    expect(dot?.getAttribute("aria-hidden")).toBe("true");
+    expect(dot?.textContent).toBe("");
+  });
+});
+
 describe("the navigation", () => {
   it("RS-105.1: Home shows the full sidebar with the brand, New process and every process", async () => {
     pathname.current = "/";
