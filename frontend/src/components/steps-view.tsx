@@ -5,7 +5,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 
 import { useDeleteProcess, useDeleteStep, useProcess, useReorderSteps } from "@/lib/api/queries";
 import type { ProcessRead } from "@/lib/api/queries";
-import { count, enumLabel, money, number, percent } from "@/lib/format";
+import { count, enumLabel, money, number } from "@/lib/format";
 
 import { Badge } from "./badge";
 import { Button, buttonClass } from "./button";
@@ -16,6 +16,7 @@ import { Dialog } from "./dialog";
 import { Metric, Metrics } from "./metric";
 import { Panel } from "./panel";
 import { ProcessSettingsForm } from "./process-form";
+import { frequencyText } from "./step-frequency";
 import { StepForm } from "./step-form";
 import { useToast } from "./toast";
 
@@ -175,9 +176,8 @@ function StepRow({
       <div className="min-w-0">
         <h3 className="mb-0.5 text-[15px] font-semibold">{step.name}</h3>
         <p className="mb-2 text-[13px] text-muted">
-          {step.responsible_role || "No role"} · {number(step.minutes_per_execution, 1)} min · runs
-          in {percent(step.occurrence_rate)} of executions · exception rate{" "}
-          {percent(step.exception_rate)}
+          {step.responsible_role || "No role"} · {number(step.minutes_per_execution, 1)} min ·{" "}
+          {frequencyText(step)}
         </p>
         <div className="flex flex-wrap gap-1.5">
           <Badge value={step.input_type} tone="neutral" />

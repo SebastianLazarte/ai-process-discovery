@@ -9,7 +9,13 @@ from dataclasses import dataclass
 from decimal import Decimal
 from types import MappingProxyType
 
-from app.domain.enums import InputType, IntegrationReadiness, Level
+from app.domain.enums import (
+    ExceptionFrequency,
+    InputType,
+    IntegrationReadiness,
+    Level,
+    StepFrequency,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -96,3 +102,52 @@ SCORING_POLICY_V1 = ScoringPolicy(
 )
 
 DEFAULT_POLICY = SCORING_POLICY_V1
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class CapturePolicy:
+    """The rate each plain-word answer stands for when a step is captured (RS-115).
+
+    A person rarely knows that a step runs in 0.45 of executions, but can say "half of
+    the time". The words are what they answer; these rates are what the formulas use.
+    Like the scoring weights, they are a product decision, versioned here.
+    """
+
+    version: str
+    occurrence_rates: Mapping[StepFrequency, Decimal]
+    exception_rates: Mapping[ExceptionFrequency, Decimal | None]
+
+    def occurrence_rate(self, frequency: StepFrequency) -> Decimal:
+        return self.occurrence_rates[frequency]
+
+    def exception_rate(self, exceptions: ExceptionFrequency) -> Decimal | None:
+        """``None`` for UNKNOWN: an unknown rate stays unknown, never zero."""
+        return self.exception_rates[exceptions]
+
+
+# Each rate sits inside one scoring band, so the word decides the band. "Sometimes" is
+# exactly the RULE_BASED limit (0.10): a step that goes off the path about 1 in 10 times
+# can still run on rules. "Often" (about 1 in 3) is past every exception ceiling.
+CAPTURE_POLICY_V1 = CapturePolicy(
+    version="capture-v1",
+    occurrence_rates=MappingProxyType(
+        {
+            StepFrequency.ALWAYS: Decimal(1),
+            StepFrequency.MOST_OF_THE_TIME: Decimal("0.75"),
+            StepFrequency.HALF_OF_THE_TIME: Decimal("0.5"),
+            StepFrequency.SOMETIMES: Decimal("0.25"),
+            StepFrequency.RARELY: Decimal("0.1"),
+        }
+    ),
+    exception_rates=MappingProxyType(
+        {
+            ExceptionFrequency.ALMOST_NEVER: Decimal("0.02"),
+            ExceptionFrequency.SOMETIMES: Decimal("0.1"),
+            ExceptionFrequency.OFTEN: Decimal("0.33"),
+            ExceptionFrequency.ALMOST_ALWAYS: Decimal("0.8"),
+            ExceptionFrequency.UNKNOWN: None,
+        }
+    ),
+)
+
+DEFAULT_CAPTURE_POLICY = CAPTURE_POLICY_V1

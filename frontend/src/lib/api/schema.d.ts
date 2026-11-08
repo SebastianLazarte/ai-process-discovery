@@ -502,6 +502,12 @@ export interface components {
             /** Executions Per Month */
             executions_per_month?: number | null;
         };
+        /**
+         * ExceptionFrequency
+         * @description How often a step goes off the normal path, in plain words (RS-115).
+         * @enum {string}
+         */
+        ExceptionFrequency: "ALMOST_NEVER" | "SOMETIMES" | "OFTEN" | "ALMOST_ALWAYS" | "UNKNOWN";
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -842,11 +848,15 @@ export interface components {
              * @example 4.0
              */
             minutes_per_execution: number | string;
+            /** @description How often an execution goes through the step, in plain words (RS-115). */
+            frequency?: components["schemas"]["StepFrequency"] | null;
             /**
              * Occurrence Rate
-             * @default 1
+             * @description An exact rate, instead of frequency.
              */
-            occurrence_rate: number | string;
+            occurrence_rate?: number | string | null;
+            /** @description How often the step goes off the normal path, in plain words (RS-115). */
+            exception_frequency?: components["schemas"]["ExceptionFrequency"] | null;
             /** Exception Rate */
             exception_rate?: number | string | null;
             /**
@@ -913,14 +923,24 @@ export interface components {
              * @example 4.0
              */
             minutes_per_execution: number | string;
+            /** @description How often an execution goes through the step, in plain words (RS-115). */
+            frequency?: components["schemas"]["StepFrequency"] | null;
             /**
              * Occurrence Rate
-             * @default 1
+             * @description An exact rate, instead of frequency.
              */
-            occurrence_rate: number | string;
+            occurrence_rate?: number | string | null;
+            /** @description How often the step goes off the normal path, in plain words (RS-115). */
+            exception_frequency?: components["schemas"]["ExceptionFrequency"] | null;
             /** Exception Rate */
             exception_rate?: number | string | null;
         };
+        /**
+         * StepFrequency
+         * @description How often an execution goes through a step, in the words a person can answer (RS-115).
+         * @enum {string}
+         */
+        StepFrequency: "ALWAYS" | "MOST_OF_THE_TIME" | "HALF_OF_THE_TIME" | "SOMETIMES" | "RARELY";
         /** StepOrder */
         StepOrder: {
             /**
@@ -987,11 +1007,15 @@ export interface components {
              * @example 4.0
              */
             minutes_per_execution: string;
+            /** @description How often an execution goes through the step, in plain words (RS-115). */
+            frequency?: components["schemas"]["StepFrequency"] | null;
             /**
              * Occurrence Rate
              * @default 1
              */
             occurrence_rate: string;
+            /** @description How often the step goes off the normal path, in plain words (RS-115). */
+            exception_frequency?: components["schemas"]["ExceptionFrequency"] | null;
             /** Exception Rate */
             exception_rate?: string | null;
             /**
@@ -1075,11 +1099,15 @@ export interface components {
             output_description?: string | null;
             /** Minutes Per Execution */
             minutes_per_execution?: number | string | null;
+            /** @description How often an execution goes through the step, in plain words (RS-115). */
+            frequency?: components["schemas"]["StepFrequency"] | null;
             /** Occurrence Rate */
             occurrence_rate?: number | string | null;
             repetitiveness?: components["schemas"]["Level"] | null;
             rule_clarity?: components["schemas"]["Level"] | null;
             input_type?: components["schemas"]["InputType"] | null;
+            /** @description How often the step goes off the normal path, in plain words (RS-115). */
+            exception_frequency?: components["schemas"]["ExceptionFrequency"] | null;
             /** Exception Rate */
             exception_rate?: number | string | null;
             integration_readiness?: components["schemas"]["IntegrationReadiness"] | null;

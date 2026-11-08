@@ -8,6 +8,8 @@ import { describe, expect, it } from "vitest";
 
 import {
   AUTOMATION_METHODS,
+  EXCEPTION_FREQUENCIES,
+  FREQUENCIES,
   HUMAN_CONTROLS,
   INPUT_TYPES,
   INTEGRATION_READINESS,
@@ -25,6 +27,8 @@ describe("RS-74.2: option lists", () => {
     ["IntegrationReadiness", INTEGRATION_READINESS],
     ["AutomationMethod", AUTOMATION_METHODS],
     ["HumanControl", HUMAN_CONTROLS],
+    ["StepFrequency", FREQUENCIES],
+    ["ExceptionFrequency", EXCEPTION_FREQUENCIES],
   ])("%s offers every member of the enum, once", (name, options) => {
     const members = openapi.components.schemas[name]?.enum;
     expect(members).toBeDefined();
