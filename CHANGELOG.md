@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.1](https://github.com/SebastianLazarte/ai-process-discovery/compare/v2.3.0...v2.3.1) (2026-11-08)
+
+
+### Bug Fixes
+
+* **ci:** give each end-to-end test its own rate limit bucket at the edge ([#238](https://github.com/SebastianLazarte/ai-process-discovery/issues/238)) ([0ec372c](https://github.com/SebastianLazarte/ai-process-discovery/commit/0ec372c1afb47edec8b1e06db21fbe2d4a9dc27c))
+
 ## [2.3.0](https://github.com/SebastianLazarte/ai-process-discovery/compare/v2.2.0...v2.3.0) (2026-11-08)
 
 
