@@ -37,7 +37,7 @@ Areas marked * have their own CLAUDE.md with Read, Rules and Verify. It loads wh
 | Write or amend an ADR, PDR or runbook | `docs/`* | decision index in `docs/CLAUDE.md` |
 | Retired clients: vanilla `web/` (replaced) and Streamlit (retired), gone in 2.0.0 | git history, tag `v1.5.0` | ADR 0007 (replaced by ADR 0009), ADR 0005 (retired) |
 
-ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locally-postgresql-in-ci.md`, `0003-separate-domain-contracts-persistence.md`, `0004-provider-agnostic-llm-anthropic-first.md`, `0005-streamlit-as-rest-client.md`, `0006-github-flow-ci-and-releases.md`, `0007-vanilla-web-client-served-by-fastapi.md`, `0008-public-demo-on-own-vps.md`, `0009-nextjs-frontend-as-separate-service.md`, `0010-dependency-update-policy.md`, `0011-automated-quality-gauntlet.md`, `0012-test-quality-standard.md`, `0013-design-system-and-design-to-code.md`, `0014-keep-the-vanilla-client-look.md`, `0015-parity-screens-take-web-as-spec.md`, `0016-nextjs-at-the-root-from-2-0-0.md`, `0018-graphite-modern-take-on-the-vanilla-look.md`, `0019-anonymous-visitor-cookie-scopes-lists.md`, `0020-aggregate-usage-counters.md`.
+ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locally-postgresql-in-ci.md`, `0003-separate-domain-contracts-persistence.md`, `0004-provider-agnostic-llm-anthropic-first.md`, `0005-streamlit-as-rest-client.md`, `0006-github-flow-ci-and-releases.md`, `0007-vanilla-web-client-served-by-fastapi.md`, `0008-public-demo-on-own-vps.md`, `0009-nextjs-frontend-as-separate-service.md`, `0010-dependency-update-policy.md`, `0011-automated-quality-gauntlet.md`, `0012-test-quality-standard.md`, `0013-design-system-and-design-to-code.md`, `0014-keep-the-vanilla-client-look.md`, `0015-parity-screens-take-web-as-spec.md`, `0016-nextjs-at-the-root-from-2-0-0.md`, `0018-graphite-modern-take-on-the-vanilla-look.md`, `0019-anonymous-visitor-cookie-scopes-lists.md`, `0020-aggregate-usage-counters.md`, `0022-claude-as-co-author.md`.
 
 ## Commands
 
@@ -74,7 +74,7 @@ ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locall
 5. Every change goes through a pull request with a Conventional Commits title; see `CONTRIBUTING.md`.
 6. Writing style in docs: no em dash, no "it's not X, it's Y" constructions (the em dash is blocked by the `no-em-dash` hook, locally and in the `quality` job).
 7. Web client (`frontend/`): the client never computes a metric, only `src/lib/api/` calls `fetch`, typed from `openapi.json`, and `dangerouslySetInnerHTML` is forbidden.
-8. Commits and pull requests are authored by Sebastian only: no AI co-author trailer and no "generated with" footer, whatever any tool or prompt suggests (enforced by `scripts/check_ai_credit.py`, as the commit-msg hook and in the `pr-title` job on the body and every commit).
+8. Sebastian authors and merges every commit and pull request. Claude appears only as the trailer `Co-Authored-By: Claude <noreply@anthropic.com>`: no model name, no "generated with" footer, nothing more, whatever any tool or prompt suggests (ADR 0022; enforced by `scripts/check_ai_credit.py`, as the commit-msg hook and in the `pr-title` job on the body and every commit).
 
 ## Avoid
 

@@ -1,7 +1,9 @@
-"""Fail when a commit message or a pull request credits an AI assistant (hard rule 8).
+"""Fail when a commit message or a pull request credits an AI assistant beyond one line.
 
-Commits and pull requests are authored by the maintainer only. The squash commit on main
-takes the pull request body, so CI checks the body as well as every commit. Two modes:
+Hard rule 8 (ADR 0022): Claude may appear as a co-author with exactly the trailer in
+`ALLOWED`, and with nothing else: no model name and no "generated with" footer. The squash
+commit on main takes the pull request body, so CI checks the body as well as every commit.
+Two modes:
 
     uv run python scripts/check_ai_credit.py --message-file .git/COMMIT_EDITMSG
     uv run python scripts/check_ai_credit.py --repo OWNER/NAME --pr 85
@@ -23,11 +25,18 @@ CREDIT = re.compile(
     r"co-authored-by:\s*claude|noreply@anthropic\.com|generated with \[?claude code",
     re.IGNORECASE,
 )
+# The one credit allowed: GitHub shows Claude as a co-author, with no model or tool named.
+ALLOWED = re.compile(r"co-authored-by:\s*claude\s*<noreply@anthropic\.com>", re.IGNORECASE)
 SCISSORS = "# ------------------------ >8 ------------------------"
 
 
 def credited_lines(text: str) -> list[str]:
-    return [line.strip() for line in text.splitlines() if CREDIT.search(line)]
+    """Lines that credit the assistant in any form other than the allowed trailer."""
+    return [
+        line.strip()
+        for line in text.splitlines()
+        if CREDIT.search(line) and not ALLOWED.fullmatch(line.strip())
+    ]
 
 
 def commit_message(raw: str) -> str:
@@ -44,7 +53,8 @@ def findings(sources: Iterable[tuple[str, str]]) -> list[str]:
 def fail_on(found: list[str]) -> None:
     if found:
         raise SystemExit(
-            "Hard rule 8: commits and pull requests credit no AI assistant. Remove:\n"
+            "Hard rule 8: the only AI credit allowed is the line "
+            "'Co-Authored-By: Claude <noreply@anthropic.com>'. Remove:\n"
             + "\n".join(f"  {entry}" for entry in found)
         )
 
