@@ -1706,12 +1706,12 @@ priority = "should"
 rank = 39
 
 [[requirement.criteria]]
-given = "a commit message that credits Claude (co-author trailer or generated-with footer)"
+given = "a commit message that credits Claude other than by the exact line Co-Authored-By: Claude <noreply@anthropic.com> (a model name or a generated-with footer; ADR 0022)"
 when = "it is committed with the hooks installed"
 then = "the commit is rejected and the offending line is named"
 
 [[requirement.criteria]]
-given = "a pull request whose body or any commit credits Claude"
+given = "a pull request whose body or any commit credits Claude other than by that exact line"
 when = "CI runs"
 then = "the pr-title check fails and names where the credit is"
 
