@@ -2151,3 +2151,42 @@ then = "the current choice reads Exact figure with its percent, and saving witho
 given = "the API"
 when = "it receives a choice and a rate for the same field"
 then = "it answers 422 naming the field"
+
+[[requirement]]
+id = "RS-116"
+ru = "RU-13"
+block = "B14"
+area = "api"
+kind = "story"
+title = "Catalog content for security operations"
+as_a = "operations lead"
+i_want = "to start from the most common processes of a security operations team"
+so_that = "I see which triage, phishing and vulnerability steps can be automated and which must stay with an analyst"
+points = 3
+priority = "should"
+rank = 53
+
+[[requirement.criteria]]
+given = "the catalog"
+when = "it is listed"
+then = "it has a Security operations sector with three processes: Alert triage, Reported phishing response and Vulnerability management"
+
+[[requirement.criteria]]
+given = "a process created from the Reported phishing response template"
+when = "it is analysed"
+then = "the steps that purge the message from the mailboxes and block the sender come out with human control REQUIRED"
+
+[[requirement.criteria]]
+given = "a process created from the Alert triage template"
+when = "it is analysed"
+then = "the verdict on the alert comes out with human control REQUIRED and its enrichment as API integration"
+
+[[requirement.criteria]]
+given = "a process created from the Vulnerability management template"
+when = "it is analysed"
+then = "the risk acceptance of a finding that cannot be fixed in time comes out with human control REQUIRED"
+
+[[requirement.criteria]]
+given = "docs/design"
+when = "the catalog is described"
+then = "each security operations process names a public source, such as NIST, CISA or FIRST"

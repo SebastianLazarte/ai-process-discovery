@@ -22,6 +22,8 @@ New process (`/processes/new`) asks for a sector, then one of its processes. Eac
 
 The processes come from public lists of the use cases most often automated in each sector. Most of these lists are published by automation vendors and consultancies, so they are a guide to what is common and say nothing about how often each process is automated in practice. They are not a measured ranking. The Product Owner chose three processes per sector from them.
 
+Security operations is the exception (RS-116): its processes come from public guidance by standards bodies and government agencies (NIST, CISA, FIRST), which describe how the work is done, not how often it is automated. The vendor guides on security automation agree on the same three starting points, alert triage, reported phishing and vulnerability management, but are not cited as sources.
+
 | Source | What it gives |
 |---|---|
 | [Blue Prism, RPA use cases](https://www.blueprism.com/automation-journey/robotic-process-automation-rpa-use-cases/) | Use cases by industry and by department (vendor) |
@@ -86,3 +88,11 @@ The processes come from public lists of the use cases most often automated in ea
 | Employee onboarding | New-starter onboarding in [Blue Prism](https://www.blueprism.com/automation-journey/robotic-process-automation-rpa-use-cases/); employee onboarding in [AIMultiple](https://aimultiple.com/robotic-process-automation-use-cases) and [Itransition](https://www.itransition.com/rpa/use-cases) |
 | Expense reports | Expense reimbursement and travel and expense management in [Blue Prism](https://www.blueprism.com/automation-journey/robotic-process-automation-rpa-use-cases/); expense management in [AIMultiple](https://aimultiple.com/robotic-process-automation-use-cases) and [Itransition](https://www.itransition.com/rpa/use-cases). Pipefy puts finance and procurement at 26.7 % of automations |
 | Customer support requests | Customer support and complaint handling in [Blue Prism](https://www.blueprism.com/automation-journey/robotic-process-automation-rpa-use-cases/). Pipefy puts customer support at 48 % of automations, the largest area in its survey |
+
+## Security operations
+
+| Process | Where it comes from |
+|---|---|
+| Alert triage | Detection, analysis and the decision to escalate in [NIST SP 800-61 Rev. 3](https://csrc.nist.gov/pubs/sp/800/61/r3/final), incident response recommendations built on CSF 2.0; the detection and analysis phase of the incident response playbook in [CISA, incident and vulnerability response playbooks](https://www.cisa.gov/news-events/news/incident-and-vulnerability-response-playbooks) |
+| Reported phishing response | User reporting, email gateway block lists and prompt remediation of successful phishing in [CISA, NSA, FBI and MS-ISAC, phishing guidance](https://www.cisa.gov/news-events/news/cisa-nsa-fbi-ms-isac-publish-guide-preventing-phishing-intrusions); containment and eradication in [NIST SP 800-61 Rev. 3](https://csrc.nist.gov/pubs/sp/800/61/r3/final) |
+| Vulnerability management | Patch and vulnerability management planning, including risk acceptance, in [NIST SP 800-40 Rev. 4](https://csrc.nist.gov/pubs/sp/800/40/r4/final); ranking by exploitation in the [CISA Known Exploited Vulnerabilities catalog](https://www.cisa.gov/known-exploited-vulnerabilities-catalog) and [FIRST EPSS](https://www.first.org/epss/); the vulnerability response playbook in [CISA, incident and vulnerability response playbooks](https://www.cisa.gov/news-events/news/incident-and-vulnerability-response-playbooks) |
