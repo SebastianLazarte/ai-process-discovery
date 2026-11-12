@@ -17,7 +17,6 @@ from app.main import create_app
 from app.retrieval.embedder import InputType
 from app.retrieval.embedders.fake import FakeEmbedder
 from app.retrieval.index import CatalogIndex, build_index, save_index
-from app.services.retrieval_service import RetrievalService, build_retrieval_service
 from app.services.template_service import catalog_files
 
 CATALOG = catalog_files()
@@ -67,7 +66,7 @@ def _first_process() -> dict[str, Any]:
 @pytest.mark.req("RS-118", criterion=4)
 def test_retrieval_embeds_only_the_description_in_one_call_as_query(index: CatalogIndex) -> None:
     spy = SpyEmbedder()
-    RetrievalService(spy, index, THRESHOLD).retrieve("Check the policy")
+    service_module.RetrievalService(spy, index, THRESHOLD).retrieve("Check the policy")
     assert spy.calls == [(["Check the policy"], "query")]
 
 
@@ -76,18 +75,28 @@ def test_retrieval_returns_the_ranking_of_the_domain_over_the_index(index: Catal
     description = _first_process()["name"] + ". " + _first_process()["description"]
     query = FakeEmbedder().embed([description], "query")[0]
     expected = rank_processes(query, index.chunks, threshold=THRESHOLD)
-    assert RetrievalService(FakeEmbedder(), index, THRESHOLD).retrieve(description) == expected
+    assert (
+        service_module.RetrievalService(FakeEmbedder(), index, THRESHOLD).retrieve(description)
+        == expected
+    )
 
 
 @pytest.mark.req("RS-118", criterion=4)
 def test_retrieval_drops_a_description_that_resembles_no_process(index: CatalogIndex) -> None:
-    assert RetrievalService(FakeEmbedder(), index, THRESHOLD).retrieve("Banana smoothie") == ()
+    assert (
+        service_module.RetrievalService(FakeEmbedder(), index, THRESHOLD).retrieve(
+            "Banana smoothie"
+        )
+        == ()
+    )
 
 
 @pytest.mark.req("RS-118", criterion=4)
 def test_a_lower_threshold_keeps_more_of_the_ranking(index: CatalogIndex) -> None:
-    strict = RetrievalService(FakeEmbedder(), index, 0.99).retrieve("Banana smoothie")
-    loose = RetrievalService(FakeEmbedder(), index, 0.0).retrieve("Banana smoothie")
+    strict = service_module.RetrievalService(FakeEmbedder(), index, 0.99).retrieve(
+        "Banana smoothie"
+    )
+    loose = service_module.RetrievalService(FakeEmbedder(), index, 0.0).retrieve("Banana smoothie")
     assert (len(strict), len(loose)) == (0, 3)
 
 
@@ -97,7 +106,7 @@ def test_an_index_of_another_model_is_refused(index: CatalogIndex) -> None:
         model="another-model", catalog_hash=index.catalog_hash, chunks=index.chunks
     )
     with pytest.raises(LLMConfigurationError, match="another-model"):
-        RetrievalService(FakeEmbedder(), other, THRESHOLD)
+        service_module.RetrievalService(FakeEmbedder(), other, THRESHOLD)
 
 
 @pytest.mark.req("RS-118", criterion=4)
@@ -106,13 +115,13 @@ def test_a_description_that_reuses_the_words_of_a_process_retrieves_it_first(
 ) -> None:
     template = _first_process()
     description = f"{template['name']}: {template['description']}"
-    found = RetrievalService(FakeEmbedder(), index, THRESHOLD).retrieve(description)
+    found = service_module.RetrievalService(FakeEmbedder(), index, THRESHOLD).retrieve(description)
     assert found[0].process_slug == template["slug"]
 
 
 @pytest.mark.req("RS-118", criterion=4)
 def test_every_process_of_the_catalog_is_first_for_its_own_words(index: CatalogIndex) -> None:
-    service = RetrievalService(FakeEmbedder(), index, THRESHOLD)
+    service = service_module.RetrievalService(FakeEmbedder(), index, THRESHOLD)
     templates = [t for sector in CATALOG.values() for t in sector["templates"]]
     first = {
         t["slug"]: service.retrieve(f"{t['name']}. {t['description']}")[0].process_slug
@@ -125,7 +134,7 @@ def test_every_process_of_the_catalog_is_first_for_its_own_words(index: CatalogI
 def test_the_description_is_never_logged(
     index: CatalogIndex, app_logs: pytest.LogCaptureFixture
 ) -> None:
-    RetrievalService(FakeEmbedder(), index, THRESHOLD).retrieve(SECRET)
+    service_module.RetrievalService(FakeEmbedder(), index, THRESHOLD).retrieve(SECRET)
     carried = [
         str(value)
         for record in app_logs.records
@@ -138,7 +147,7 @@ def test_the_description_is_never_logged(
 def test_retrieval_logs_the_model_and_a_count(
     index: CatalogIndex, app_logs: pytest.LogCaptureFixture
 ) -> None:
-    RetrievalService(FakeEmbedder(), index, 0.0).retrieve(SECRET)
+    service_module.RetrievalService(FakeEmbedder(), index, 0.0).retrieve(SECRET)
     record = next(r for r in app_logs.records if r.getMessage() == "retrieval_done")
     assert (record.__dict__["embedding_model"], record.__dict__["retrieved"]) == (
         FakeEmbedder().model,
@@ -149,7 +158,7 @@ def test_retrieval_logs_the_model_and_a_count(
 @pytest.mark.req("RS-118", criterion=5)
 def test_the_description_is_not_added_to_the_index(index: CatalogIndex) -> None:
     before = CatalogIndex(index.model, index.catalog_hash, tuple(index.chunks))
-    RetrievalService(FakeEmbedder(), index, THRESHOLD).retrieve(SECRET)
+    service_module.RetrievalService(FakeEmbedder(), index, THRESHOLD).retrieve(SECRET)
     assert index == before
 
 
@@ -158,7 +167,7 @@ def test_retrieval_writes_no_file(
     index: CatalogIndex, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.chdir(tmp_path)
-    RetrievalService(FakeEmbedder(), index, THRESHOLD).retrieve(SECRET)
+    service_module.RetrievalService(FakeEmbedder(), index, THRESHOLD).retrieve(SECRET)
     assert list(tmp_path.iterdir()) == []
 
 
@@ -189,13 +198,13 @@ def test_with_the_fake_embedder_the_index_is_built_in_memory_and_no_file_is_touc
 
     monkeypatch.setattr(service_module, "load_index", forbidden)
     monkeypatch.setattr("app.retrieval.index.save_index", forbidden)
-    service = build_retrieval_service(Settings(embedding_provider="fake"), CATALOG)
+    service = service_module.build_retrieval_service(Settings(embedding_provider="fake"), CATALOG)
     assert service.retrieve("Check the policy and the cover of the claim") is not None
 
 
 @pytest.mark.req("RS-118", criterion=3)
 def test_the_fake_index_has_the_chunks_of_the_catalog(index: CatalogIndex) -> None:
-    service = build_retrieval_service(Settings(embedding_provider="fake"), CATALOG)
+    service = service_module.build_retrieval_service(Settings(embedding_provider="fake"), CATALOG)
     assert service.index == index
 
 
@@ -204,7 +213,7 @@ def test_the_app_builds_the_retrieval_service_when_it_starts() -> None:
     settings = Settings(database_url="sqlite://", log_level="WARNING")
     with TestClient(create_app(settings)) as client:
         started = client.app.state.retrieval_service  # type: ignore[attr-defined]
-    assert isinstance(started, RetrievalService)
+    assert isinstance(started, service_module.RetrievalService)
 
 
 @pytest.mark.req("RS-118", criterion=1)
@@ -215,7 +224,7 @@ def test_with_another_provider_the_index_is_loaded_from_the_file_of_the_model(
     save_index(built, tmp_path / "file.json")
     monkeypatch.setattr(service_module, "get_embedder", lambda settings: SpyEmbedder())
     monkeypatch.setattr(service_module, "index_path", lambda model: tmp_path / "file.json")
-    service = build_retrieval_service(Settings(embedding_provider="voyage"), CATALOG)
+    service = service_module.build_retrieval_service(Settings(embedding_provider="voyage"), CATALOG)
     assert service.index == built
 
 
@@ -227,12 +236,12 @@ def test_with_another_provider_a_stale_file_stops_the_start_and_names_itself(
     monkeypatch.setattr(service_module, "get_embedder", lambda settings: SpyEmbedder())
     monkeypatch.setattr(service_module, "index_path", lambda model: tmp_path / "stale.json")
     with pytest.raises(LLMConfigurationError, match=r"stale\.json"):
-        build_retrieval_service(Settings(embedding_provider="voyage"), {})
+        service_module.build_retrieval_service(Settings(embedding_provider="voyage"), {})
 
 
 @pytest.mark.req("RS-118", criterion=4)
 def test_the_threshold_comes_from_the_settings() -> None:
-    service = build_retrieval_service(
+    service = service_module.build_retrieval_service(
         Settings(embedding_provider="fake", retrieval_threshold=0.123), CATALOG
     )
     assert service.threshold == 0.123
@@ -241,7 +250,7 @@ def test_the_threshold_comes_from_the_settings() -> None:
 @pytest.mark.req("RS-118", criterion=4)
 def test_the_default_threshold_keeps_a_process_and_drops_an_unrelated_sentence() -> None:
     settings = Settings(embedding_provider="fake")
-    service = build_retrieval_service(settings, CATALOG)
+    service = service_module.build_retrieval_service(settings, CATALOG)
     template = _first_process()
     kept = service.retrieve(f"{template['name']}. {template['description']}")
     dropped = service.retrieve("What is the weather like on the moon during a football game")
