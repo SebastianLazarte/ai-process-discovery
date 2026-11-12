@@ -1,4 +1,4 @@
-"""Architecture boundaries, enforced as tests (RS-08, RS-26, RS-42, RS-63, RS-80)."""
+"""Architecture boundaries, enforced as tests (RS-08, RS-26, RS-42, RS-63, RS-80, RS-117)."""
 
 import ast
 from pathlib import Path
@@ -49,7 +49,19 @@ def _violations(directory: Path, forbidden: tuple[str, ...]) -> list[str]:
                 "app.api",
             ),
         ),
-        (SRC / "services", ("anthropic", "fastapi")),
+        (SRC / "services", ("anthropic", "fastapi", "voyageai")),
+        # RS-117: retrieval is a layer below the services and apart from the web and the store.
+        (
+            SRC / "retrieval",
+            (
+                "fastapi",
+                "sqlalchemy",
+                "app.services",
+                "app.api",
+                "app.repositories",
+                "app.models",
+            ),
+        ),
         # RS-63: deleting demo data is an operator command, never an HTTP route.
         (SRC / "api", ("app.services.retention_service", "app.purge")),
     ],
@@ -59,6 +71,11 @@ def test_layer_does_not_import_forbidden_modules(
 ) -> None:
     assert directory.exists(), directory
     assert _violations(directory, forbidden) == []
+
+
+@pytest.mark.req("RS-117", criterion=5)
+def test_services_do_not_import_the_voyage_sdk() -> None:
+    assert _violations(SRC / "services", ("voyageai",)) == []
 
 
 def test_no_print_calls_in_source() -> None:

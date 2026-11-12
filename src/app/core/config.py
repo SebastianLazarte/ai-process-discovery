@@ -25,6 +25,12 @@ class Settings(BaseSettings):
     # Analyses that may ask the LLM per UTC day, across every instance. None means no limit.
     llm_daily_limit: int | None = Field(default=None, ge=0)
 
+    # Embeddings for retrieval over the sector catalog (ADR 0021). Fake by default: no key,
+    # deterministic. "voyage" needs voyage_api_key and arrives with RS-120.
+    embedding_provider: Literal["fake", "voyage"] = "fake"
+    voyage_api_key: SecretStr | None = None
+    voyage_model: str = "voyage-4-lite"
+
     log_level: str = "INFO"
 
     # Public deployment (ADR 0008): the web client warns that data is public and short-lived.
