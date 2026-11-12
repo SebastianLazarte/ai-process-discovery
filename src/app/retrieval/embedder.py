@@ -12,10 +12,12 @@ class Embedder(Protocol):
     """
 
     @property
-    def name(self) -> str: ...
+    def name(self) -> str:
+        """The provider, as ``embedding_provider`` names it."""
 
     @property
-    def model(self) -> str: ...
+    def model(self) -> str:
+        """The embedding model; an index built with one model is only read with the same."""
 
     def embed(self, texts: Sequence[str], input_type: InputType) -> list[tuple[float, ...]]:
         """One vector per text, in the order of ``texts``.
@@ -23,4 +25,3 @@ class Embedder(Protocol):
         ``query`` is a short search text and ``document`` a catalog chunk; models trained
         for retrieval embed the two differently.
         """
-        ...
