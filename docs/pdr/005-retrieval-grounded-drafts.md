@@ -36,5 +36,5 @@ ADR 0021 records how retrieval is built.
 
 - PDR 001's non-goal "No RAG" notes the amendment, as its "no hosted deployment" notes ADR 0008.
 - One new external service, the embedding provider, with its own key; the fake embedder keeps the demo and CI free of keys, as the fake LLM provider does (ADR 0004).
-- The backlog of RU-14 gains retrieval, its evaluation and the grounding of the draft. The Product Owner writes those stories; they enter `requirements.toml` once approved.
+- The backlog of RU-14 gains retrieval, its evaluation and the grounding of the draft. They are RS-116 to RS-122, approved by the Product Owner on 2026-11-12.
 - Adding or changing a catalog process changes what drafts can be grounded in, so the catalog index is rebuilt with it.
