@@ -1,7 +1,8 @@
 """Every catalog template is a valid set of qualitative steps without a single number (RS-95).
 
-The catalog covers seven sectors with three processes each, named after generic roles and
-tools, and `docs/design/catalog.md` names the sources of each sector (RS-97).
+The catalog covers eight sectors with three processes each, named after generic roles and
+tools, and `docs/design/catalog.md` names the sources of each sector (RS-97). Security operations
+is the eighth, its processes sourced from public standards bodies (RS-123).
 """
 
 import re
@@ -56,7 +57,16 @@ SECTORS = {
         "Insurance claims submission",
     ],
     "Any sector": ["Employee onboarding", "Expense reports", "Customer support requests"],
+    "Security operations": [
+        "Alert triage",
+        "Reported phishing response",
+        "Vulnerability management",
+    ],
 }
+# Security processes cite public guidance, not vendor use-case lists (RS-123).
+SECURITY_SOURCES = re.compile(
+    r"\]\(https://(www\.)?(csrc\.nist\.gov|nist\.gov|cisa\.gov|first\.org)/"
+)
 # Vendors a business process often names. Templates use generic tools ("ERP", "Help desk").
 BRANDS = [
     "Amazon", "DHL", "DocuSign", "Epic", "Excel", "FedEx", "Gmail", "Google",
@@ -165,7 +175,7 @@ def _doc_sections() -> dict[str, str]:
     return dict(zip(parts[1::2], parts[2::2], strict=True))
 
 
-def test_the_catalog_has_seven_sectors_with_three_processes_each() -> None:
+def test_the_catalog_has_eight_sectors_with_three_processes_each() -> None:
     listed = {
         sector["name"]: [template["name"] for template in sector["templates"]]
         for sector in CATALOG.values()
@@ -193,3 +203,24 @@ def test_the_design_docs_name_the_sources_of_each_sector(sector: str) -> None:
     for process in SECTORS[sector]:
         row = next(line for line in section.splitlines() if line.startswith(f"| {process} |"))
         assert re.search(r"\]\(https://[^)]+\)", row), process
+
+
+@pytest.mark.req("RS-123", criterion=1)
+def test_security_operations_offers_triage_phishing_and_vulnerabilities() -> None:
+    sector = CATALOG["security-operations"]
+
+    assert sector["name"] == "Security operations"
+    assert [template["name"] for template in sector["templates"]] == [
+        "Alert triage",
+        "Reported phishing response",
+        "Vulnerability management",
+    ]
+
+
+@pytest.mark.req("RS-123", criterion=5)
+@pytest.mark.parametrize("process", SECTORS["Security operations"])
+def test_each_security_process_cites_a_public_standards_body(process: str) -> None:
+    section = _doc_sections()["Security operations"]
+
+    row = next(line for line in section.splitlines() if line.startswith(f"| {process} |"))
+    assert SECURITY_SOURCES.search(row), process
