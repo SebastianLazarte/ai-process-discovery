@@ -30,6 +30,10 @@ class Settings(BaseSettings):
     embedding_provider: Literal["fake", "voyage"] = "fake"
     voyage_api_key: SecretStr | None = None
     voyage_model: str = "voyage-4-lite"
+    # Lowest cosine similarity at which a catalog process is retrieved for a description.
+    # Provisional, picked for the fake embedder: pasted catalog descriptions score 0.69 to
+    # 0.95 and unrelated sentences 0.23 to 0.51. RS-119 sets it per model from the gold set.
+    retrieval_threshold: float = Field(default=0.6, ge=-1.0, le=1.0)
 
     log_level: str = "INFO"
 
