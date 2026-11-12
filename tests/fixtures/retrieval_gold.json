@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "description": "Synthetic English visitor descriptions, authored independently of retrieval scores. Each pair has a direct request and a paraphrase. Null means outside the current catalog. Calibration and regression data, not a held-out quality estimate.",
+  "processes": {
+    "employee-onboarding": [
+      "When someone joins our company, HR collects their paperwork and arranges payroll, a laptop and access before their first day.",
+      "We need to get new starters ready for work, from signing their contract to setting up accounts and planning their induction."
+    ],
+    "expense-reports": [
+      "Our employees send receipts for business trips. Finance checks the expense policy and asks their manager to approve reimbursement.",
+      "Staff pay for travel themselves and we check the receipts before paying them back through the company."
+    ],
+    "customer-support-requests": [
+      "Our support team receives customer problems by email, categorises the requests and either replies or sends them to a specialist.",
+      "People contact the help desk with questions. We log a ticket, find an answer and check that the problem is resolved before closing it."
+    ],
+    "customer-onboarding-and-kyc": [
+      "Before opening a bank account we collect the customer's identity documents, screen for sanctions and review the KYC risk.",
+      "Someone wants to become a bank customer. We verify who they are and run compliance checks before giving them an account."
+    ],
+    "account-reconciliation": [
+      "Every month finance matches the bank statement against ledger entries and investigates transactions that do not agree.",
+      "We compare what our accounts say with what actually went through the bank, explain any differences and get the reconciliation approved."
+    ],
+    "loan-application-processing": [
+      "A borrower submits a loan application. We collect income documents, check credit and affordability, then approve or reject the lending request.",
+      "Customers ask to borrow money. Our team reviews their finances, makes a lending decision and arranges signatures and the release of funds."
+    ],
+    "patient-intake-and-registration": [
+      "At our clinic the front desk registers new patients, checks their insurance and referral, and collects consent forms before the visit.",
+      "Before seeing the doctor for the first time, people give us their personal details and coverage information and sign the required paperwork."
+    ],
+    "appointment-scheduling": [
+      "Patients request appointments and our schedulers find an available clinician, book a slot and send reminders.",
+      "We organise the clinic diary, give urgent cases priority and offer cancelled visits to people waiting for a time with the doctor."
+    ],
+    "insurance-claims-submission": [
+      "After a patient visit, our medical billing team codes the services and submits a claim to the insurer, then follows up on denials.",
+      "The clinic needs to get paid for treatments. We prepare the reimbursement paperwork, send it to the payer and reconcile their response."
+    ],
+    "claims-intake": [
+      "Policyholders report accidents to us. We open an insurance claim, check the policy cover and collect evidence for the adjuster.",
+      "When an insured person suffers a loss, we record what happened, request photos and pass the case to the person handling the claim."
+    ],
+    "policy-changes": [
+      "Customers ask us to update their insurance policy details. We check the requested change, refer exceptions to underwriting and issue revised documents.",
+      "An existing policyholder wants to change their cover. We review what needs updating and send them the amended insurance paperwork."
+    ],
+    "quote-preparation": [
+      "A broker requests an insurance quote. We gather the risk details, check underwriting guidelines and prepare an approved price for cover.",
+      "Prospective customers tell us what they want insured and we assess the risk before sending a coverage proposal they can accept."
+    ],
+    "freight-invoice-audit": [
+      "We audit carrier invoices against shipment records and agreed freight rates, and dispute overcharges before payment.",
+      "Transport companies send us bills. We compare the charges with the deliveries and our rate agreement and query any extra fees."
+    ],
+    "shipment-status-updates": [
+      "Our logistics coordinators collect shipment status updates from carriers and notify customers about delivery delays.",
+      "We keep track of goods in transit, update the transport record when something moves and tell the customer when arrival plans change."
+    ],
+    "customs-documentation": [
+      "For international shipments we collect trade documents, classify the goods and submit a checked customs declaration.",
+      "Before our goods cross the border, we prepare the import paperwork and tariff codes, lodge the declaration and keep the clearance records."
+    ],
+    "supplier-invoice-processing": [
+      "Accounts payable matches supplier invoices to purchase orders and goods receipts, obtains approval and schedules payment.",
+      "Our suppliers send bills for materials. We verify that we ordered and received the items before getting authorisation to pay."
+    ],
+    "purchase-orders-to-suppliers": [
+      "Purchasing receives material requirements, creates purchase orders for suppliers and follows them up until the goods arrive.",
+      "When production needs more materials, we choose a supplier, get the order approved and chase the delivery."
+    ],
+    "customer-order-entry": [
+      "Sales support receives customer orders by email and enters them in the ERP after checking prices, credit and delivery dates.",
+      "Buyers send us orders in different formats. We type them into our sales system and confirm what we can supply and when."
+    ],
+    "returns-and-refunds": [
+      "Shoppers return purchased items. We inspect the goods, approve a refund or exchange and update stock after the return.",
+      "A buyer wants their money back for an item. We register the request, check its condition when it arrives and arrange the repayment."
+    ],
+    "inventory-reconciliation": [
+      "Our warehouse counts stock, compares quantities with inventory records and investigates discrepancies before posting adjustments.",
+      "We check what is physically on the shelves against the stock system and ask a supervisor to approve corrections for missing items."
+    ],
+    "retail-customer-support-requests": [
+      "Shoppers contact our online store about their orders. We find the order, answer delivery questions and handle changes or complaints.",
+      "Customers use web shop chat to ask where a purchase is or change it. Our retail team looks up the order and replies."
+    ]
+  },
+  "unmatched": [
+    "Please write a funny poem about a dragon who loves bananas.",
+    "How do I make a strawberry smoothie without milk?",
+    "Explain why the moon changes shape during the month.",
+    "I want a training plan to run my first marathon.",
+    "Our team edits video footage, adds subtitles and exports the finished film.",
+    "We grow tomatoes in a greenhouse and check soil moisture before watering.",
+    "Our engineers design bridge foundations and test how they withstand earthquakes.",
+    "We rehearse a theatre performance, adjust the lighting and record the music.",
+    "We review job applications, interview candidates and decide who to hire.",
+    "Our technicians diagnose a broken air conditioner, replace the faulty part and test the repair."
+  ]
+}

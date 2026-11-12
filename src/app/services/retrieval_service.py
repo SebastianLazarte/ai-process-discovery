@@ -47,6 +47,14 @@ def build_retrieval_service(settings: Settings, catalog: Catalog | None = None) 
     """
     catalog = catalog_files() if catalog is None else catalog
     embedder = get_embedder(settings)
+    threshold = settings.retrieval_threshold
+    if threshold is None:
+        threshold = settings.retrieval_thresholds.get(embedder.model)
+    if threshold is None:
+        raise LLMConfigurationError(
+            f"no retrieval threshold is calibrated for {embedder.model}; evaluate the gold "
+            "set and set RETRIEVAL_THRESHOLDS for that model"
+        )
     if embedder.name == "fake":
         index = build_index(embedder, catalog)
     else:
@@ -55,4 +63,4 @@ def build_retrieval_service(settings: Settings, catalog: Catalog | None = None) 
         "retrieval_ready",
         extra={"embedding_model": embedder.model, "chunks": len(index.chunks)},
     )
-    return RetrievalService(embedder, index, settings.retrieval_threshold)
+    return RetrievalService(embedder, index, threshold)
