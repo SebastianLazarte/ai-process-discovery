@@ -19,8 +19,17 @@ from app.domain.enums import AutomationMethod, HumanControl, Level
 from app.domain.errors import DomainValidationError
 from app.domain.metrics import MINUTES_PER_HOUR, calculate_step_monthly_minutes
 from app.domain.reconciliation import AISuggestion, RecommendationSource, reconcile
+from app.domain.retrieval import CatalogChunk, rank_processes
 from tests.factories import make_process, make_step
-from tests.strategies import ai_suggestions, money, processes, steps, unit_interval
+from tests.strategies import (
+    ai_suggestions,
+    catalog_chunks,
+    money,
+    processes,
+    retrieval_queries,
+    steps,
+    unit_interval,
+)
 
 # Hard rule 3: the LLM may raise a human control and never lower it.
 
@@ -218,3 +227,50 @@ def test_invalid_input_reports_its_field(build: Callable[[], object], field: str
     with pytest.raises(DomainValidationError) as error:
         build()
     assert error.value.field == field
+
+
+# RS-116: ranking of catalog processes. Similarity is a float and never touches money or hours.
+
+
+@pytest.mark.req("RS-116", criterion=1)
+@given(
+    query=retrieval_queries,
+    chunks=st.lists(catalog_chunks, max_size=12),
+    threshold=st.floats(min_value=-1, max_value=1),
+    max_processes=st.integers(min_value=0, max_value=5),
+)
+def test_ranking_is_sorted_bounded_and_above_the_threshold(
+    query: tuple[float, ...],
+    chunks: list[CatalogChunk],
+    threshold: float,
+    max_processes: int,
+) -> None:
+    result = rank_processes(query, chunks, threshold=threshold, max_processes=max_processes)
+    scores = [process.similarity for process in result]
+    assert scores == sorted(scores, reverse=True)
+    assert len(result) <= max_processes
+    assert all(score >= threshold for score in scores)
+    assert all(match.similarity >= threshold for process in result for match in process.steps)
+    for process in result:
+        step_scores = [match.similarity for match in process.steps]
+        assert step_scores == sorted(step_scores, reverse=True)
+        assert len(process.steps) <= 3
+
+
+@pytest.mark.req("RS-116", criterion=3)
+@given(
+    query=retrieval_queries,
+    chunks=st.lists(catalog_chunks, max_size=12),
+    threshold=st.floats(min_value=-1, max_value=1),
+    data=st.data(),
+)
+def test_ranking_does_not_depend_on_the_order_of_the_chunks(
+    query: tuple[float, ...],
+    chunks: list[CatalogChunk],
+    threshold: float,
+    data: st.DataObject,
+) -> None:
+    shuffled = data.draw(st.permutations(chunks))
+    assert rank_processes(query, shuffled, threshold=threshold) == rank_processes(
+        query, chunks, threshold=threshold
+    )
