@@ -34,7 +34,7 @@ Describe a process step by step → quantify the current state → deterministic
 
 ## Non-goals
 
-- No RAG
+- No RAG. Amended by PDR 005: retrieval over the sector catalog grounds the drafts of RU-14, and nothing else
 - No autonomous agents
 - No authentication or enterprise identity
 - No multi-tenancy

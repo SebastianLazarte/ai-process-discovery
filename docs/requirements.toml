@@ -2151,3 +2151,246 @@ then = "the current choice reads Exact figure with its percent, and saving witho
 given = "the API"
 when = "it receives a choice and a rate for the same field"
 then = "it answers 422 naming the field"
+
+[[requirement]]
+id = "RS-116"
+ru = "RU-14"
+block = "B14"
+area = "domain"
+kind = "enabler"
+title = "Rank catalog processes against a description, pure in the domain (ADR 0021)"
+points = 3
+priority = "should"
+rank = 53
+
+[[requirement.criteria]]
+given = "a query vector and an index of normalised chunk vectors"
+when = "they are ranked"
+then = "a process scores as its best chunk and the result is the top 3 processes above the threshold, best first, each with its best steps"
+
+[[requirement.criteria]]
+given = "no process above the threshold"
+when = "they are ranked"
+then = "the result is empty"
+
+[[requirement.criteria]]
+given = "two processes with the same score"
+when = "they are ranked"
+then = "the order is deterministic"
+
+[[requirement.criteria]]
+given = "the ranking module of the domain"
+when = "the boundaries test runs"
+then = "it imports no framework, SDK or Pydantic"
+
+[[requirement]]
+id = "RS-117"
+ru = "RU-14"
+block = "B14"
+area = "api"
+kind = "enabler"
+title = "Embedder protocol with a fake default, and catalog chunks with their context (ADR 0021)"
+points = 3
+priority = "should"
+rank = 54
+
+[[requirement.criteria]]
+given = "the same text"
+when = "the fake embedder embeds it twice"
+then = "it returns the same normalised vector, with no network and no key"
+
+[[requirement.criteria]]
+given = "two texts that share words and one that shares none"
+when = "the fake embedder embeds them"
+then = "the pair that shares words is more similar"
+
+[[requirement.criteria]]
+given = "the catalog"
+when = "it is chunked"
+then = "each step yields one chunk that starts with its sector and process, and each process one chunk with its name, description and step names"
+
+[[requirement.criteria]]
+given = "the default settings"
+when = "the app starts"
+then = "embedding_provider is fake"
+
+[[requirement.criteria]]
+given = "the services package"
+when = "the boundaries test runs"
+then = "it does not import voyageai"
+
+[[requirement]]
+id = "RS-118"
+ru = "RU-14"
+block = "B14"
+area = "api"
+kind = "enabler"
+title = "Catalog index checked by a hash, and retrieval for a description (ADR 0021)"
+points = 5
+priority = "should"
+rank = 55
+
+[[requirement.criteria]]
+given = "scripts/build_catalog_index.py"
+when = "it runs for a model"
+then = "it writes src/app/catalog/index/<model>.json with the vectors embedded as document and a hash of the catalog files"
+
+[[requirement.criteria]]
+given = "a catalog file changed without a rebuilt index"
+when = "the tests run"
+then = "one fails and names the stale index"
+
+[[requirement.criteria]]
+given = "the fake embedder"
+when = "the app starts"
+then = "the index is built in memory"
+
+[[requirement.criteria]]
+given = "a description"
+when = "retrieval runs"
+then = "only the description is embedded, as query, and the result is the ranking of RS-116"
+
+[[requirement.criteria]]
+given = "a description"
+when = "it is retrieved"
+then = "it is never stored, indexed or logged"
+
+[[requirement]]
+id = "RS-119"
+ru = "RU-14"
+block = "B14"
+area = "infra"
+kind = "enabler"
+title = "Gold set and retrieval metrics in CI (ADR 0021)"
+points = 3
+priority = "should"
+rank = 56
+
+[[requirement.criteria]]
+given = "the gold set"
+when = "it is read"
+then = "each of the 21 catalog processes has at least two descriptions written as a visitor would, plus descriptions that match no process"
+
+[[requirement.criteria]]
+given = "the fake embedder"
+when = "CI runs the gold set"
+then = "recall@3 and mean reciprocal rank are at or above fixed floors"
+
+[[requirement.criteria]]
+given = "a description that matches no process"
+when = "it is retrieved"
+then = "nothing is returned"
+
+[[requirement.criteria]]
+given = "the threshold"
+when = "it is read"
+then = "it is a setting per model, and its value for the fake embedder comes from this evaluation"
+
+[[requirement]]
+id = "RS-120"
+ru = "RU-14"
+block = "B14"
+area = "llm"
+kind = "enabler"
+title = "Voyage embedder and the committed index of the production model (ADR 0021)"
+points = 5
+priority = "should"
+rank = 57
+
+[[requirement.criteria]]
+given = "embedding_provider voyage without voyage_api_key"
+when = "the app starts"
+then = "it fails instead of falling back"
+
+[[requirement.criteria]]
+given = "an error of the Voyage SDK"
+when = "a draft is requested"
+then = "it maps to the provider errors of the LLM package"
+
+[[requirement.criteria]]
+given = "the catalog and a description"
+when = "they are embedded"
+then = "the catalog uses the input type document, the description uses query, and the model is voyage_model"
+
+[[requirement.criteria]]
+given = "the gold set"
+when = "the manual workflow runs it with Voyage"
+then = "recall@3 is at least 0.9 and the result sets the threshold of that model"
+
+[[requirement.criteria]]
+given = "the voyageai dependency"
+when = "dependencies are checked"
+then = "it is pinned and updated under ADR 0010, and the index of the production model is committed"
+
+[[requirement]]
+id = "RS-121"
+ru = "RU-14"
+block = "B14"
+area = "llm"
+kind = "story"
+title = "Draft grounded in the closest catalog processes"
+as_a = "operations lead"
+i_want = "each drafted step to say which catalog process it was based on"
+so_that = "I can tell what comes from a reviewed process and what is new"
+points = 5
+priority = "should"
+rank = 58
+
+[[requirement.criteria]]
+given = "a description close to a catalog process"
+when = "I ask for a draft"
+then = "the retrieved processes reach the prompt as reference and each step carries grounded_on, the slug of a retrieved process or null"
+
+[[requirement.criteria]]
+given = "a draft that names a process that was not retrieved"
+when = "it is checked"
+then = "the request fails as a schema error does"
+
+[[requirement.criteria]]
+given = "nothing in the catalog above the threshold"
+when = "I ask for a draft"
+then = "it is returned marked as ungrounded"
+
+[[requirement.criteria]]
+given = "the draft output schema"
+when = "its fields are checked"
+then = "grounded_on is text and no field is numeric"
+
+[[requirement.criteria]]
+given = "the draft prompt"
+when = "the reference blocks are added"
+then = "its PROMPT_VERSION changes"
+
+[[requirement.criteria]]
+given = "the fake provider and the fake embedder"
+when = "a draft is requested"
+then = "the result is deterministic"
+
+[[requirement]]
+id = "RS-122"
+ru = "RU-14"
+block = "B14"
+area = "ui"
+kind = "story"
+title = "See which catalog process each drafted step was based on"
+as_a = "operations lead"
+i_want = "to see next to each drafted step the catalog process it came from"
+so_that = "I know which parts to check more closely"
+points = 2
+priority = "should"
+rank = 59
+
+[[requirement.criteria]]
+given = "a grounded step"
+when = "the review screen shows it"
+then = "it reads Based on and the name of the process, next to the AI badge"
+
+[[requirement.criteria]]
+given = "an ungrounded step or draft"
+when = "the review screen shows it"
+then = "it says that no catalog process was close enough"
+
+[[requirement.criteria]]
+given = "the review screen with a grounded draft"
+when = "the end-to-end walkthrough runs"
+then = "axe finds no serious or critical violation"
