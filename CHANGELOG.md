@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.4.0](https://github.com/SebastianLazarte/ai-process-discovery/compare/v2.3.1...v2.4.0) (2026-11-12)
+
+
+### Features
+
+* **api:** embedder protocol with a fake default and catalog chunks (RS-117) ([#257](https://github.com/SebastianLazarte/ai-process-discovery/issues/257)) ([d16b3bc](https://github.com/SebastianLazarte/ai-process-discovery/commit/d16b3bccf8f50c7c10b71f09118f5b37094f91e4))
+* **domain:** rank catalog processes against a description (RS-116) ([#256](https://github.com/SebastianLazarte/ai-process-discovery/issues/256)) ([dbe468b](https://github.com/SebastianLazarte/ai-process-discovery/commit/dbe468be0fc05ab326b3e5dc923850209173b916))
+
+
+### Documentation
+
+* ground the drafts of RU-14 in the sector catalog (PDR 005, ADR 0021, RS-116 to RS-122) ([#247](https://github.com/SebastianLazarte/ai-process-discovery/issues/247)) ([add4e9e](https://github.com/SebastianLazarte/ai-process-discovery/commit/add4e9ebbf29bf61eff51cf64480dfbb6956c765))
+
 ## [2.3.1](https://github.com/SebastianLazarte/ai-process-discovery/compare/v2.3.0...v2.3.1) (2026-11-08)
 
 
