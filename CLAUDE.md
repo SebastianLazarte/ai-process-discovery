@@ -28,7 +28,7 @@ Areas marked * have their own CLAUDE.md with Read, Rules and Verify. It loads wh
 | HTTP routes | `src/app/api/`* | ADR 0003, ADR 0009, ADR 0016 |
 | HTTP contracts, storage, repositories | `src/app/models/`*, `src/app/repositories/` | ADR 0003, ADR 0002 |
 | LLM adapter or prompt | `src/app/llm/`* | ADR 0004 |
-| Retrieval over the catalog (embedder, index, gold set) | `src/app/retrieval/` (planned) | PDR 005, ADR 0021 |
+| Retrieval over the catalog (embedder, index, gold set) | `src/app/retrieval/`, `scripts/evaluate_retrieval.py`, `tests/fixtures/retrieval_gold.json` | PDR 005, ADR 0021, `docs/design/retrieval-evaluation.md` |
 | Next.js client | `frontend/`* | ADR 0009, ADR 0013, ADR 0014, ADR 0015, ADR 0016, ADR 0018 |
 | UX research, wireframes, tokens, component specs | `docs/design/` | ADR 0013 |
 | Production deploy, Nginx, operations | `deploy/`* | ADR 0008, ADR 0016, `docs/runbook/production.md` |
@@ -59,6 +59,7 @@ ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locall
 | Apply migrations / check them against the models | `uv run alembic upgrade head && uv run alembic check` |
 | Purge demo data older than 24 h | `uv run python -m app.purge --older-than-hours 24` |
 | Rebuild the catalog index after a catalog change (not for the fake embedder) | `uv run python scripts/build_catalog_index.py` |
+| Evaluate the fake retrieval model and its fixed regression floors offline | `uv run python scripts/evaluate_retrieval.py --check` |
 
 ## Change contract
 

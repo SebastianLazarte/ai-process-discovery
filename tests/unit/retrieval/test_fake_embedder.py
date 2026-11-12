@@ -99,7 +99,13 @@ def test_texts_that_share_no_words_have_no_similarity() -> None:
 
 def test_the_fake_embedder_names_itself() -> None:
     embedder = FakeEmbedder()
-    assert (embedder.name, embedder.model) == ("fake", "fake-hash-256")
+    assert (embedder.name, embedder.model) == ("fake", "fake-hash-256-v2")
+
+
+@pytest.mark.req("RS-119", criterion=2)
+def test_common_english_words_do_not_inflate_the_similarity() -> None:
+    assert _embed_one("the invoice and the supplier") == _embed_one("invoice supplier")
+    assert _embed_one("the and our we their") == (0.0,) * 256
 
 
 def test_the_fake_embedder_satisfies_the_protocol() -> None:

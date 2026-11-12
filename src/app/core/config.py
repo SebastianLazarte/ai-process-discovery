@@ -1,10 +1,14 @@
 from functools import lru_cache
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 DEFAULT_ANTHROPIC_MODEL = "claude-opus-5"
+RetrievalThreshold = Annotated[float, Field(ge=-1.0, le=1.0, allow_inf_nan=False)]
+# RS-119: calibrated against tests/fixtures/retrieval_gold.json. No unmeasured real-model
+# default: RS-120 must evaluate a model before adding its threshold.
+DEFAULT_RETRIEVAL_THRESHOLDS: dict[str, float] = {"fake-hash-256-v2": 0.35}
 
 
 class Settings(BaseSettings):
@@ -30,10 +34,12 @@ class Settings(BaseSettings):
     embedding_provider: Literal["fake", "voyage"] = "fake"
     voyage_api_key: SecretStr | None = None
     voyage_model: str = "voyage-4-lite"
-    # Lowest cosine similarity at which a catalog process is retrieved for a description.
-    # Provisional, picked for the fake embedder: pasted catalog descriptions score 0.69 to
-    # 0.95 and unrelated sentences 0.23 to 0.51. RS-119 sets it per model from the gold set.
-    retrieval_threshold: float = Field(default=0.6, ge=-1.0, le=1.0)
+    # Per-model calibrated similarity floors. JSON in RETRIEVAL_THRESHOLDS replaces the
+    # map. The old scalar setting remains an explicit operator override for migration.
+    retrieval_thresholds: dict[str, RetrievalThreshold] = Field(
+        default_factory=lambda: DEFAULT_RETRIEVAL_THRESHOLDS.copy()
+    )
+    retrieval_threshold: RetrievalThreshold | None = None
 
     log_level: str = "INFO"
 
