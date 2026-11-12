@@ -17,7 +17,7 @@ Thin FastAPI routes: validate the contract, call a service, return a schema. Bus
 - A route that a visitor's step goes through records its usage event after its service succeeds, through `UsageServiceDep` (ADR 0020, RS-114): creating a process, loading a demo, running an analysis, adding an override, viewing or downloading a blueprint. A failed request counts nothing, and a demo's own process and analysis never count as the visitor's.
 - `/api/meta` tells the client the version and whether this is the public demo (banner).
 - Loading a demo goes through `DemoService`: demos in `app/demo/` with `assumptions` also get a first analysis, never with the LLM (RS-89). Reductions there are keyed by step name.
-- `/api/process-templates` serves `app/catalog/` through `TemplateService`, one JSON file per sector named by its id (RS-95). Templates hold only `StepTraits`: never minutes, rates, executions or an hourly cost, because the person types every number. `tests/unit/test_catalog_files.py` fails if one appears. The sectors and the sources of their processes are described in `docs/design/catalog.md` (RS-97, RS-116).
+- `/api/process-templates` serves `app/catalog/` through `TemplateService`, one JSON file per sector named by its id (RS-95). Templates hold only `StepTraits`: never minutes, rates, executions or an hourly cost, because the person types every number. `tests/unit/test_catalog_files.py` fails if one appears. The sectors and the sources of their processes are described in `docs/design/catalog.md` (RS-97, RS-123).
 
 ## Verify
 

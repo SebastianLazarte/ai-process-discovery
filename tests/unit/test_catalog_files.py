@@ -2,7 +2,7 @@
 
 The catalog covers eight sectors with three processes each, named after generic roles and
 tools, and `docs/design/catalog.md` names the sources of each sector (RS-97). Security operations
-is the eighth, its processes sourced from public standards bodies (RS-116).
+is the eighth, its processes sourced from public standards bodies (RS-123).
 """
 
 import re
@@ -63,7 +63,7 @@ SECTORS = {
         "Vulnerability management",
     ],
 }
-# Security processes cite public guidance, not vendor use-case lists (RS-116).
+# Security processes cite public guidance, not vendor use-case lists (RS-123).
 SECURITY_SOURCES = re.compile(
     r"\]\(https://(www\.)?(csrc\.nist\.gov|nist\.gov|cisa\.gov|first\.org)/"
 )
@@ -205,7 +205,7 @@ def test_the_design_docs_name_the_sources_of_each_sector(sector: str) -> None:
         assert re.search(r"\]\(https://[^)]+\)", row), process
 
 
-@pytest.mark.req("RS-116", criterion=1)
+@pytest.mark.req("RS-123", criterion=1)
 def test_security_operations_offers_triage_phishing_and_vulnerabilities() -> None:
     sector = CATALOG["security-operations"]
 
@@ -217,7 +217,7 @@ def test_security_operations_offers_triage_phishing_and_vulnerabilities() -> Non
     ]
 
 
-@pytest.mark.req("RS-116", criterion=5)
+@pytest.mark.req("RS-123", criterion=5)
 @pytest.mark.parametrize("process", SECTORS["Security operations"])
 def test_each_security_process_cites_a_public_standards_body(process: str) -> None:
     section = _doc_sections()["Security operations"]

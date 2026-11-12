@@ -98,7 +98,7 @@ def _analysed_from_template(client: TestClient, slug: str) -> dict[str, dict[str
     return {step["name"]: step for step in analysed.json()["step_assessments"]}
 
 
-@pytest.mark.req("RS-116", criterion=2)
+@pytest.mark.req("RS-123", criterion=2)
 @pytest.mark.parametrize(
     "step", ["Purge the message from every mailbox", "Block the sender and the malicious links"]
 )
@@ -108,21 +108,21 @@ def test_phishing_containment_needs_a_person_to_approve_it(client: TestClient, s
     assert steps[step]["final_human_control"] == "REQUIRED"
 
 
-@pytest.mark.req("RS-116", criterion=3)
+@pytest.mark.req("RS-123", criterion=3)
 def test_the_verdict_on_an_alert_stays_with_an_analyst(client: TestClient) -> None:
     steps = _analysed_from_template(client, "alert-triage")
 
     assert steps["Decide whether the alert is a real threat"]["final_human_control"] == "REQUIRED"
 
 
-@pytest.mark.req("RS-116", criterion=3)
+@pytest.mark.req("RS-123", criterion=3)
 def test_alert_enrichment_goes_through_the_integrations(client: TestClient) -> None:
     steps = _analysed_from_template(client, "alert-triage")
 
     assert steps["Enrich the alert with context"]["final_method"] == "API_INTEGRATION"
 
 
-@pytest.mark.req("RS-116", criterion=4)
+@pytest.mark.req("RS-123", criterion=4)
 def test_accepting_the_risk_of_an_open_finding_needs_a_person(client: TestClient) -> None:
     steps = _analysed_from_template(client, "vulnerability-management")
 

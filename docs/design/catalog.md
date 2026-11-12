@@ -22,7 +22,7 @@ New process (`/processes/new`) asks for a sector, then one of its processes. Eac
 
 The processes come from public lists of the use cases most often automated in each sector. Most of these lists are published by automation vendors and consultancies, so they are a guide to what is common and say nothing about how often each process is automated in practice. They are not a measured ranking. The Product Owner chose three processes per sector from them.
 
-Security operations is the exception (RS-116): its processes come from public guidance by standards bodies and government agencies (NIST, CISA, FIRST), which describe how the work is done, not how often it is automated. The vendor guides on security automation agree on the same three starting points, alert triage, reported phishing and vulnerability management, but are not cited as sources.
+Security operations is the exception (RS-123): its processes come from public guidance by standards bodies and government agencies (NIST, CISA, FIRST), which describe how the work is done, not how often it is automated. The vendor guides on security automation agree on the same three starting points, alert triage, reported phishing and vulnerability management, but are not cited as sources.
 
 | Source | What it gives |
 |---|---|
