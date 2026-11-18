@@ -2394,3 +2394,39 @@ then = "it says that no catalog process was close enough"
 given = "the review screen with a grounded draft"
 when = "the end-to-end walkthrough runs"
 then = "axe finds no serious or critical violation"
+
+[[requirement]]
+id = "RS-123"
+ru = "RU-12"
+block = "B13"
+area = "infra"
+kind = "enabler"
+title = "CI runs the slow jobs only when the change can affect them (ADR 0023)"
+points = 3
+priority = "should"
+rank = 60
+
+[[requirement.criteria]]
+given = "a pull request whose changed files are all documentation (Markdown, docs/, the pull request and issue templates, the PR checklist)"
+when = "CI runs"
+then = "frontend, test-postgres, docker and e2e report skipped, while quality, test (3.12), test (3.13) and pr-title run, so the required checks are satisfied"
+
+[[requirement.criteria]]
+given = "a pull request that changes only Python tests"
+when = "CI runs"
+then = "docker and e2e are skipped, and test-postgres runs only if a file under tests/integration/ changed"
+
+[[requirement.criteria]]
+given = "a pull request with a changed file outside the documentation and test paths, an unknown one included"
+when = "CI runs"
+then = "docker and e2e run"
+
+[[requirement.criteria]]
+given = "a pull request that changes frontend/ or openapi.json"
+when = "CI runs"
+then = "frontend runs"
+
+[[requirement.criteria]]
+given = "a push to main or a manual run"
+when = "CI runs"
+then = "every job runs, no job with a matrix carries a condition, and the workflow has no paths or paths-ignore filter"
