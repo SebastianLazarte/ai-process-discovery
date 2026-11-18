@@ -1706,12 +1706,12 @@ priority = "should"
 rank = 39
 
 [[requirement.criteria]]
-given = "a commit message that credits Claude (co-author trailer or generated-with footer)"
+given = "a commit message that credits Claude other than by the exact line Co-Authored-By: Claude <noreply@anthropic.com> (a model name or a generated-with footer; ADR 0022)"
 when = "it is committed with the hooks installed"
 then = "the commit is rejected and the offending line is named"
 
 [[requirement.criteria]]
-given = "a pull request whose body or any commit credits Claude"
+given = "a pull request whose body or any commit credits Claude other than by that exact line"
 when = "CI runs"
 then = "the pr-title check fails and names where the credit is"
 
@@ -2397,6 +2397,42 @@ then = "axe finds no serious or critical violation"
 
 [[requirement]]
 id = "RS-123"
+ru = "RU-12"
+block = "B13"
+area = "infra"
+kind = "enabler"
+title = "CI runs the slow jobs only when the change can affect them (ADR 0023)"
+points = 3
+priority = "should"
+rank = 60
+
+[[requirement.criteria]]
+given = "a pull request whose changed files are all documentation (Markdown, docs/, the pull request and issue templates, the PR checklist)"
+when = "CI runs"
+then = "frontend, test-postgres, docker and e2e report skipped, while quality, test (3.12), test (3.13) and pr-title run, so the required checks are satisfied"
+
+[[requirement.criteria]]
+given = "a pull request that changes only Python tests"
+when = "CI runs"
+then = "docker and e2e are skipped, and test-postgres runs only if a file under tests/integration/ changed"
+
+[[requirement.criteria]]
+given = "a pull request with a changed file outside the documentation and test paths, an unknown one included"
+when = "CI runs"
+then = "docker and e2e run"
+
+[[requirement.criteria]]
+given = "a pull request that changes frontend/ or openapi.json"
+when = "CI runs"
+then = "frontend runs"
+
+[[requirement.criteria]]
+given = "a push to main or a manual run"
+when = "CI runs"
+then = "every job runs, no job with a matrix carries a condition, and the workflow has no paths or paths-ignore filter"
+
+[[requirement]]
+id = "RS-124"
 ru = "RU-13"
 block = "B14"
 area = "api"
@@ -2407,7 +2443,7 @@ i_want = "to start from the most common processes of a security operations team"
 so_that = "I see which triage, phishing and vulnerability steps can be automated and which must stay with an analyst"
 points = 3
 priority = "should"
-rank = 60
+rank = 61
 
 [[requirement.criteria]]
 given = "the catalog"

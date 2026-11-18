@@ -5,6 +5,7 @@ from hypothesis import strategies as st
 from app.domain.entities import Process, ProcessStep
 from app.domain.enums import AutomationMethod, InputType, IntegrationReadiness, Level
 from app.domain.reconciliation import AISuggestion
+from app.domain.retrieval import CatalogChunk
 
 unit_interval = st.decimals(min_value=0, max_value=1, places=2)
 minutes = st.decimals(min_value=0, max_value=600, places=2)
@@ -48,4 +49,14 @@ ai_suggestions = st.builds(
     interpretation=st.just("i"),
     rationale=st.just("r"),
     human_control_recommended=st.booleans(),
+)
+
+
+_components = st.floats(min_value=-1, max_value=1, allow_nan=False)
+retrieval_queries = st.tuples(_components, _components, _components)
+catalog_chunks = st.builds(
+    CatalogChunk,
+    process_slug=st.sampled_from(["a", "b", "c", "d", "e"]),
+    step_position=st.none() | st.integers(min_value=1, max_value=6),
+    vector=st.tuples(_components, _components, _components),
 )

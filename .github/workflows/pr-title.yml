@@ -17,7 +17,8 @@ jobs:
         with:
           persist-credentials: false
       - name: No AI credit
-        # Hard rule 8 (RS-102). The squash commit on main takes the pull request body, so the
+        # Hard rule 8 (RS-102, ADR 0022): only the plain Claude co-author line is allowed.
+        # The squash commit on main takes the pull request body, so the
         # body is checked with every commit. The script reads both through the API.
         env:
           GH_TOKEN: ${{ github.token }}
