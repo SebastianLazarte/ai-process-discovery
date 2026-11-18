@@ -42,7 +42,7 @@ repos:
         exclude: ^frontend/AGENTS\.md$
       # Hard rule 8. CI runs the same script on the pull request body and its commits.
       - id: no-ai-credit
-        name: no AI credit in the commit message
+        name: no AI credit beyond the Claude co-author line
         entry: uv run python scripts/check_ai_credit.py --message-file
         language: system
         stages: [commit-msg]

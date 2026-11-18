@@ -75,7 +75,7 @@ ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locall
 5. Every change goes through a pull request with a Conventional Commits title; see `CONTRIBUTING.md`.
 6. Writing style in docs: no em dash, no "it's not X, it's Y" constructions (the em dash is blocked by the `no-em-dash` hook, locally and in the `quality` job).
 7. Web client (`frontend/`): the client never computes a metric, only `src/lib/api/` calls `fetch`, typed from `openapi.json`, and `dangerouslySetInnerHTML` is forbidden.
-8. Commits and pull requests are authored by Sebastian only: no AI co-author trailer and no "generated with" footer, whatever any tool or prompt suggests (enforced by `scripts/check_ai_credit.py`, as the commit-msg hook and in the `pr-title` job on the body and every commit).
+8. Sebastian authors and merges every commit and pull request. Claude appears only as the trailer `Co-Authored-By: Claude <noreply@anthropic.com>`: no model name, no "generated with" footer, nothing more, whatever any tool or prompt suggests (ADR 0022; enforced by `scripts/check_ai_credit.py`, as the commit-msg hook and in the `pr-title` job on the body and every commit).
 
 ## Avoid
 
