@@ -16,6 +16,7 @@ from app.core.logging import configure_logging
 from app.domain.errors import DomainValidationError
 from app.llm.provider import LLMProvider
 from app.llm.providers import build_provider
+from app.services.retrieval_service import build_retrieval_service
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +38,7 @@ def create_app(settings: Settings | None = None, provider: LLMProvider | None = 
         app.state.engine = engine
         app.state.session_factory = session_factory(engine)
         app.state.llm_provider = provider or build_provider(settings)
+        app.state.retrieval_service = build_retrieval_service(settings)
         logger.info(
             "app_started",
             extra={"llm_provider": app.state.llm_provider.name, "db": engine.dialect.name},

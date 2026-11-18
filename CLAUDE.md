@@ -58,6 +58,7 @@ ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locall
 | End-to-end walkthroughs with axe, against the stack on `:8080` | `docker compose up --build -d --wait edge && cd frontend && corepack pnpm exec playwright install chromium && corepack pnpm e2e` |
 | Apply migrations / check them against the models | `uv run alembic upgrade head && uv run alembic check` |
 | Purge demo data older than 24 h | `uv run python -m app.purge --older-than-hours 24` |
+| Rebuild the catalog index after a catalog change (not for the fake embedder) | `uv run python scripts/build_catalog_index.py` |
 
 ## Change contract
 
