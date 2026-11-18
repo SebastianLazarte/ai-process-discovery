@@ -4,6 +4,7 @@ on:
   pull_request:
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -16,6 +17,31 @@ env:
   UV_LOCKED: "1"
 
 jobs:
+  # RS-123 (ADR 0023): which slow jobs a pull request needs, from the files it changes.
+  # The slow jobs skip with `if:` instead of a workflow `paths` filter: a skipped job
+  # satisfies its required check, a workflow that never starts does not. On `main` and on a
+  # manual run every job runs. `quality` and `test` always run: pytest reads the docs too,
+  # and a skipped matrix job would not report `test (3.12)`.
+  changes:
+    name: changes
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.classify.outputs.frontend }}
+      postgres: ${{ steps.classify.outputs.postgres }}
+      stack: ${{ steps.classify.outputs.stack }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: github.event_name == 'pull_request'
+        with:
+          fetch-depth: 0
+      - name: Classify the changed files
+        id: classify
+        if: github.event_name == 'pull_request'
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: python3 scripts/ci_changes.py "$BASE" "$HEAD"
+
   quality:
     name: quality
     runs-on: ubuntu-latest
@@ -38,9 +64,12 @@ jobs:
         # Hard rule 6 (RS-102): the same pre-commit hook that runs locally.
         run: uv run pre-commit run no-em-dash --all-files
 
-  # RS-70: the Next.js client (ADR 0009). Runs on every pull request so it can be required.
+  # RS-70: the Next.js client (ADR 0009). Required; skipped on a pull request that leaves the
+  # client and the API contract alone (RS-123).
   frontend:
     name: frontend
+    needs: changes
+    if: ${{ !cancelled() && (github.event_name != 'pull_request' || needs.changes.result != 'success' || needs.changes.outputs.frontend == 'true') }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -114,6 +143,8 @@ jobs:
 
   test-postgres:
     name: test-postgres
+    needs: changes
+    if: ${{ !cancelled() && (github.event_name != 'pull_request' || needs.changes.result != 'success' || needs.changes.outputs.postgres == 'true') }}
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -146,6 +177,8 @@ jobs:
 
   docker:
     name: docker
+    needs: changes
+    if: ${{ !cancelled() && (github.event_name != 'pull_request' || needs.changes.result != 'success' || needs.changes.outputs.stack == 'true') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -249,6 +282,8 @@ jobs:
   # images build here as in `docker`, reading its layer cache without writing to it.
   e2e:
     name: e2e
+    needs: changes
+    if: ${{ !cancelled() && (github.event_name != 'pull_request' || needs.changes.result != 'success' || needs.changes.outputs.stack == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
