@@ -22,10 +22,12 @@ default = ["What did you run, and what did you observe?"]
 feat = [
   "Which test covers each acceptance criterion of the issue?",
   "Did you try it in the running app (`uv run uvicorn app.main:app --reload --reload-dir src`)?",
+  "Did you change an existing assertion? Which criterion or intended change of behaviour justifies it?",
 ]
 fix = [
   "Which test failed before the fix and passes now?",
   "What was the root cause, and can it happen anywhere else?",
+  "Did you change an existing assertion? Which criterion or intended change of behaviour justifies it?",
 ]
 refactor = ["Which existing tests show the behaviour did not change? Did any of them need editing?"]
 perf = ["What did you measure, and what were the numbers before and after?"]

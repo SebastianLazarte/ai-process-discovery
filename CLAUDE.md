@@ -28,16 +28,17 @@ Areas marked * have their own CLAUDE.md with Read, Rules and Verify. It loads wh
 | HTTP routes | `src/app/api/`* | ADR 0003, ADR 0009, ADR 0016 |
 | HTTP contracts, storage, repositories | `src/app/models/`*, `src/app/repositories/` | ADR 0003, ADR 0002 |
 | LLM adapter or prompt | `src/app/llm/`* | ADR 0004 |
+| Retrieval over the catalog (embedder, index, gold set) | `src/app/retrieval/` (planned) | PDR 005, ADR 0021 |
 | Next.js client | `frontend/`* | ADR 0009, ADR 0013, ADR 0014, ADR 0015, ADR 0016, ADR 0018 |
 | UX research, wireframes, tokens, component specs | `docs/design/` | ADR 0013 |
 | Production deploy, Nginx, operations | `deploy/`* | ADR 0008, ADR 0016, `docs/runbook/production.md` |
 | CI/CD, releases, GitHub setup, dependency updates | `.github/`, `scripts/bootstrap_github.py` | ADR 0006, ADR 0010 |
-| Test strategy, mutation testing, complexity limits | `tests/`, `pyproject.toml`, `.github/workflows/mutation.yml` | ADR 0011, ADR 0012 |
+| Test strategy, mutation testing, complexity limits | `tests/`*, `pyproject.toml`, `.github/workflows/mutation.yml` | ADR 0011, ADR 0012 |
 | Scope, product backlog, stories and acceptance criteria | `docs/requirements.toml` | `docs/pdr/001-mvp-scope.md`, `docs/pdr/002-portfolio-product-goal-and-roles.md` |
 | Write or amend an ADR, PDR or runbook | `docs/`* | decision index in `docs/CLAUDE.md` |
 | Retired clients: vanilla `web/` (replaced) and Streamlit (retired), gone in 2.0.0 | git history, tag `v1.5.0` | ADR 0007 (replaced by ADR 0009), ADR 0005 (retired) |
 
-ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locally-postgresql-in-ci.md`, `0003-separate-domain-contracts-persistence.md`, `0004-provider-agnostic-llm-anthropic-first.md`, `0005-streamlit-as-rest-client.md`, `0006-github-flow-ci-and-releases.md`, `0007-vanilla-web-client-served-by-fastapi.md`, `0008-public-demo-on-own-vps.md`, `0009-nextjs-frontend-as-separate-service.md`, `0010-dependency-update-policy.md`, `0011-automated-quality-gauntlet.md`, `0012-test-quality-standard.md`, `0013-design-system-and-design-to-code.md`, `0014-keep-the-vanilla-client-look.md`, `0015-parity-screens-take-web-as-spec.md`, `0016-nextjs-at-the-root-from-2-0-0.md`, `0018-graphite-modern-take-on-the-vanilla-look.md`, `0019-anonymous-visitor-cookie-scopes-lists.md`, `0020-aggregate-usage-counters.md`, `0022-claude-as-co-author.md`.
+ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locally-postgresql-in-ci.md`, `0003-separate-domain-contracts-persistence.md`, `0004-provider-agnostic-llm-anthropic-first.md`, `0005-streamlit-as-rest-client.md`, `0006-github-flow-ci-and-releases.md`, `0007-vanilla-web-client-served-by-fastapi.md`, `0008-public-demo-on-own-vps.md`, `0009-nextjs-frontend-as-separate-service.md`, `0010-dependency-update-policy.md`, `0011-automated-quality-gauntlet.md`, `0012-test-quality-standard.md`, `0013-design-system-and-design-to-code.md`, `0014-keep-the-vanilla-client-look.md`, `0015-parity-screens-take-web-as-spec.md`, `0016-nextjs-at-the-root-from-2-0-0.md`, `0018-graphite-modern-take-on-the-vanilla-look.md`, `0019-anonymous-visitor-cookie-scopes-lists.md`, `0020-aggregate-usage-counters.md`, `0021-retrieval-over-the-catalog.md`.
 
 ## Commands
 
@@ -61,7 +62,7 @@ ADRs in `docs/adr/`: `0001-deterministic-first-analysis.md`, `0002-sqlite-locall
 ## Change contract
 
 - **Inputs:** one issue, which is one backlog item `RS-nn` in `docs/requirements.toml` with its acceptance criteria (Ready, when refined: see the Scrum section of `docs/CLAUDE.md`); the ADRs routed above.
-- **Process:** branch from `main` (`feat/rs-12-process-score`, `fix/...`, `docs/...`, `ci/...`). A test proves each acceptance criterion. A new dependency or a reversed decision comes with an ADR.
+- **Process:** branch from `main` (`feat/rs-12-process-score`, `fix/...`, `docs/...`, `ci/...`). A test proves each acceptance criterion, written first as `tests/CLAUDE.md` describes. A new dependency or a reversed decision comes with an ADR.
 - **Outputs:** one pull request with the template and a Conventional Commits title (`feat(scoring): ...`), squash merged. The description answers the verification questions of the checklist comment (`.github/pr-checklist.toml`).
 - **Verify:** pre-commit, `uv run pytest` and the `frontend/` checks pass locally. Required checks: `quality`, `frontend`, `test (3.12)`, `test (3.13)`, `test-postgres`, `docker`, `e2e`, `pr-title`.
 
