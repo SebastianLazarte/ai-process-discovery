@@ -1,10 +1,11 @@
 """CI runs the slow jobs only when the change can affect them (RS-123, ADR 0023)."""
 
 import re
+import subprocess
 from pathlib import Path
 
 import pytest
-from scripts.ci_changes import classify, outputs
+from scripts.ci_changes import changed_files, classify, outputs
 
 ROOT = Path(__file__).resolve().parents[2]
 CI = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
@@ -148,3 +149,39 @@ def test_the_outputs_are_one_github_output_line_per_job_group() -> None:
     assert outputs({"frontend": True, "postgres": False, "stack": True}) == (
         "frontend=true\npostgres=false\nstack=true\n"
     )
+
+
+@pytest.mark.req("RS-123", criterion=2)
+@pytest.mark.parametrize("path", ["tests/payloads.py", "tests/snapshots/invoice-approval.json"])
+def test_a_helper_the_integration_tests_read_needs_postgres_and_not_the_stack(path: str) -> None:
+    assert classify([path]) == {"frontend": False, "postgres": True, "stack": False}
+
+
+def _git(repo: Path, *args: str) -> str:
+    done = subprocess.run(
+        ["git", "-c", "user.name=ci", "-c", "user.email=ci@example.com", *args],
+        cwd=repo,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return done.stdout.strip()
+
+
+@pytest.mark.req("RS-123", criterion=2)
+def test_a_moved_file_counts_where_it_came_from(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _git(tmp_path, "init", "--quiet")
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "catalog.json").write_text('{"sector": "insurance"}\n', encoding="utf-8")
+    _git(tmp_path, "add", ".")
+    _git(tmp_path, "commit", "--quiet", "-m", "base")
+    base = _git(tmp_path, "rev-parse", "HEAD")
+    (tmp_path / "docs").mkdir()
+    _git(tmp_path, "mv", "src/catalog.json", "docs/catalog.json")
+    _git(tmp_path, "commit", "--quiet", "-m", "move")
+    head = _git(tmp_path, "rev-parse", "HEAD")
+    monkeypatch.chdir(tmp_path)
+
+    assert sorted(changed_files(base, head)) == ["docs/catalog.json", "src/catalog.json"]
