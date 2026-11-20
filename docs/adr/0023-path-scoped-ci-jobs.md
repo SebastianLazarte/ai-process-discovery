@@ -12,12 +12,12 @@ The end-to-end walkthroughs stay useful on a change to the API alone: they cross
 
 ## Decision
 
-- **One workflow.** A `changes` job runs `scripts/ci_changes.py` (standard library only) on the files the pull request changes, `git diff base...head`, and outputs three groups. The slow jobs need it and skip with `if:`:
+- **One workflow.** A `changes` job runs `scripts/ci_changes.py` (standard library only) on the files the pull request changes, `git diff --no-renames base...head` (a moved file counts at both paths), and outputs three groups. The slow jobs need it and skip with `if:`:
 
   | Job | Runs on a pull request when a changed file is |
   |---|---|
   | `frontend` | under `frontend/`, or `openapi.json`, or `ci.yml` |
-  | `test-postgres` | under `src/` or `tests/integration/`, or `alembic.ini`, `pyproject.toml`, `uv.lock`, `ci.yml` |
+  | `test-postgres` | under `src/`, `tests/integration/` or `tests/snapshots/`, or `tests/payloads.py`, `alembic.ini`, `pyproject.toml`, `uv.lock`, `ci.yml` |
   | `docker`, `e2e` | anything but documentation and Python tests |
 
 - **Documentation** is any `*.md`, anything under `docs/` or `.github/ISSUE_TEMPLATE/`, `.github/pr-checklist.toml` and `LICENSE`. `README.md` goes into the API image as package metadata only, so it counts as documentation too.
