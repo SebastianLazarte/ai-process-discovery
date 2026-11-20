@@ -18,8 +18,11 @@ DOCS_FILES = frozenset({".github/pr-checklist.toml", "LICENSE"})
 DOCS_PREFIXES = ("docs/", ".github/ISSUE_TEMPLATE/")
 FRONTEND_PREFIXES = ("frontend/",)
 FRONTEND_FILES = frozenset({"openapi.json", CI_WORKFLOW})
-POSTGRES_PREFIXES = ("src/", "tests/integration/")
-POSTGRES_FILES = frozenset({"alembic.ini", "pyproject.toml", "uv.lock", CI_WORKFLOW})
+# The integration tests also read the shared payloads and the frozen demo outputs.
+POSTGRES_PREFIXES = ("src/", "tests/integration/", "tests/snapshots/")
+POSTGRES_FILES = frozenset(
+    {"alembic.ini", "pyproject.toml", "uv.lock", "tests/payloads.py", CI_WORKFLOW}
+)
 
 
 def _is_docs(path: str) -> bool:
@@ -49,8 +52,10 @@ def outputs(needs: dict[str, bool]) -> str:
 
 
 def changed_files(base: str, head: str) -> list[str]:
+    # Without rename detection a moved file lists both paths, so a file leaving `src/`
+    # still counts where it came from.
     diff = subprocess.run(
-        ["git", "diff", "--name-only", f"{base}...{head}"],
+        ["git", "diff", "--name-only", "--no-renames", f"{base}...{head}"],
         check=True,
         capture_output=True,
         text=True,

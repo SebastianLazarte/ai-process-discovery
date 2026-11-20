@@ -2414,7 +2414,7 @@ then = "frontend, test-postgres, docker and e2e report skipped, while quality, t
 [[requirement.criteria]]
 given = "a pull request that changes only Python tests"
 when = "CI runs"
-then = "docker and e2e are skipped, and test-postgres runs only if a file under tests/integration/ changed"
+then = "docker and e2e are skipped, and test-postgres runs only if a file the integration tests read changed: under tests/integration/ or tests/snapshots/, or tests/payloads.py; a file moved out of another path counts where it came from"
 
 [[requirement.criteria]]
 given = "a pull request with a changed file outside the documentation and test paths, an unknown one included"
